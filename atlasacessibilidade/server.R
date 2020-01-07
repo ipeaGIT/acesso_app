@@ -16,7 +16,7 @@ data.table::setDTthreads(percent = 100)
 
 
 # register mapbox api key
-my_api <- data.table::fread("mapbox_key.txt", header = F)
+my_api <- data.table::fread("atlasacessibilidade/mapbox_key.txt", header = F)
 set_token(my_api$V1)
 
 
