@@ -36,7 +36,7 @@ spec:
         workload.user.cattle.io/workloadselector: deployment-acessibilidade-shiny-acessibilidade
     spec:
       containers:
-      - image: docker-registry.ipea.gov.br/shiny/atlasacessibilidade:latest
+      - image: docker-registry.ipea.gov.br/shiny/atlasacessibilidade:${CICD_GIT_TAG}
         imagePullPolicy: Always
         name: shiny-acessibilidade
         ports:
