@@ -16,7 +16,7 @@ data.table::setDTthreads(percent = 100)
 
 
 # register mapbox api key
-my_api <- data.table::fread("atlasacessibilidade/mapbox_key.txt", header = F)
+my_api <- data.table::fread("mapbox_key.txt", header = F)
 set_token(my_api$V1)
 
 
@@ -148,7 +148,7 @@ function(input, output) {
           update_view = FALSE,
           focus_layer = FALSE,
           auto_highlight = TRUE,
-          tooltip = "popup",
+          tooltip = "valor",
           legend = TRUE,
           legend_options = list(title = "% de Oportunidades Acessíveis"),
           legend_format = list( fill_colour = as.integer)
