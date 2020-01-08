@@ -4,6 +4,12 @@ stages:
   - publishImageConfig:
       dockerfilePath: ./Dockerfile
       buildContext: .
+      tag: shiny/atlasacessibilidade:${CICD_GIT_TAG}
+      pushRemote: true
+      registry: docker-registry.ipea.gov.br
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
       tag: shiny/atlasacessibilidade:latest
       pushRemote: true
       registry: docker-registry.ipea.gov.br
