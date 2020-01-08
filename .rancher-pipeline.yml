@@ -13,6 +13,8 @@ stages:
       tag: shiny/atlasacessibilidade:latest
       pushRemote: true
       registry: docker-registry.ipea.gov.br
+    env:
+      PLUGIN_STORAGE_PATH: /var/lib/docker/1
 - name: Deploy
   steps:
   - applyYamlConfig:
