@@ -24,9 +24,9 @@ set_token(my_api$V1)
 
 # abrir acessibilidade
 
-acess_cum <- read_rds("data/acess_tp_cum_app_sgeo.rds")
+acess_cum <- read_rds("data/acess_tp_cum_app_sgeo_wide.rds")
 
-acess_min <- read_rds("data/acess_tp_min_app_sgeo.rds")
+acess_min <- read_rds("data/acess_tp_min_app_sgeo_wide.rds")
 
 hex <- read_rds("data/hex_teste.rds")
 
@@ -48,17 +48,61 @@ function(input, output) {
   })
   
   
+    
+  # # Reactive para a modo para indicador cumulativo
+  modo_filtrado <- reactive({
+    
+    
+    if (input$cidade %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {
+      
+      modo_filtrado <- cidade_filtrada()[modo == input$modo_todos]
+      
+      
+    } else if(input$cidade %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat')) {
+      
+      # # Reactive para a modo para indicador cumulativo
+      modo_filtrado <- cidade_filtrada()[modo == input$modo_ativo]
+      
+      
+    }
+    
+  })
+  
+    
+  # # Reactive para a modo para indicador minimo
+  modo_filtrado_min <- reactive({
+    
+    
+    if (input$cidade %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {
+      
+      cidade_filtrada_min()[modo == input$modo_todos]
+      
+      
+    } else if(input$cidade %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat')) {
+      
+      # # Reactive para a modo para indicador cumulativo
+      cidade_filtrada_min()[modo == input$modo_ativo]
+      
+      
+    }
+    
+  })
+    
+  
+  
   # # Reactive para a atividade para indicador cumulativo
   atividade_filtrada <- reactive({
-    cidade_filtrada()[atividade == input$atividade_cum]
+    modo_filtrado() %>% select(id_hex, matches(input$atividade_cum))
+    # modo_filtrado()[atividade == input$atividade_cum]
   })
   
   
   # Atividade filtrada para o indicador minimo
   # # Reactive para a atividade para indicador cumulativo
   atividade_filtrada_min <- reactive({
-    cidade_filtrada_min()[atividade == input$atividade_min] %>%
+    modo_filtrado_min() %>% select(id_hex, matches(input$atividade_min)) %>%
       merge(hex, by = "id_hex", all.x = TRUE) %>% 
+      rename(id_hex = 1, valor = 2, geometry = 3) %>%
       st_sf(crs = 4326)
     
   })
@@ -66,8 +110,9 @@ function(input, output) {
   
   # Reactive para o tempo
   tempo_filtrado <- reactive({
-    atividade_filtrada()[tempo_viagem == input$tempo] %>%
-      merge(hex, by = "id_hex", all.x = TRUE) %>% 
+    atividade_filtrada() %>% select(id_hex, matches(as.character(input$tempo))) %>%
+      merge(hex, by = "id_hex", all.x = TRUE) %>%
+      rename(id_hex = 1, valor = 2, geometry = 3) %>%
       st_sf(crs = 4326)
   })
   
