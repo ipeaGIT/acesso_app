@@ -95,7 +95,65 @@ h1 {
   padding-left: 30px;
 }
 
+/*Change pickerinput font size */
+.btn {
+  font-size: 18px;
+}
 
+/*Change info button size */
+.btn-group-xs>.btn, .btn-xs {
+    padding: 1px 5px;
+    font-size: 12px !important;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+
+/* add 2 whitespaces before the icon */
+/*
+.fa-bus:before {
+    content: "\00a0\00a0\f207";
+}
+*/
+
+
+/*
+.fa-bus:after {
+    content: "\00a0\00a0";
+}
+*/
+
+
+
+/* This section include many failed attemps to reposition the bus icon on selectpick */
+/*https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Ordering_Flex_Items*/
+/*
+.filter-option-inner-inner {
+  display: flex;
+  flex-direction: row;
+}
+
+
+.filter-option-inner-inner :nth-child(4) {content: "aaaa";}
+
+.filter-option-inner-inner :nth-child(1) { order: 4; }
+.filter-option-inner-inner :nth-child(2) { order: 3; }
+.filter-option-inner-inner :nth-child(4) { order: 1; }
+
+
+[id^="bs-select"] {
+  display: flex !important;
+  flex-direction: row;
+}
+
+
+[id^="bs-select"] :nth-child(3) { order: 2; }
+[id^="bs-select"] :nth-child(1) { order: 3; }
+[id^="bs-select"] :nth-child(2) { order: 1; }
+*/
+
+
+/*Change mapdeck popup */
 .mapdecktooltip {
     max-width: 400px;
     font-size: 14px;
