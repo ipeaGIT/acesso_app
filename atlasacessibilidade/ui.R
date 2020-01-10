@@ -7,6 +7,7 @@ library(shinyBS)
 
 
 # UI SO COM UMA ABA -------------------------------------------------------
+a <- HTML("<p>Fortaleza <i class=\"fas fa-bus fa-sm\"></i></p>")
 
 div(class = "navbar-default",
     navbarPage("Acesso a Oportunidades",
@@ -21,7 +22,7 @@ div(class = "navbar-default",
                         mapdeckOutput("map"),
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE, draggable = FALSE,
                                       top = 80, right = 20, width = 350, height = 700,
-                                      selectInput(inputId = "cidade",
+                                      pickerInput(inputId = "cidade",
                                                   label = h1("Escolha a cidade:"),
                                                   choices = list(
                                                     'Norte' = c("Belém" = "bel",
@@ -45,6 +46,32 @@ div(class = "navbar-default",
                                                                        "Campo Grande" = "cgr",
                                                                        "Goiânia" = "goi")
                                                     ),
+                                                  choicesOpt = list(
+                                                    icon = c("", 
+                                                             "",
+                                                             "fa-bus",
+                                                             "",
+                                                             "",
+                                                             "fa-bus",
+                                                             "",
+                                                             "",
+                                                             "fa-bus",
+                                                             "",
+                                                             "",
+                                                             "",
+                                                             "fa-bus",
+                                                             "",
+                                                             "fa-bus",
+                                                             "fa-bus",
+                                                             "fa-bus",
+                                                             "",
+                                                             "",
+                                                             ""
+                                                             )
+                                                  ),
+                                                  options = list('size' = 15,
+                                                                 'icon-base' = "fa",
+                                                                 'tickIcon' = "fa-check"),
                                                   selected = "bho"),
                                       awesomeRadio(inputId = "indicador",
                                                    # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
@@ -56,7 +83,7 @@ div(class = "navbar-default",
                                                        radioButtons(inputId = "modo_todos",
                                                                     # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                                                                     label = HTML("<h1>Escolha o modo de transporte: 
-                                                                  <button id=\"q2\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
+                                                                  <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
                                                                     choiceNames = list(HTML("<i class=\"fas fa-bus fa-2x\"></i>"), 
                                                                                        HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
                                                                                        HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
@@ -71,7 +98,7 @@ div(class = "navbar-default",
                                                        radioButtons(inputId = "modo_ativo",
                                                                     # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                                                                     label = HTML("<h1>Escolha o modo de transporte: 
-                                                                  <button id=\"q2\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
+                                                                  <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
                                                                     choiceNames = list(HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
                                                                                        HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
                                                                     choiceValues = list("caminhada",
