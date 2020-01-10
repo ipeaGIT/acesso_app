@@ -65,13 +65,13 @@ acess_tp_min_long <- acess_tp_min %>%
 
 # salvar sem geometria - wide
 write_rds(acess_tp_cum_wide %>% 
-          filter(sigla_muni %in% c("bho", "sal")) %>%
+          # filter(sigla_muni %in% c("bho", "sal")) %>%
           st_set_geometry(NULL) %>% setDT(),
           # filter(nome_muni %nin% c("São Paulo", "Rio de Janeiro")), 
           "atlasacessibilidade/data/acess_tp_cum_app_sgeo_wide.rds") 
 
 write_rds(acess_tp_min_wide %>%  
-          filter(sigla_muni %in% c("bho", "sal")) %>%
+          # filter(sigla_muni %in% c("bho", "sal")) %>%
             st_set_geometry(NULL) %>% setDT(),
           "atlasacessibilidade/data/acess_tp_min_app_sgeo_wide.rds") 
 

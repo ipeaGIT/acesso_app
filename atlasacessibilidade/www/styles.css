@@ -95,6 +95,12 @@ h1 {
   padding-left: 30px;
 }
 
+
+.mapdecktooltip {
+    max-width: 400px;
+    font-size: 14px;
+    pointer-events: auto;
+}
 /*.navbar-default .navbar-nav .active, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover  {
     color: #cabdbd69;
     background-color: transparent;
@@ -130,6 +136,13 @@ h1 {
   font-weight: bold;
 }
 
+/* https://stackoverflow.com/questions/13533258/how-to-change-css-style-without-id-or-class */
+/* https://stackoverflow.com/questions/31974431/target-a-div-without-a-class-or-id */
+.legendContent > div:first-child{
+      width: 20px !important;
+  
+}
+
 
 
 /* change spacing betweehn radio buttons! */
@@ -139,16 +152,17 @@ h1 {
 
 /* change aspect of slider that change time trhesolhd */
 .irs-from, .irs-to, .irs-single {
-    color: #fff;
+    /*color: #fff;*/
     font-size: 14px;
     line-height: 1.333;
     text-shadow: none;
     padding: 1px 5px;
-    background: #20b426;
+    /*background: #20b426;*/
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
 
+/*
 .irs-grid-text {
     position: absolute;
     bottom: 0;
@@ -166,6 +180,18 @@ h1 {
     margin-top: -1px;
 }
 
+.irs-line {
+    height: 5px;
+    background: #DEE4EC;
+    border-radius: 16px;
+}
+
+.irs-bar, .irs-bar-edge {
+    top: 36px;
+    height: 5px;
+    background: #006CFA;
+}
+*/
 
 
 /* ESSA PARTE DE BAIXO SO FUNCIONA SE FOR USADO LEAFET!!!

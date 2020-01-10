@@ -92,7 +92,7 @@ function(input, output) {
   
   # # Reactive para a atividade para indicador cumulativo
   atividade_filtrada <- reactive({
-    modo_filtrado() %>% select(id_hex, matches(input$atividade_cum))
+    modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_cum))
     # modo_filtrado()[atividade == input$atividade_cum]
   })
   
@@ -100,9 +100,10 @@ function(input, output) {
   # Atividade filtrada para o indicador minimo
   # # Reactive para a atividade para indicador cumulativo
   atividade_filtrada_min <- reactive({
-    modo_filtrado_min() %>% select(id_hex, matches(input$atividade_min)) %>%
+    modo_filtrado_min() %>% dplyr::select(id_hex, P001, matches(input$atividade_min)) %>%
       merge(hex, by = "id_hex", all.x = TRUE) %>% 
-      rename(id_hex = 1, valor = 2, geometry = 3) %>%
+      rename(id_hex = 1, P001 = 2, valor = 3, geometry = 4) %>%
+      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 0), " minutos")) %>%
       st_sf(crs = 4326)
     
   })
@@ -110,10 +111,35 @@ function(input, output) {
   
   # Reactive para o tempo
   tempo_filtrado <- reactive({
-    atividade_filtrada() %>% select(id_hex, matches(as.character(input$tempo))) %>%
-      merge(hex, by = "id_hex", all.x = TRUE) %>%
-      rename(id_hex = 1, valor = 2, geometry = 3) %>%
-      st_sf(crs = 4326)
+    
+    if (input$cidade %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "tp") {
+      
+      atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(input$tempo_tp))) %>%
+        merge(hex, by = "id_hex", all.x = TRUE) %>%
+        rename(id_hex = 1, P001 = 2, valor = 3, geometry = 4) %>%
+        # create popup
+        mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 1), "%")) %>%
+        st_sf(crs = 4326)
+      
+    } else if (input$cidade %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% c("caminhada", "bicicleta")) {
+      
+      atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(input$tempo_ativo_tp))) %>%
+        merge(hex, by = "id_hex", all.x = TRUE) %>%
+        rename(id_hex = 1, P001 = 2, valor = 3, geometry = 4) %>%
+        mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 1), "%")) %>%
+        st_sf(crs = 4326)
+      
+    } else if(input$cidade %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat')) {
+      
+      atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(input$tempo_ativo))) %>%
+        merge(hex, by = "id_hex", all.x = TRUE) %>%
+        rename(id_hex = 1, P001 = 2, valor = 3, geometry = 4) %>%
+        mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 1), "%")) %>%
+        st_sf(crs = 4326)
+      
+    }
+    
+    
   })
   
   
@@ -161,16 +187,22 @@ function(input, output) {
   
   observe({
     
-    if(input$cidade %in% c("spo", "rio")) {
+    if(input$cidade %in% c("spo", "man", "cgr", "bsb")) {
       
-    zoom1 <- 9
-        
+      zoom1 <- 9
+      
+    } else if(input$cidade %in% c("mac", "for", "nat", "rec", "sal", "slz", "bho")) {
+      
+      zoom1 <- 11
+    
     } else {zoom1 <- 10}
     
-    proxy <- mapdeck_update(map_id = "map") %>%
-      mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1,
-                   transition = "fly")
-    
+    isolate({
+      proxy <- mapdeck_update(map_id = "map") %>%
+        mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1,
+                     transition = "fly")
+      
+    })
     
     
     # linhas_cidade <- linhas %>%
@@ -192,10 +224,10 @@ function(input, output) {
           palette = "inferno",
           update_view = FALSE,
           focus_layer = FALSE,
-          auto_highlight = TRUE,
-          tooltip = "valor",
+          # auto_highlight = TRUE,
+          tooltip = "popup",
           legend = TRUE,
-          legend_options = list(title = "% de Oportunidades Acessíveis"),
+          legend_options = list(title = "Porcentagem de Oportunidades Acessíveis"),
           legend_format = list( fill_colour = as.integer)
         )
       
@@ -206,7 +238,7 @@ function(input, output) {
       # create matrix
       colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
       # invert matrix
-      colorss <- apply(colorss, 2, rev)
+      colorss <- apply(colorss, 2, rev)[, 1:3]
       
       proxy %>%
         clear_polygon(layer_id = "acess_cum_go") %>%
@@ -218,6 +250,7 @@ function(input, output) {
           layer_id = "acess_min_go",
           palette = colorss,
           update_view = FALSE,
+          tooltip = "popup",
           legend = TRUE,
           legend_options = list(title = "Minutos atè a oportunidade mais próxima"),
           legend_format = list( fill_colour = as.integer)
@@ -227,7 +260,7 @@ function(input, output) {
       
       
     
-      
+    
   })
   
   
