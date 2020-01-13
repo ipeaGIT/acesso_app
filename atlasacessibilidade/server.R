@@ -4,7 +4,7 @@ library(sf)
 library(readr)
 library(data.table)
 library(mapdeck)
-library(waiter) # remotes::install_github("JohnCoene/waiter")
+# library(waiter) # remotes::install_github("JohnCoene/waiter")
 
 
 

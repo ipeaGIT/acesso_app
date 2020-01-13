@@ -2,7 +2,7 @@ library(shiny)
 library(shinyWidgets)
 library(mapdeck)
 library(shinyBS)
-library(waiter)
+# library(waiter)
 
 
 
