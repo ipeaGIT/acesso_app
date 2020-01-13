@@ -1,16 +1,18 @@
 library(shiny)
-library(RColorBrewer)
 library(shinyWidgets)
 library(mapdeck)
 library(shinyBS)
+library(waiter)
 
 
 
 # UI SO COM UMA ABA -------------------------------------------------------
 a <- HTML("<p>Fortaleza <i class=\"fas fa-bus fa-sm\"></i></p>")
 
-div(class = "navbar-default",
-    navbarPage("Acesso a Oportunidades",
+div(class = "navbar-default"
+    # , use_waiter(include_js = FALSE)
+    # , waiter_show_on_load(html = spin_loader(), color = "##F4F6F6")
+    , navbarPage("Acesso a Oportunidades",
                tabPanel("Mapa",
                         tags$head(includeCSS("www/styles.css")),
                         tags$head(tags$script("var cities_todos = ['for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec'];")),
@@ -18,7 +20,6 @@ div(class = "navbar-default",
                         tags$head(tags$script("var modos_ativos = ['caminhada', 'bicicleta'];")),
                         # https://divadnojnarg.github.io/blog/customsliderinput/
                         chooseSliderSkin("HTML5", color = "#112446"),
-                        # titlePanel(HTML("<h1>&emsp;Acesso a Oportunidades</h1>")),
                         mapdeckOutput("map"),
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE, draggable = FALSE,
                                       top = 80, right = 20, width = 350, height = 700,
@@ -71,59 +72,65 @@ div(class = "navbar-default",
                                                   ),
                                                   options = list('size' = 15,
                                                                  'icon-base' = "fa",
-                                                                 'tickIcon' = "fa-check"),
-                                                  selected = "bho"),
+                                                                 'tickIcon' = "fa-check",
+                                                                 title = "Selecione aqui")
+                                                  ),
                                       awesomeRadio(inputId = "indicador",
                                                    # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                                                    label = HTML("<h1>Escolha o indicador de acessibilidade: 
                                                                   <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
-                                                   choices = c("Cumulativo", "Oportunidade mais próxima"),
-                                                   selected = "Cumulativo"),
+                                                   choices = c("Cumulativo" ="CMA", "Oportunidade mais próxima" = "TMI"),
+                                                   selected = "CMA"),
                                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
-                                                       radioButtons(inputId = "modo_todos",
-                                                                    # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                                    label = HTML("<h1>Escolha o modo de transporte: 
-                                                                  <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
-                                                                    choiceNames = list(HTML("<i class=\"fas fa-bus fa-2x\"></i>"), 
-                                                                                       HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
-                                                                                       HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
-                                                                    choiceValues = list("tp", 
-                                                                                        "caminhada",
-                                                                                        "bicicleta"),
-                                                                    selected = "tp",
-                                                                    inline = TRUE,
-                                                                    width = "100%"
+                                                       radioGroupButtons(inputId = "modo_todos",
+                                                                         # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                                                         label = HTML("<h1>Escolha o modo de transporte: 
+                                                                  <button id=\"q2\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
+                                                                         choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
+                                                                                     "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                                                                     "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
+                                                                         selected = "tp",
+                                                                         individual = TRUE,
+                                                                         justified = TRUE
                                                        )),
                                       conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
-                                                       radioButtons(inputId = "modo_ativo",
-                                                                    # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                                    label = HTML("<h1>Escolha o modo de transporte: 
-                                                                  <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
-                                                                    choiceNames = list(HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
-                                                                                       HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
-                                                                    choiceValues = list("caminhada",
-                                                                                        "bicicleta"),
-                                                                    selected = "caminhada",
-                                                                    inline = TRUE,
-                                                                    width = "100%"
+                                                       radioGroupButtons(inputId = "modo_ativo",
+                                                                         # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                                                         label = HTML("<h1>Escolha o modo de transporte: 
+                                                                  <button id=\"q2\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>"),
+                                                                         choices = c("<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                                                                     "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
+                                                                         # choiceNames = list(HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
+                                                                         # HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
+                                                                         # choiceValues = list("caminhada",
+                                                                         # "bicicleta"),
+                                                                         selected = "caminhada",
+                                                                         individual = TRUE,
+                                                                         justified = TRUE
+                                                                         # checkIcon = list(
+                                                                         #   yes = tags$i(class = "fa fa-circle", 
+                                                                         #                style = "color: steelblue"),
+                                                                         #   no = tags$i(class = "fa fa-circle-o", 
+                                                                         #               style = "color: steelblue"))
                                                        )),
                                       div(
                                         # edit2
                                         bsPopover(id = "q1", 
                                                   title = "Indicadores de acessibilidade",
-                                                  content = "Indicador cumulativo representa quantas oportunidades podem ser alcançadas dado o tempo de viagem",
+                                                  content = HTML("<strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem<br>Tempo mínimo ...."),
                                                   placement = "top",
-                                                  trigger = "click",
+                                                  trigger = "hover",
                                                   options = list(container = "body"))
-                                        ),
+                                      ),
                                       # img(src='ipea.jpg', align = "right", width = "150"),
-                                      conditionalPanel(condition = "input.indicador == 'Cumulativo'",
-                                                       selectInput(inputId = "atividade_cum",
+                                      conditionalPanel(condition = "input.indicador == 'CMA'",
+                                                       pickerInput(inputId = "atividade_cum",
                                                                    label = h1("Escolha a atividade:"),
                                                                    choices = list(
-                                                                     'Trabalho' = c("Trabalho Total" = "TT",
-                                                                                    "Trabalho Quintil" = "TQ",
-                                                                                    "Trabalho Decil" = "TD"),
+                                                                     'Trabalho' = c("Trabalho Total" = "TT"
+                                                                                    # , "Trabalho Quintil" = "TQ"
+                                                                                    # , "Trabalho Decil" = "TD"
+                                                                                    ),
                                                                      'Saúde' = c("Saúde Total" = "ST",
                                                                                  "Saúde Baixa" = "SB",
                                                                                  "Saúde Média" = "SM",
@@ -133,7 +140,7 @@ div(class = "navbar-default",
                                                                                     "Educação Fundamental" = "EF",
                                                                                     "Educação Média" = "EM")),
                                                                    selected = "Trabalho Total")),
-                                      conditionalPanel(condition = "input.indicador == 'Oportunidade mais próxima'",
+                                      conditionalPanel(condition = "input.indicador == 'TMI'",
                                                        selectInput(inputId = "atividade_min",
                                                                    label = h1("Escolha a atividade:"),
                                                                    choices = list(
@@ -146,33 +153,42 @@ div(class = "navbar-default",
                                                                                     "Educação Fundamental" = "EF",
                                                                                     "Educação Média" = "EM")),
                                                                    selected = "Saúde")),
-                                      conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'Cumulativo' && input.modo_todos == 'tp'",
+                                      conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
                                                        sliderInput(inputId = "tempo_tp",
                                                                    label = h1("Escolha o tempo de viagem:"),
                                                                    min = 30, max = 120,
                                                                    step = 30, value = 30,
-                                                                   animate = TRUE)),
-                                      conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'Cumulativo' && modos_ativos.indexOf(input.modo_todos) > -1",
+                                                                   animate = animationOptions(interval = 2000),
+                                                                   post = " min")),
+                                      conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
                                                        sliderInput(inputId = "tempo_ativo_tp",
                                                                    label = h1("Escolha o tempo de viagem:"),
                                                                    min = 15, max = 60,
                                                                    step = 15, value = 15,
-                                                                   animate = TRUE)),
-                                      conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'Cumulativo' && modos_ativos.indexOf(input.modo_ativo) > -1",
+                                                                   animate = animationOptions(interval = 2000),
+                                                                   post = " min")),
+                                      conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
                                                        sliderInput(inputId = "tempo_ativo",
                                                                    label = h1("Escolha o tempo de viagem:"),
                                                                    min = 15, max = 60,
                                                                    step = 15, value = 15,
-                                                                   animate = TRUE)),
-                                      conditionalPanel(condition = "input.indicador == 'Oportunidade mais próxima'",
+                                                                   animate = animationOptions(interval = 2000),
+                                                                   post = " min")),
+                                      conditionalPanel(condition = "input.indicador == 'TMI'",
                                                        strong("Observação"), p("Valores truncados para 30 minutos"))
-                        )
-               ),
+                                      # waiter_show_on_load(html = spin_fading_circles())
+                                      
+                        ),
+                         ),
                tabPanel("Sobre o projeto",
-                        sidebarPanel(includeMarkdown("about.md"))
-               )
-
+                        sidebarPanel(includeMarkdown("about.md")),
+               ) 
+               
+               
+               
     )
+    
+    
 )
 
 

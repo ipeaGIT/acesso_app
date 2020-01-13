@@ -109,6 +109,10 @@ h1 {
 }
 
 
+.radio-bs-primary input[type="radio"]:checked + label::after {
+    background-color: #333;
+}
+
 /* add 2 whitespaces before the icon */
 /*
 .fa-bus:before {
