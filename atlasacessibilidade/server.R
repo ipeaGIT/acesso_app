@@ -4,7 +4,7 @@ library(sf)
 library(readr)
 library(data.table)
 library(mapdeck)
-# library(waiter) # remotes::install_github("JohnCoene/waiter")
+library(waiter) # remotes::install_github("JohnCoene/waiter")
 
 
 
@@ -153,7 +153,7 @@ function(input, output) {
   })
   
   
-  # waiter_hide()
+  waiter_hide()
   
   
   observeEvent({input$cidade},{
@@ -204,10 +204,11 @@ function(input, output) {
           clear_legend(layer_id = "acess_min_go") %>%
           add_polygon(
             data = limits_filtrado,
+            stroke_colour = "#616A6B",
             stroke_width = 100,
             fill_opacity = 0,
             update_view = FALSE,
-            focus_layer = FALSE
+            focus_layer = FALSE,
           ) %>%
           add_polygon(
             data = tempo_filtrado(),
@@ -238,6 +239,7 @@ function(input, output) {
           clear_legend(layer_id = "acess_cum_go") %>%
           add_polygon(
             data = limits_filtrado,
+            stroke_colour = "#616A6B",
             stroke_width = 100,
             fill_opacity = 0,
             update_view = FALSE,

@@ -2,7 +2,7 @@ library(shiny)
 library(shinyWidgets)
 library(mapdeck)
 library(shinyBS)
-# library(waiter)
+library(waiter)
 
 
 
@@ -10,8 +10,8 @@ library(shinyBS)
 a <- HTML("<p>Fortaleza <i class=\"fas fa-bus fa-sm\"></i></p>")
 
 div(class = "navbar-default"
-    # , use_waiter(include_js = FALSE)
-    # , waiter_show_on_load(html = spin_loader(), color = "##F4F6F6")
+    , use_waiter(include_js = FALSE)
+    , waiter_show_on_load(html = spin_loader(), color = "##F4F6F6")
     , navbarPage("Acesso a Oportunidades",
                tabPanel("Mapa",
                         tags$head(includeCSS("www/styles.css")),
