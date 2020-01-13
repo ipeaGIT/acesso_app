@@ -252,7 +252,7 @@ function(input, output) {
             update_view = FALSE,
             tooltip = "popup",
             legend = TRUE,
-            legend_options = list(title = "Minutos atè a oportunidade mais próxima"),
+            legend_options = list(title = "Minutos até a oportunidade mais próxima"),
             legend_format = list( fill_colour = as.integer)
           )
         
@@ -295,7 +295,7 @@ function(input, output) {
                           update_view = FALSE,
                           tooltip = "popup",
                           legend = TRUE,
-                          legend_options = list(title = "Minutos atè a oportunidade mais próxima"),
+                          legend_options = list(title = "Minutos até a oportunidade mais próxima"),
                           legend_format = list( fill_colour = as.integer)
                         )
                       
