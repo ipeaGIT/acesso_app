@@ -189,16 +189,29 @@ h1 {
     border: 1px solid #b8b8b8;
     border-radius: 4px;
     display: inline-block;
-    max-height: 300px;
-    max-width: 200px;
+    max-height: 400px !important;
+    max-width: 300px !important;
     overflow: auto;
     position: fixed;
     bottom: 50px;
     left: 0;
 }
 
+.legendContainer{
+    font-family: "Roboto Condensed", sans-serif;
+    overflow: auto;
+    position: fixed;
+    max-height: 400px !important;
+    max-width: 300px !important;
+    bottom: 50px;
+    left: 0;
+  
+  
+}
+
 .legendTitle {
-  font-size: 18px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 18px !important;
   font-weight: bold;
 }
 
