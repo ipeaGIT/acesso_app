@@ -49,7 +49,7 @@ function(input, output) {
     # HTML("&nbsp;&nbsp;&nbsp;&nbsp;- Tempo de viagem<br>"),
       # HTML("<img src=\"https://media.giphy.com/media/mEjT1jbXelaEg/giphy.gif\" alt=\"Smiley face\" height=\"42\" align=\"right\">"),
     # # HTML("O mapa da cidade é gerado para opções predefinidas de indicador, modo, atividade e tempo<br>"),
-    includeHTML("carousel_2.html"),
+    includeHTML("www/carousel_2.html"),
     easyClose = FALSE,
     size = "m",
     footer = modalButton("Fechar")
