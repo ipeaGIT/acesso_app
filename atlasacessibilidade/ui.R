@@ -105,7 +105,8 @@ div(class = "navbar-default"
                                                        radioGroupButtons(inputId = "modo_ativo",
                                                                          # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                                                                          label = HTML("<h1>Escolha o modo de transporte:</h1>"),
-                                                                         choices = c("<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                                                         choices = c("<i id =\"modo_des\" class=\"fas fa-bus fa-2x\" style=\"color: #F2F3F4;\"></i>" = "error",
+                                                                                     "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
                                                                                      "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
                                                                          # choiceNames = list(HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
                                                                          # HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
@@ -120,6 +121,15 @@ div(class = "navbar-default"
                                                                          #   no = tags$i(class = "fa fa-circle-o", 
                                                                          #               style = "color: steelblue"))
                                                        )),
+                                      
+                                      div(
+                                        # edit2
+                                        bsTooltip(id = "modo_des", 
+                                                  title = "Modo não disponível para essa cidade",
+                                                  placement = "top",
+                                                  trigger = "hover",
+                                                  options = list(container = "body"))
+                                      ),
                                       # img(src='ipea.jpg', align = "right", width = "150"),
                                       conditionalPanel(condition = "input.indicador == 'CMA'",
                                                        pickerInput(inputId = "atividade_cum",
