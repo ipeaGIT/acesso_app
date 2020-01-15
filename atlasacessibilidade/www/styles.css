@@ -222,8 +222,8 @@ h1 {
   
 }
 
-.carousel-control {
-  background-image: #FDFEFE !important;
+.carousel-control.left, .carousel-control.right {
+    background-image: none !important;
 }
 
 .popover {
