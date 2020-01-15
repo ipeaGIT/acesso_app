@@ -102,25 +102,28 @@ div(class = "navbar-default"
                                                                          justified = TRUE
                                                        )),
                                       conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
-                                                       radioGroupButtons(inputId = "modo_ativo",
-                                                                         # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                                         label = HTML("<h1>Escolha o modo de transporte:</h1>"),
-                                                                         choices = c("<i id =\"modo_des\" class=\"fas fa-bus fa-2x\" style=\"color: #F2F3F4;\"></i>" = "error",
-                                                                                     "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
-                                                                                     "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
-                                                                         # choiceNames = list(HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
-                                                                         # HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
-                                                                         # choiceValues = list("caminhada",
-                                                                         # "bicicleta"),
-                                                                         selected = "caminhada",
-                                                                         individual = TRUE,
-                                                                         justified = TRUE
-                                                                         # checkIcon = list(
-                                                                         #   yes = tags$i(class = "fa fa-circle", 
-                                                                         #                style = "color: steelblue"),
-                                                                         #   no = tags$i(class = "fa fa-circle-o", 
-                                                                         #               style = "color: steelblue"))
-                                                       )),
+                                                       # radioGroupButtons(inputId = "modo_ativo",
+                                                       #                   # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                                       #                   label = HTML("<h1>Escolha o modo de transporte:</h1>"),
+                                                       #                   choices = c("<i id =\"modo_des\" class=\"fas fa-bus fa-2x\" style=\"color: #F2F3F4;\"></i>" = "error",
+                                                       #                               "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                                       #                               "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
+                                                       #                   # choiceNames = list(HTML("<i class=\"fas fa-walking fa-2x\"></i>"),
+                                                       #                   # HTML("<i class=\"fas fa-bicycle fa-2x\"></i>")),
+                                                       #                   # choiceValues = list("caminhada",
+                                                       #                   # "bicicleta"),
+                                                       #                   selected = "caminhada",
+                                                       #                   individual = TRUE,
+                                                       #                   justified = TRUE
+                                                       #                   # checkIcon = list(
+                                                       #                   #   yes = tags$i(class = "fa fa-circle", 
+                                                       #                   #                style = "color: steelblue"),
+                                                       #                   #   no = tags$i(class = "fa fa-circle-o", 
+                                                       #                   #               style = "color: steelblue"))
+                                                       # )
+                                                       # Tive que fazer esse ui manualmente pq nao consegui mudar a cor do botao de 'tp' quando o transporte era ativo
+                                                       includeHTML("www/radio_modo_para_ativas.html")
+                                                       ),
                                       
                                       div(
                                         # edit2
