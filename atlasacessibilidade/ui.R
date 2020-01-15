@@ -165,7 +165,7 @@ div(class = "navbar-default"
                                         # edit2
                                         bsPopover(id = "q3", 
                                                   title = HTML("<strong>Atividades</strong>"),
-                                                  content = HTML("<ul><li> Atividades com o sufixo <em>Total</em> representam a soma das subdivisões da atividade</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam a complexidade daqueles estabelecimentos</li></ul>"),
+                                                  content = HTML("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>"),
                                                   placement = "top",
                                                   trigger = "hover",
                                                   options = list(container = "body"))
