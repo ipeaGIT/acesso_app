@@ -122,7 +122,11 @@ h1 {
 
 
 .modal-dialog{
-  margin: 150px auto;
+  /*margin: 150px auto;*/
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) !important;
 }
 
 .carousel-indicators  {
