@@ -22,7 +22,7 @@ div(class = "navbar-default"
                         chooseSliderSkin("HTML5", color = "#112446"),
                         mapdeckOutput("map"),
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE, draggable = FALSE,
-                                      top = 80, right = 20, width = 350, height = 700,
+                                      top = 80, right = 20, width = 350, height = 630,
                                       pickerInput(inputId = "cidade",
                                                   label = h1("Escolha a cidade:"),
                                                   choices = list(

@@ -100,6 +100,13 @@ h1 {
   font-size: 18px;
 }
 
+/*Change spacing between input in contro ba (right) */
+.form-group{
+  
+  margin-bottom: 5px;
+  
+}
+
 /*Change info button size */
 .btn-group-xs>.btn, .btn-xs {
     padding: 1px 5px;
