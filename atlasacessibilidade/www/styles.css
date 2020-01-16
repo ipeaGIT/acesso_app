@@ -118,6 +118,28 @@ h1 {
   margin: 150px auto;
 }
 
+.carousel-indicators  {
+  bottom: 0;
+}
+
+.carousel-indicators li {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 5px 0 2px 0;
+    text-indent: 0;
+    cursor: pointer;
+    border: none;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: inset 1px 1px 1px 1px rgba(0,0,0,0.5);    
+}
+.carousel-indicators .active {
+    width: 10px;
+    height: 10px;
+    margin: 5px 0 2px 0;
+    background-color: #333;
+}
 /* add 2 whitespaces before the icon */
 /*
 .fa-bus:before {

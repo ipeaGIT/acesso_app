@@ -38,7 +38,7 @@ function(input, output) {
   
   # the modal dialog where the user can enter the query details.
   query_modal <- modalDialog(
-    title = h1("Instruções para uso do mapa interativo"),
+    title = HTML("<h1>Instruções para uso do mapa interativo na aba ao lado &nbsp<i class=\"fas fa-arrow-right\"></i></h1>"),
     # HTML("1) Selecione a cidade na aba ao lado<br>"),
     # HTML("&nbsp;<br>"),
     # # HTML("1) Selecione a cidade na aba <strong>Escolha a cidade</strong><br>"),
