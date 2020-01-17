@@ -4,6 +4,7 @@ library(sf)
 library(readr)
 library(data.table)
 library(mapdeck)
+library(ggplot2)
 library(waiter) # remotes::install_github("JohnCoene/waiter")
 
 
@@ -16,7 +17,8 @@ data.table::setDTthreads(percent = 100)
 
 
 # register mapbox api key
-set_token("")
+# set_token("")
+set_token("pk.eyJ1Ijoia2F1ZWJyYWdhIiwiYSI6ImNqa2JoN3VodDMxa2YzcHFxMzM2YWw1bmYifQ.XAhHAgbe0LcDqKYyqKYIIQ")
 
 
 
@@ -111,13 +113,17 @@ function(input, output) {
   # # Reactive para a atividade para indicador cumulativo
   atividade_filtrada_min <- reactive({
     indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_min)) %>%
-      merge(hex, by = "id_hex", all.x = TRUE) %>% 
-      rename(id_hex = 1, P001 = 2, valor = 3, geometry = 4) %>%
-      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 0), " minutos")) %>%
+      rename(id_hex = 1, P001 = 2, valor = 3) %>%
+      mutate(id = 1:n()) %>%
+      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 0), " minutos"))
+  })
+  
+  atividade_filtrada_min_sf <- reactive({
+    atividade_filtrada_min() %>% 
+      merge(hex, by = "id_hex", all.x = TRUE, sorte = FALSE) %>% 
       st_sf(crs = 4326)
     
   })
-  
   
   b <- reactive({
     
@@ -133,14 +139,23 @@ function(input, output) {
   tempo_filtrado <- reactive({
     
     atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(b()))) %>%
-      merge(hex, by = "id_hex", all.x = TRUE) %>%
-      rename(id_hex = 1, P001 = 2, valor = 3, geometry = 4) %>%
+      rename(id_hex = 1, P001 = 2, valor = 3) %>%
+      mutate(id = 1:n())
       # create popup
-      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 1), "%")) %>%
+    
+    
+  })
+  
+  # Reactive para o tempo
+  tempo_filtrado_sf <- reactive({
+    
+    tempo_filtrado() %>%
+      merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>%
       st_sf(crs = 4326)
     
     
   })
+
 
   
     
@@ -211,7 +226,7 @@ function(input, output) {
             focus_layer = FALSE,
           ) %>%
           add_polygon(
-            data = tempo_filtrado(),
+            data = tempo_filtrado_sf(),
             fill_colour = "valor",
             fill_opacity = 200,
             layer_id = "acess_cum_go",
@@ -246,7 +261,7 @@ function(input, output) {
             focus_layer = FALSE
           ) %>%
           add_polygon(
-            data = atividade_filtrada_min(),
+            data = atividade_filtrada_min_sf(),
             fill_colour = "valor",
             fill_opacity = 200,
             layer_id = "acess_min_go",
@@ -289,7 +304,7 @@ function(input, output) {
                         clear_polygon(layer_id = "acess_cum_go") %>%
                         clear_legend(layer_id = "acess_cum_go") %>%
                         add_polygon(
-                          data = atividade_filtrada_min(),
+                          data = atividade_filtrada_min_sf(),
                           fill_colour = "valor",
                           fill_opacity = 200,
                           layer_id = "acess_min_go",
@@ -309,7 +324,7 @@ function(input, output) {
                           clear_polygon(layer_id = "acess_min_go") %>%
                           clear_legend(layer_id = "acess_min_go") %>%
                           add_polygon(
-                            data = tempo_filtrado(),
+                            data = tempo_filtrado_sf(),
                             fill_colour = "valor",
                             fill_opacity = 200,
                             layer_id = "acess_cum_go",
@@ -327,6 +342,77 @@ function(input, output) {
                     
                     }
                   })
+  
+  
+  fim <- reactive({
+    
+    if(input$indicador == "CMA") {df <- tempo_filtrado()} else {df <- atividade_filtrada_min()}
+    
+    aa <- setDT(df)[, quebra := cut(valor, 10, labels = c(1:10))]
+    
+    # print(head(aa))
+    
+    return(aa)
+    
+  })
+  
+  
+  
+  fim_v1 <- reactive({
+    
+    fim()[, .N, by = quebra]
+    
+  })
+  
+  
+  
+  
+  global <- reactiveValues()
+  
+  # get map click
+  observeEvent({input$map_polygon_click},{
+    # print( input$map_polygon_click )
+    
+    js <- input$map_polygon_click
+    lst <- jsonlite::fromJSON( js )
+    row <- (lst$index) + 1
+    
+    # print(lst$index)
+    # print(row)
+    
+    # get decil of problematic row
+    quebra_prob <- fim()[id == row]$quebra
+    
+    # print(quebra_prob)
+    
+    ui <- fim_v1()[, oi := fifelse(quebra == quebra_prob, "yes", "no")]
+    
+    # mais teste
+     # print(fim()[row,])                      
+     
+    global$high <- ui$oi
+    
+    
+    # print(global$high)
+  })
+  
+  # plot
+  output$plot <- renderPlot({
+    
+    if(input$cidade == "") {return()} else {
+    
+    ggplot(fim_v1())+
+      geom_bar(aes(x = quebra, y = N, fill = global$high), stat = "identity")+
+      scale_fill_manual(values = c("yes"="tomato", "no"="gray" ), guide = FALSE )+
+      theme_minimal()+
+      labs(x = "", y = "")+
+      theme(plot.margin = unit(c(0,0,0,0), "cm"),
+            rect = element_rect(fill = "transparent"))
+      
+    }
+    
+  }
+  )
   
   
   

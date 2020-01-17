@@ -208,6 +208,12 @@ div(class = "navbar-default"
                                       # waiter_show_on_load(html = spin_fading_circles())
                                       
                         ),
+                        absolutePanel(id = "controls2", class = "panel panel-default", fixed = TRUE, draggable = TRUE,
+                                      top = 80, left = 20, width = 350, height = 350,
+                                      plotOutput("plot", height = 320),
+                                        
+                                      
+                        )
                          ),
                tabPanel("Sobre o projeto",
                         sidebarPanel(includeMarkdown("about.md")),
