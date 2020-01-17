@@ -3,7 +3,7 @@ library(shinyWidgets)
 library(mapdeck)
 library(shinyBS)
 library(waiter)
-
+library(plotly)
 
 
 # UI SO COM UMA ABA -------------------------------------------------------
@@ -211,7 +211,8 @@ div(class = "navbar-default"
                           conditionalPanel(condition = "input.cidade != ''",
                                            absolutePanel(id = "controls2", class = "panel panel-default", fixed = TRUE, draggable = TRUE,
                                                          top = 80, left = 20, width = 350, height = 350,
-                                                         plotOutput("plot", height = 320),
+                                                         # plotOutput("plot", height = 320),
+                                                         plotlyOutput("plot", height = "320px"),
                                                          
                                                          
                                            )

@@ -6,6 +6,8 @@ library(data.table)
 library(mapdeck)
 library(ggplot2)
 library(waiter) # remotes::install_github("JohnCoene/waiter")
+library(plotly)
+library(htmlwidgets)
 
 
 
@@ -140,8 +142,9 @@ function(input, output) {
     
     atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(b()))) %>%
       rename(id_hex = 1, P001 = 2, valor = 3) %>%
-      mutate(id = 1:n())
+      mutate(id = 1:n()) %>%
       # create popup
+      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 1), "%"))
     
     
   })
@@ -348,19 +351,17 @@ function(input, output) {
     
     if(input$indicador == "CMA") {df <- tempo_filtrado()} else {df <- atividade_filtrada_min()}
     
-    aa <- setDT(df)[, quebra := cut(valor, 10, labels = c(1:10))]
-    
-    # print(head(aa))
-    
-    return(aa)
-    
   })
   
   
   
   fim_v1 <- reactive({
     
-    fim()[, .N, by = quebra]
+    city_pop <- sum(fim()$P001)
+    
+    fim_ordered <- setorder(setDT(fim()), valor, P001)
+    
+    fim_ordered_cum <- fim_ordered[, cumsum := cumsum(P001)/city_pop]
     
   })
   
@@ -369,7 +370,68 @@ function(input, output) {
   
   global <- reactiveValues()
   
-  # get map click
+  # # get map click
+  # observeEvent({input$map_polygon_click},{
+  #   # print( input$map_polygon_click )
+  #   
+  #   js <- input$map_polygon_click
+  #   lst <- jsonlite::fromJSON( js )
+  #   row <- (lst$index) + 1
+  #   
+  #   # print(lst$index)
+  #   # print(row)
+  #   
+  #   # get decil of problematic row
+  #   quebra_prob <- fim()[id == row]$quebra
+  #   
+  #   # print(quebra_prob)
+  #   
+  #   ui <- fim_v1()[, oi := fifelse(quebra == quebra_prob, "yes", "no")]
+  #   
+  #   # mais teste
+  #    # print(fim()[row,])                      
+  #    
+  #   global$high <- ui$oi
+  #   
+  #   
+  #   # print(global$high)
+  # })
+  
+  # produce plot for the whole city when we change cities
+  output$plot <- renderPlotly({
+    
+    if(input$cidade == "") {return()} else {
+      
+    # go <- ggplot(fim_v1())+
+    #   geom_bar(aes(x = quebra, y = N, fill = global$high), stat = "identity")+
+    #   scale_fill_manual(values = c("yes"="tomato", "no"="gray" ), guide = FALSE )+
+    #   theme_minimal()+
+    #   labs(x = "", y = "")+
+    #   theme(plot.margin = unit(c(0,0,0,0), "cm"),
+    #         rect = element_rect(fill = "transparent"))
+    # 
+    # ui <- ggplotly(go)
+    # 
+    # print(ui)
+    # 
+    # return(ui)
+      
+      
+      plotly_go <-  plot_ly(fim_v1(), x = ~cumsum, y = ~valor, type = 'scatter', mode = 'lines') %>%
+        layout(title = "Indicador Cumulativo",
+               xaxis = list(title = "% populacao"),
+               yaxis = list(title = "% oportunidades"))
+      
+      return(plotly_go)
+
+      
+    }
+    
+  }
+  )
+  
+  
+  # observer to update only the highlighted bar on MAP CLICK
   observeEvent({input$map_polygon_click},{
     # print( input$map_polygon_click )
     
@@ -377,42 +439,34 @@ function(input, output) {
     lst <- jsonlite::fromJSON( js )
     row <- (lst$index) + 1
     
-    # print(lst$index)
-    # print(row)
     
-    # get decil of problematic row
-    quebra_prob <- fim()[id == row]$quebra
-    
-    # print(quebra_prob)
-    
-    ui <- fim_v1()[, oi := fifelse(quebra == quebra_prob, "yes", "no")]
-    
-    # mais teste
-     # print(fim()[row,])                      
-     
-    global$high <- ui$oi
+    # get problematic value of hist
+    valor_prob <- fim_v1()[id == row]$valor
+    cumsum_prob <- fim_v1()[id == row]$cumsum
     
     
-    # print(global$high)
+    # pegar quebra
+    
+    print(valor_prob)
+    print(cumsum_prob)
+    
+    
+    plotlyProxy("plot") %>%
+      plotlyProxyInvoke("deleteTraces", list(as.integer(1))) %>%
+      plotlyProxyInvoke("addTraces", list(x=c(cumsum_prob, cumsum_prob),
+                                             y=c(valor_prob, valor_prob)))
+                        # marker = list(size = 10,
+                        #               color = 'rgba(255, 182, 193, .9)',
+                        #               line = list(color = 'rgba(152, 0, 0, .8)',
+                        #                           width = 2)))
+      # plotlyProxyInvoke("addTraces", list(x=c(as.factor(quebra_prob), as.factor(quebra_prob)),
+      #                                     y=c(as.factor(valor_prob), as.factor(valor_prob)),
+      #                                     type = 'bar',
+      #                                     marker = list(color = 'rgb(211,84,0)',
+      #                                                   line = list(color = 'rgb(8,48,107)',
+      #                                                               width = 1.5))))
+    
   })
-  
-  # plot
-  output$plot <- renderPlot({
-    
-    if(input$cidade == "") {return()} else {
-    
-    ggplot(fim_v1())+
-      geom_bar(aes(x = quebra, y = N, fill = global$high), stat = "identity")+
-      scale_fill_manual(values = c("yes"="tomato", "no"="gray" ), guide = FALSE )+
-      theme_minimal()+
-      labs(x = "", y = "")+
-      theme(plot.margin = unit(c(0,0,0,0), "cm"),
-            rect = element_rect(fill = "transparent"))
-      
-    }
-    
-  }
-  )
   
   
   
