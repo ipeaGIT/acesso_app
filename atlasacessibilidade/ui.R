@@ -1,9 +1,3 @@
-library(shiny)
-library(shinyWidgets)
-library(mapdeck)
-library(shinyBS)
-library(waiter)
-library(plotly)
 
 
 # UI SO COM UMA ABA -------------------------------------------------------
@@ -18,6 +12,7 @@ div(class = "navbar-default"
                           tags$head(tags$script("var cities_todos = ['for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec'];")),
                           tags$head(tags$script("var cities_ativo = ['bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat'];")),
                           tags$head(tags$script("var modos_ativos = ['caminhada', 'bicicleta'];")),
+                          tags$script(inactivity),
                           # https://divadnojnarg.github.io/blog/customsliderinput/
                           chooseSliderSkin("HTML5", color = "#112446"),
                           mapdeckOutput("map"),
