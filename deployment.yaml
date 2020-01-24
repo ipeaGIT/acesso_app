@@ -124,10 +124,10 @@ spec:
   - resource:
       name: memory
       target:
-        averageUtilization: 200
+        averageUtilization: 150
         type: Utilization
     type: Resource
-  minReplicas: 1
+  minReplicas: 2
   scaleTargetRef:
     apiVersion: apps/v1beta2
     kind: Deployment
