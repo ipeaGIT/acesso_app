@@ -10,9 +10,11 @@ library(data.table)
 # library(ggplot2)
 library(waiter) # remotes::install_github("JohnCoene/waiter")
 library(plotly)
+library(shiny.i18n)
 
+translator <- Translator$new(translation_json_path = "data/translation.json")
 
-
+source("teste_div.R")
 
 # Use GForce Optimisations in data.table operations
 options(datatable.optimize=Inf)

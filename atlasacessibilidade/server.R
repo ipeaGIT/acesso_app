@@ -14,40 +14,234 @@ function(input, output, session) {
   
   # 2) MODAL WITH INSTRUCTIONS AT STARTUP ----------------------------------------------------------
   query_modal <- modalDialog(
-    title = HTML("<h1>Instruções para uso do mapa interativo na aba ao lado &nbsp<i class=\"fas fa-arrow-right\"></i></h1>"),
-    # HTML("1) Selecione a cidade na aba ao lado<br>"),
-    # HTML("&nbsp;<br>"),
-    # # HTML("1) Selecione a cidade na aba <strong>Escolha a cidade</strong><br>"),
-    # HTML("2) Modifique as opções de:<br>"),
-    # HTML("&nbsp;&nbsp;&nbsp;&nbsp;- Indicador de acessibilidade<br>"),
-    # HTML("&nbsp;&nbsp;&nbsp;&nbsp;- Modo de transporte<br>"),
-    # HTML("&nbsp;&nbsp;&nbsp;&nbsp;- Atividade<br>"),
-    # HTML("&nbsp;&nbsp;&nbsp;&nbsp;- Tempo de viagem<br>"),
-      # HTML("<img src=\"https://media.giphy.com/media/mEjT1jbXelaEg/giphy.gif\" alt=\"Smiley face\" height=\"42\" align=\"right\">"),
-    # # HTML("O mapa da cidade é gerado para opções predefinidas de indicador, modo, atividade e tempo<br>"),
-    includeHTML("www/carousel_2.html"),
+    # title = HTML("<h1>Instruções para uso do mapa interativo na aba ao lado &nbsp<i class=\"fas fa-arrow-right\"></i></h1>"),
+    title = HTML("<h1>Escolha a lingua:</h1>"),
+    renderUI({
+      div(style = "width: 50%;margin: 0 auto;", 
+          pickerInput(inputId = 'selected_language',
+                      # label = "Escolha a lingua:",
+                      choices = c(a = "pt", b = "en"),
+                      choicesOpt = list(content = (c("<p><img src='img/pt.png' width=30px>&nbsp;&nbsp;Português</img></p>",
+                                                     "<p><img src='img/en_new.png' width=30px>&nbsp;&nbsp; English</img></p>"))),
+                      selected = input$selected_language))
+      
+    }),
+    # includeHTML("www/carousel_2.html"),
     easyClose = FALSE,
     size = "m",
     footer = modalButton("Fechar")
-    )
-
+  )
+  
   # Show the model on start up ...
   showModal(query_modal)
   
-
-  # 3) OBSERVER TO TIMEOUT IF USER IS INACTIVE ----------------------------------------------------------
-
-  observeEvent(input$timeOut, { 
-    print(paste0("Session (", session$token, ") timed out at: ", Sys.time()))
-    showModal(modalDialog(
-      title = "Timeout",
-      HTML(paste("Session timeout due to", input$timeOut, "inactivity -", Sys.time()), "<br>"),
-      HTML("<a href=\".\">Recarregar</a>"),
-      footer = NULL
-    ))
-    session$close()
-  })  
   
+  # 3) OBSERVER TO TIMEOUT IF USER IS INACTIVE ----------------------------------------------------------
+  
+  # observeEvent(input$timeOut, { 
+  #   print(paste0("Session (", session$token, ") timed out at: ", Sys.time()))
+  #   showModal(modalDialog(
+  #     title = "Timeout",
+  #     HTML(paste("Session timeout due to", input$timeOut, "inactivity -", Sys.time()), "<br>"),
+  #     HTML("<a href=\".\">Recarregar</a>"),
+  #     footer = NULL
+  #   ))
+  #   session$close()
+  # })  
+  
+  
+  # RENDER UI FOR GODS SAKE! --------------------------------------------------------------------
+  
+  i18n <- reactive({
+    selected <- input$selected_language
+    if (length(selected) > 0 && selected %in% translator$languages) {
+      translator$set_translation_language(selected)
+    }
+    translator
+  })
+  
+  
+  
+  output$page_content <- renderUI({
+    
+    list_trabalho <- list('Trabalho' = structure(c("TT"), .Names = c(i18n()$t("Trabalho Total"))))
+    list_saude <- list('Saúde' = structure(c("ST", "SB", "SM", "SA"), 
+                                              .Names = c(i18n()$t("Saúde Total"),
+                                                         i18n()$t("Saúde Baixa"),
+                                                         i18n()$t("Saúde Média"),
+                                                         i18n()$t("Saúde Alta"))))
+    list_edu <- list('Educação' = structure(c("ET", "EI", "EF", "EM"), 
+                                              .Names = c(i18n()$t("Educação Total"),
+                                                         i18n()$t("Educação Infantil"),
+                                                         i18n()$t("Educação Fundamental"),
+                                                         i18n()$t("Educação Média"))))
+
+    names(list_trabalho) <-c(i18n()$t("Trabalho"))
+    names(list_saude) <-c(i18n()$t("Saúde"))
+    names(list_edu) <-c(i18n()$t("Educação"))
+    
+    vector_indicadores <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
+    
+    
+    # START UI !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    tagList(
+
+      pickerInput(inputId = "cidade",
+                  label = h1(i18n()$t("Escolha a cidade:")),
+                  choices = list(
+                    'Norte' = c("Belém" = "bel",
+                                "Manaus" = "man"),
+                    'Nordeste' = c("Fortaleza" = "for",
+                                   "Maceió" = "mac",
+                                   "Natal" = "nat",
+                                   "Recife" = "rec",
+                                   "Salvador" = "sal",
+                                   "São Luís" = "slz"),
+                    'Sudeste' = c("Belo Horizonte" = "bho",
+                                  "Campinas" = "cam",
+                                  "Duque de Caxias" = "duq",
+                                  "Guarulhos" = "gua",
+                                  "Rio de Janeiro" = "rio",
+                                  "São Gonçalo" = "sgo",
+                                  "São Paulo" = "spo"),
+                    'Sul' = c("Curitiba" = "cur",
+                              "Porto Alegre" = "poa"),
+                    'Centro-Oeste' = c("Brasília" = "bsb",
+                                       "Campo Grande" = "cgr",
+                                       "Goiânia" = "goi")
+                  ),
+                  choicesOpt = list(
+                    icon = c("", 
+                             "",
+                             "fa-bus",
+                             "",
+                             "",
+                             "fa-bus",
+                             "",
+                             "",
+                             "fa-bus",
+                             "",
+                             "",
+                             "",
+                             "fa-bus",
+                             "",
+                             "fa-bus",
+                             "fa-bus",
+                             "fa-bus",
+                             "",
+                             "",
+                             ""
+                    )
+                  ),
+                  options = list('size' = 15,
+                                 'icon-base' = "fa",
+                                 'tickIcon' = "fa-check",
+                                 title = i18n()$t("Selecione aqui"))
+      ),
+      conditionalPanel(condition = "input.cidade != ''",
+                       awesomeRadio(inputId = "indicador",
+                                    # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                    label = HTML(sprintf("<h1>%s <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                                         i18n()$t("Escolha o indicador de acessibilidade:"))),
+                                    choices = vector_indicadores,
+                                    selected = "CMA"),
+                       div(
+                         # edit2
+                         bsPopover(id = "q1", 
+                                   title = "<strong>Indicadores de acessibilidade</strong>",
+                                   content = HTML("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>"),
+                                   placement = "bottom",
+                                   trigger = "hover",
+                                   options = list(container = "body"))
+                       ),
+                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
+                                        radioGroupButtons(inputId = "modo_todos",
+                                                          # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                                          label = h1(i18n()$t("Escolha o modo de transporte:")), 
+                                                          choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
+                                                                      "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                                                      "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
+                                                          selected = "tp",
+                                                          individual = TRUE,
+                                                          justified = TRUE
+                                        )),
+                       conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
+                                        radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
+                       ),
+                       
+                       div(
+                         # edit2
+                         bsTooltip(id = "modo_des", 
+                                   title = i18n()$t("Modo não disponível para essa cidade"),
+                                   placement = "top",
+                                   trigger = "hover",
+                                   options = list(container = "body"))
+                       ),
+                       # img(src='ipea.jpg', align = "right", width = "150"),
+                       conditionalPanel(condition = "input.indicador == 'CMA'",
+                                        pickerInput(inputId = "atividade_cum",
+                                                    label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                                                         i18n()$t("Escolha a atividade"))),
+                                                    choices = c(list_trabalho, list_saude, list_edu),
+                                                    selected = "TT")),
+                       conditionalPanel(condition = "input.indicador == 'TMI'",
+                                        selectInput(inputId = "atividade_min",
+                                                    label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                                                         i18n()$t("Escolha a atividade"))),
+                                                    choices = c(list_saude, list_edu),
+                                                    selected = "ST")),
+                       div(
+                         # edit2
+                         bsPopover(id = "q3", 
+                                   title = HTML("<strong>Atividades</strong>"),
+                                   content = HTML("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>"),
+                                   placement = "top",
+                                   trigger = "hover",
+                                   options = list(container = "body"))
+                       ),
+                       div(
+                         # edit2
+                         bsPopover(id = "q4", 
+                                   title = HTML("<strong>Atividades</strong>"),
+                                   content = HTML("<ul><li> Atividades com o sufixo <em>Total</em> representam a soma das subdivisões da atividade</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam a complexidade daqueles estabelecimentos</li></ul>"),
+                                   placement = "top",
+                                   trigger = "hover",
+                                   options = list(container = "body"))
+                       ),
+                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
+                                        sliderInput(inputId = "tempo_tp",
+                                                    label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                                    min = 30, max = 120,
+                                                    step = 30, value = 30,
+                                                    animate = animationOptions(interval = 2000),
+                                                    post = " min")),
+                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
+                                        sliderInput(inputId = "tempo_ativo_tp",
+                                                    label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                                    min = 15, max = 60,
+                                                    step = 15, value = 15,
+                                                    animate = animationOptions(interval = 2000),
+                                                    post = " min")),
+                       conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
+                                        sliderInput(inputId = "tempo_ativo",
+                                                    label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                                    min = 15, max = 60,
+                                                    step = 15, value = 15,
+                                                    animate = animationOptions(interval = 2000),
+                                                    post = " min")),
+                       conditionalPanel(condition = "input.indicador == 'TMI'",
+                                        strong("Observação"), p("Valores truncados para 30 minutos"))
+                       
+      )
+    )
+    
+    
+  })
+  
+  # observeEvent(i18n(), {
+  #   updatePickerInput(session, "cidade", label = i18n()$t("Escolha a cidade:"), choices = req(input$cidade))
+  #   
+  # })
   
   
   a_city <- reactive({
@@ -91,8 +285,8 @@ function(input, output, session) {
     modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$indicador))
     
   })
-
-    
+  
+  
   # 7) REACTIVE TO FILTER THE ACTIVITY ------------------------------------------------------------
   # Reactive para a atividade para indicador cumulativo
   atividade_filtrada <- reactive({
@@ -108,9 +302,9 @@ function(input, output, session) {
     indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_min)) %>%
       rename(id_hex = 1, P001 = 2, valor = 3) %>%
       mutate(id = 1:n()) %>%
-      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 0), " minutos"))
-  
-    })
+      mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos")))
+    
+  })
   
   atividade_filtrada_min_sf <- reactive({
     
@@ -138,7 +332,7 @@ function(input, output, session) {
       rename(id_hex = 1, P001 = 2, valor = 3) %>%
       mutate(id = 1:n()) %>%
       # create popup
-      mutate(popup = paste0("<strong>População:</strong> ", P001, "<br><strong>Valor da acessibilidade:</strong> ", round(valor, 1), "%"))
+      mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%"))
     
     # print(unique(time1$modo))
     
@@ -150,17 +344,17 @@ function(input, output, session) {
   
   # Reactive para o tempo
   tempo_filtrado_sf <- reactive({
-
+    
     tempo_filtrado() %>% setDT() %>%
       merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
       st_sf(crs = 4326)
-
-
-  })
-
-
-  
     
+    
+  })
+  
+  
+  
+  
   # 9) RENDER BASEMAP -------------------------------------------------------
   # baseMap
   output$map <- renderMapdeck({
@@ -217,7 +411,7 @@ function(input, output, session) {
                      duration = 3000, transition = "fly")
       
       if (input$indicador == "CMA") {
-
+        
         proxy %>%
           clear_polygon(layer_id = "acess_min_go") %>%
           clear_legend(layer_id = "acess_min_go") %>%
@@ -240,19 +434,19 @@ function(input, output, session) {
             # auto_highlight = TRUE,
             tooltip = "popup",
             legend = TRUE,
-            legend_options = list(title = "Porcentagem de Oportunidades Acessíveis"),
+            legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
             legend_format = list( fill_colour = as.integer)
           )
-
-
+        
+        
       } else if (input$indicador == "TMI") {
-
+        
         # create viridis scale in the reverse direction
         # create matrix
         colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
         # invert matrix
         colorss <- apply(colorss, 2, rev)[, 1:3]
-
+        
         proxy %>%
           clear_polygon(layer_id = "acess_cum_go") %>%
           clear_legend(layer_id = "acess_cum_go") %>%
@@ -273,10 +467,10 @@ function(input, output, session) {
             update_view = FALSE,
             tooltip = "popup",
             legend = TRUE,
-            legend_options = list(title = "Minutos até a oportunidade mais próxima"),
+            legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
             legend_format = list( fill_colour = as.integer)
           )
-
+        
       }
       
       
@@ -294,56 +488,56 @@ function(input, output, session) {
                     
                     
                     if (a_city() != "fake") {
-                    
-                    
-                    if (input$indicador == "TMI") {
                       
-                      # create viridis scale in the reverse direction
-                      # create matrix
-                      colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-                      # invert matrix
-                      colorss <- apply(colorss, 2, rev)[, 1:3]
                       
-                      mapdeck_update(map_id = "map") %>%
-                        clear_polygon(layer_id = "acess_cum_go") %>%
-                        clear_legend(layer_id = "acess_cum_go") %>%
-                        add_polygon(
-                          data = atividade_filtrada_min_sf(),
-                          fill_colour = "valor",
-                          fill_opacity = 200,
-                          layer_id = "acess_min_go",
-                          palette = colorss,
-                          update_view = FALSE,
-                          tooltip = "popup",
-                          legend = TRUE,
-                          legend_options = list(title = "Minutos até a oportunidade mais próxima"),
-                          legend_format = list( fill_colour = as.integer)
-                        )
-                      
-                    } else 
-                      
-                      if (input$indicador == "CMA") {
+                      if (input$indicador == "TMI") {
+                        
+                        # create viridis scale in the reverse direction
+                        # create matrix
+                        colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+                        # invert matrix
+                        colorss <- apply(colorss, 2, rev)[, 1:3]
                         
                         mapdeck_update(map_id = "map") %>%
-                          clear_polygon(layer_id = "acess_min_go") %>%
-                          clear_legend(layer_id = "acess_min_go") %>%
+                          clear_polygon(layer_id = "acess_cum_go") %>%
+                          clear_legend(layer_id = "acess_cum_go") %>%
                           add_polygon(
-                            data = tempo_filtrado_sf(),
+                            data = atividade_filtrada_min_sf(),
                             fill_colour = "valor",
                             fill_opacity = 200,
-                            layer_id = "acess_cum_go",
-                            palette = "inferno",
+                            layer_id = "acess_min_go",
+                            palette = colorss,
                             update_view = FALSE,
-                            focus_layer = FALSE,
-                            # auto_highlight = TRUE,
                             tooltip = "popup",
                             legend = TRUE,
-                            legend_options = list(title = "Porcentagem de Oportunidades Acessíveis"),
+                            legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
                             legend_format = list( fill_colour = as.integer)
                           )
-                      }
-                    
-                    
+                        
+                      } else 
+                        
+                        if (input$indicador == "CMA") {
+                          
+                          mapdeck_update(map_id = "map") %>%
+                            clear_polygon(layer_id = "acess_min_go") %>%
+                            clear_legend(layer_id = "acess_min_go") %>%
+                            add_polygon(
+                              data = tempo_filtrado_sf(),
+                              fill_colour = "valor",
+                              fill_opacity = 200,
+                              layer_id = "acess_cum_go",
+                              palette = "inferno",
+                              update_view = FALSE,
+                              focus_layer = FALSE,
+                              # auto_highlight = TRUE,
+                              tooltip = "popup",
+                              legend = TRUE,
+                              legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
+                              legend_format = list( fill_colour = as.integer)
+                            )
+                        }
+                      
+                      
                     }
                   })
   

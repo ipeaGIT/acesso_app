@@ -69,6 +69,12 @@ h1 {
   transition-delay: 0;
 }   
 
+#new {
+  z-index: 99999;
+  padding: 0;
+  margin: 0;
+}
+
 /* Modificar o tamanho do mapa! */
 #map {
   height: calc(100vh - 80px) !important;
