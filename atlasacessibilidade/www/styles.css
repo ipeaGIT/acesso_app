@@ -37,9 +37,9 @@ h1 {
   border-radius: 20px;
   cursor: move;
   /* Fade out while not hovering */
-  opacity: 0.4;
+  opacity: 0.7;
   /*zoom: 0.9;*/
-  transition: opacity 300ms 0.5s; 
+  transition: opacity 100ms 0.5s; 
 }
 
 #controls2 {
@@ -147,12 +147,27 @@ h1 {
 }
 
 
-.modal-dialog{
+#modal_lang .modal-dialog{
   /*margin: 150px auto;*/
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) !important;
+}
+
+/*Second modal with instructions*/
+.modal_instructions .modal-dialog {
+ position: absolute;
+ right: 400px !important;
+ top: 80px;
+  
+}
+
+#openDetails {
+  position: relative;
+    margin: 10px auto;
+    right: -25%;
+    width: 50%;
 }
 
 .carousel-indicators  {

@@ -12,31 +12,57 @@ limits<- read_rds(("data/cities_limits.rds"))
 # Define a server for the Shiny app
 function(input, output, session) {
   
-  # 2) MODAL WITH INSTRUCTIONS AT STARTUP ----------------------------------------------------------
-  query_modal <- modalDialog(
-    # title = HTML("<h1>Instruções para uso do mapa interativo na aba ao lado &nbsp<i class=\"fas fa-arrow-right\"></i></h1>"),
-    title = HTML("<h1>Escolha a lingua:</h1>"),
-    renderUI({
-      div(style = "width: 50%;margin: 0 auto;", 
-          pickerInput(inputId = 'selected_language',
-                      # label = "Escolha a lingua:",
-                      choices = c(a = "pt", b = "en"),
-                      choicesOpt = list(content = (c("<p><img src='img/pt.png' width=30px>&nbsp;&nbsp;Português</img></p>",
-                                                     "<p><img src='img/en_new.png' width=30px>&nbsp;&nbsp; English</img></p>"))),
-                      selected = input$selected_language))
-      
-    }),
-    # includeHTML("www/carousel_2.html"),
-    easyClose = FALSE,
-    size = "m",
-    footer = modalButton("Fechar")
+  # 2) MODAL WITH LANGUAGE OPTION AT STARTUP ----------------------------------------------------------
+  query_modal <- div(id = "modal_lang", 
+                     modalDialog(
+                       # title = HTML("<h1>Instruções para uso do mapa interativo na aba ao lado &nbsp<i class=\"fas fa-arrow-right\"></i></h1>"),
+                       title = HTML("<h1>Lingua // Language</h1>"),
+                       renderUI({
+                         div(style = "width: 50%;margin: 0 auto;", 
+                             pickerInput(inputId = 'selected_language',
+                                         # label = "Escolha a lingua:",
+                                         choices = c(a = "pt", b = "en"),
+                                         choicesOpt = list(content = (c("<p><img src='img/pt.png' width=30px>&nbsp;&nbsp;Português</img></p>",
+                                                                        "<p><img src='img/en_new.png' width=30px>&nbsp;&nbsp; English</img></p>"))),
+                                         selected = input$selected_language),
+                             
+                             actionButton(inputId = "openDetails", 
+                                          label = "", 
+                                          icon = icon("check"))
+                         )
+                       }),
+                       
+                       # includeHTML("www/carousel_2.html"),
+                       easyClose = FALSE,
+                       size = "m",
+                       footer = NULL
+                       
+                     )
   )
   
   # Show the model on start up ...
   showModal(query_modal)
   
+  # Second modal with instrctions
+  observeEvent(input$openDetails, {
+    
+    showModal(
+      div(class = "modal_instructions",
+        modalDialog(
+          # title = "Teste",
+          HTML(sprintf("<h1>%s &nbsp<i class=\"fas fa-arrow-right\"></i></h1>", i18n()$t("Comece selecionado uma cidade"))),
+          easyClose = TRUE,
+          size = "s",
+          footer = NULL
+          
+        ))
+    )
+    
+    
+  })
   
-  # 3) OBSERVER TO TIMEOUT IF USER IS INACTIVE ----------------------------------------------------------
+  
+  # 3) OBSERVER TO TIMEOUT IF USER IS INACTIVE  (inactive) -----------------------------------------------------
   
   # observeEvent(input$timeOut, { 
   #   print(paste0("Session (", session$token, ") timed out at: ", Sys.time()))
@@ -50,8 +76,9 @@ function(input, output, session) {
   # })  
   
   
-  # RENDER UI FOR GODS SAKE! --------------------------------------------------------------------
+  # 3) RENDER 'UI' HERE SO IT CAN UPDATE FOR THE LANGUAGUES ---------------------------------------------
   
+  # 3.1 Reactive to select the translator for the active langague -------------
   i18n <- reactive({
     selected <- input$selected_language
     if (length(selected) > 0 && selected %in% translator$languages) {
@@ -61,9 +88,10 @@ function(input, output, session) {
   })
   
   
-  
+  # 3.2 Start of the UI -------------------------------------
   output$page_content <- renderUI({
     
+    # Create lists that will give the select options to the respective language
     list_trabalho <- list('Trabalho' = structure(c("TT"), .Names = c(i18n()$t("Trabalho Total"))))
     list_saude <- list('Saúde' = structure(c("ST", "SB", "SM", "SA"), 
                                               .Names = c(i18n()$t("Saúde Total"),
@@ -83,7 +111,7 @@ function(input, output, session) {
     vector_indicadores <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
     
     
-    # START UI !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # Start proper UI here 
     tagList(
 
       pickerInput(inputId = "cidade",
@@ -148,8 +176,8 @@ function(input, output, session) {
                        div(
                          # edit2
                          bsPopover(id = "q1", 
-                                   title = "<strong>Indicadores de acessibilidade</strong>",
-                                   content = HTML("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>"),
+                                   title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
+                                   content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
                                    placement = "bottom",
                                    trigger = "hover",
                                    options = list(container = "body"))
@@ -185,7 +213,7 @@ function(input, output, session) {
                                                     choices = c(list_trabalho, list_saude, list_edu),
                                                     selected = "TT")),
                        conditionalPanel(condition = "input.indicador == 'TMI'",
-                                        selectInput(inputId = "atividade_min",
+                                        pickerInput(inputId = "atividade_min",
                                                     label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
                                                                          i18n()$t("Escolha a atividade"))),
                                                     choices = c(list_saude, list_edu),
@@ -193,8 +221,8 @@ function(input, output, session) {
                        div(
                          # edit2
                          bsPopover(id = "q3", 
-                                   title = HTML("<strong>Atividades</strong>"),
-                                   content = HTML("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>"),
+                                   title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
+                                   content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
                                    placement = "top",
                                    trigger = "hover",
                                    options = list(container = "body"))
@@ -202,8 +230,8 @@ function(input, output, session) {
                        div(
                          # edit2
                          bsPopover(id = "q4", 
-                                   title = HTML("<strong>Atividades</strong>"),
-                                   content = HTML("<ul><li> Atividades com o sufixo <em>Total</em> representam a soma das subdivisões da atividade</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam a complexidade daqueles estabelecimentos</li></ul>"),
+                                   title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
+                                   content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
                                    placement = "top",
                                    trigger = "hover",
                                    options = list(container = "body"))
@@ -230,7 +258,7 @@ function(input, output, session) {
                                                     animate = animationOptions(interval = 2000),
                                                     post = " min")),
                        conditionalPanel(condition = "input.indicador == 'TMI'",
-                                        strong("Observação"), p("Valores truncados para 30 minutos"))
+                                        strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
                        
       )
     )
@@ -238,12 +266,8 @@ function(input, output, session) {
     
   })
   
-  # observeEvent(i18n(), {
-  #   updatePickerInput(session, "cidade", label = i18n()$t("Escolha a cidade:"), choices = req(input$cidade))
-  #   
-  # })
   
-  
+  # 4) REACTIVE TO FILTER THE CITY -----------------------------------------------------------------
   a_city <- reactive({
     
     if(input$cidade != "") {input$cidade} else {"fake"}
@@ -251,7 +275,6 @@ function(input, output, session) {
     
   })
   
-  # 4) REACTIVE TO FILTER THE CITY -----------------------------------------------------------------
   cidade_filtrada <- reactive({
     
     acess[sigla_muni == a_city()]
@@ -365,6 +388,7 @@ function(input, output, session) {
   })
   
   
+  # Stop the loading page here !
   waiter_hide()
   
   
