@@ -67,7 +67,38 @@ h1 {
   /* Fade in while hovering */
   opacity: 0.95;
   transition-delay: 0;
-}   
+}
+
+.w3-container:after,
+.w3-container:before {
+	content: "";
+	display: table;
+	clear: both
+}
+
+.w3-animate-opacity {
+	animation: opac 3.5s
+}
+
+@keyframes opac {
+	from {
+		opacity: 0
+	}
+	to {
+		opacity: 4
+	}
+}
+
+
+#controls_animated {
+  background-color: transparent;
+  /*width: 350px;*/
+  padding: 0 20px 0 20px;
+  border: transparent;
+  /*border-radius: 20px;*/
+  cursor: move;
+}
+
 
 #new {
   z-index: 99999;
@@ -160,7 +191,16 @@ h1 {
  position: absolute;
  right: 400px !important;
  top: 80px;
+ width: auto;
   
+}
+
+.modal_instructions .modal-body {
+  padding: 0 10px;
+}
+
+.modal_instructions h1 {
+  margin: 10px 0;
 }
 
 #openDetails {

@@ -50,7 +50,7 @@ function(input, output, session) {
       div(class = "modal_instructions",
         modalDialog(
           # title = "Teste",
-          HTML(sprintf("<h1>%s &nbsp<i class=\"fas fa-arrow-right\"></i></h1>", i18n()$t("Comece selecionado uma cidade"))),
+          HTML(sprintf("<h1>%s &nbsp<i class=\"fas fa-arrow-right\"></i></h1>", i18n()$t("Comece selecionando uma cidade"))),
           easyClose = TRUE,
           size = "s",
           footer = NULL
@@ -167,101 +167,106 @@ function(input, output, session) {
                                  title = i18n()$t("Selecione aqui"))
       ),
       conditionalPanel(condition = "input.cidade != ''",
-                       awesomeRadio(inputId = "indicador",
-                                    # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                    label = HTML(sprintf("<h1>%s <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                         i18n()$t("Escolha o indicador de acessibilidade:"))),
-                                    choices = vector_indicadores,
-                                    selected = "CMA"),
-                       div(
-                         # edit2
-                         bsPopover(id = "q1", 
-                                   title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
-                                   content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
-                                   placement = "bottom",
-                                   trigger = "hover",
-                                   options = list(container = "body"))
-                       ),
-                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
-                                        radioGroupButtons(inputId = "modo_todos",
-                                                          # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                          label = h1(i18n()$t("Escolha o modo de transporte:")), 
-                                                          choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
-                                                                      "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
-                                                                      "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
-                                                          selected = "tp",
-                                                          individual = TRUE,
-                                                          justified = TRUE
-                                        )),
-                       conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
-                                        radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
-                       ),
-                       
-                       div(
-                         # edit2
-                         bsTooltip(id = "modo_des", 
-                                   title = i18n()$t("Modo não disponível para essa cidade"),
-                                   placement = "top",
-                                   trigger = "hover",
-                                   options = list(container = "body"))
-                       ),
-                       # img(src='ipea.jpg', align = "right", width = "150"),
-                       conditionalPanel(condition = "input.indicador == 'CMA'",
-                                        pickerInput(inputId = "atividade_cum",
-                                                    label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                         i18n()$t("Escolha a atividade"))),
-                                                    choices = c(list_trabalho, list_saude, list_edu),
-                                                    selected = "TT")),
-                       conditionalPanel(condition = "input.indicador == 'TMI'",
-                                        pickerInput(inputId = "atividade_min",
-                                                    label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                         i18n()$t("Escolha a atividade"))),
-                                                    choices = c(list_saude, list_edu),
-                                                    selected = "ST")),
-                       div(
-                         # edit2
-                         bsPopover(id = "q3", 
-                                   title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                                   content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
-                                   placement = "top",
-                                   trigger = "hover",
-                                   options = list(container = "body"))
-                       ),
-                       div(
-                         # edit2
-                         bsPopover(id = "q4", 
-                                   title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                                   content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
-                                   placement = "top",
-                                   trigger = "hover",
-                                   options = list(container = "body"))
-                       ),
-                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
-                                        sliderInput(inputId = "tempo_tp",
-                                                    label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                                                    min = 30, max = 120,
-                                                    step = 30, value = 30,
-                                                    animate = animationOptions(interval = 2000),
-                                                    post = " min")),
-                       conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
-                                        sliderInput(inputId = "tempo_ativo_tp",
-                                                    label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                                                    min = 15, max = 60,
-                                                    step = 15, value = 15,
-                                                    animate = animationOptions(interval = 2000),
-                                                    post = " min")),
-                       conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
-                                        sliderInput(inputId = "tempo_ativo",
-                                                    label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                                                    min = 15, max = 60,
-                                                    step = 15, value = 15,
-                                                    animate = animationOptions(interval = 2000),
-                                                    post = " min")),
-                       conditionalPanel(condition = "input.indicador == 'TMI'",
-                                        strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
-                       
+                       absolutePanel(id = "controls_animated", class = "w3-container w3-animate-opacity", 
+                                     fixed = TRUE, draggable = FALSE,
+                                     top = 180, right = 20, width = 350,
+                                     awesomeRadio(inputId = "indicador",
+                                                  # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                                  label = HTML(sprintf("<h1>%s <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                                                       i18n()$t("Escolha o indicador de acessibilidade:"))),
+                                                  choices = vector_indicadores,
+                                                  selected = "CMA"),
+                                     div(
+                                       # edit2
+                                       bsPopover(id = "q1", 
+                                                 title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
+                                                 content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
+                                                 placement = "bottom",
+                                                 trigger = "hover",
+                                                 options = list(container = "body"))
+                                     ),
+                                     conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
+                                                      radioGroupButtons(inputId = "modo_todos",
+                                                                        # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
+                                                                        label = h1(i18n()$t("Escolha o modo de transporte:")), 
+                                                                        choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
+                                                                                    "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                                                                    "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
+                                                                        selected = "tp",
+                                                                        individual = TRUE,
+                                                                        justified = TRUE
+                                                      )),
+                                     conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
+                                                      radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
+                                     ),
+                                     
+                                     div(
+                                       # edit2
+                                       bsTooltip(id = "modo_des", 
+                                                 title = i18n()$t("Modo não disponível para essa cidade"),
+                                                 placement = "top",
+                                                 trigger = "hover",
+                                                 options = list(container = "body"))
+                                     ),
+                                     # img(src='ipea.jpg', align = "right", width = "150"),
+                                     conditionalPanel(condition = "input.indicador == 'CMA'",
+                                                      pickerInput(inputId = "atividade_cum",
+                                                                  label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                                                                       i18n()$t("Escolha a atividade"))),
+                                                                  choices = c(list_trabalho, list_saude, list_edu),
+                                                                  selected = "TT")),
+                                     conditionalPanel(condition = "input.indicador == 'TMI'",
+                                                      pickerInput(inputId = "atividade_min",
+                                                                  label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                                                                       i18n()$t("Escolha a atividade"))),
+                                                                  choices = c(list_saude, list_edu),
+                                                                  selected = "ST")),
+                                     div(
+                                       # edit2
+                                       bsPopover(id = "q3", 
+                                                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
+                                                 content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
+                                                 placement = "top",
+                                                 trigger = "hover",
+                                                 options = list(container = "body"))
+                                     ),
+                                     div(
+                                       # edit2
+                                       bsPopover(id = "q4", 
+                                                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
+                                                 content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
+                                                 placement = "top",
+                                                 trigger = "hover",
+                                                 options = list(container = "body"))
+                                     ),
+                                     conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
+                                                      sliderInput(inputId = "tempo_tp",
+                                                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                                                  min = 30, max = 120,
+                                                                  step = 30, value = 30,
+                                                                  animate = animationOptions(interval = 2000),
+                                                                  post = " min")),
+                                     conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
+                                                      sliderInput(inputId = "tempo_ativo_tp",
+                                                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                                                  min = 15, max = 60,
+                                                                  step = 15, value = 15,
+                                                                  animate = animationOptions(interval = 2000),
+                                                                  post = " min")),
+                                     conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
+                                                      sliderInput(inputId = "tempo_ativo",
+                                                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                                                  min = 15, max = 60,
+                                                                  step = 15, value = 15,
+                                                                  animate = animationOptions(interval = 2000),
+                                                                  post = " min")),
+                                     conditionalPanel(condition = "input.indicador == 'TMI'",
+                                                      strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
+                                     
+                    )
       )
     )
+    
     
     
   })

@@ -23,7 +23,7 @@ shinyUI(
                               mapdeckOutput("map"),
                               # Create the main absolute panel
                               absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE, draggable = FALSE,
-                                            top = 80, right = 20, width = 350, height = 630,
+                                            top = 80, right = 20, width = 350, height = 615,
                                             # Output the 'UI' that was generated in the server
                                             uiOutput('page_content')
                               )
