@@ -37,6 +37,6 @@
     {"pt": "minutos",  "en": "minutes"},
     {"pt": "Observação",  "en": "PS"},
     {"pt": "Valores truncados para 30 minutos", "en": "Values were truncated to 30 minutes"},
-    {"pt": "Comece selecionado uma cidade", "en": "Start by selecting a city"}
+    {"pt": "Comece selecionando uma cidade", "en": "Start by selecting a city"}
     ]
 }
