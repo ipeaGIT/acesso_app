@@ -12,7 +12,7 @@ library(shiny.i18n)
 
 translator <- Translator$new(translation_json_path = "data/translation.json")
 
-source("teste_div.R")
+source("R/create_radio_button_custom.R")
 
 # Use GForce Optimisations in data.table operations
 options(datatable.optimize=Inf)
