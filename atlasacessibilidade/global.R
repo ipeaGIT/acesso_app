@@ -6,9 +6,14 @@ library(dplyr)
 library(sf)
 library(readr)
 library(data.table)
-# library(ggplot2)
 library(waiter) # remotes::install_github("JohnCoene/waiter")
 library(shiny.i18n)
+
+# new
+library(ggplot2)
+library(forcats)
+library(highcharter)
+library(hrbrthemes)
 
 translator <- Translator$new(translation_json_path = "data/translation.json")
 
@@ -25,7 +30,7 @@ data.table::setDTthreads(percent = 100)
 # set_token("")
 set_token("pk.eyJ1Ijoia2F1ZWJyYWdhIiwiYSI6ImNqa2JoN3VodDMxa2YzcHFxMzM2YWw1bmYifQ.XAhHAgbe0LcDqKYyqKYIIQ")
 
-
+source("R/slider_input_acess.R")
 
 # TIMEOUT -------------------------------------------------------------------------------------
 

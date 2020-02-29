@@ -7,7 +7,13 @@ hex <- read_rds("data/hex.rds")
 
 centroids <- read_rds("data/cities_centroids.rds")
 
-limits<- read_rds(("data/cities_limits.rds"))
+limits <- read_rds(("data/cities_limits.rds"))
+
+palma_renda <- read_rds("data/acess_palma_renda.rds") %>% setDT()
+palma_cor <- read_rds("data/acess_palma_cor.rds") %>% setDT()
+
+dumbell_renda <- read_rds("data/acess_dumbell_renda.rds") %>% setDT()
+dumbell_cor <- read_rds("data/acess_dumbell_cor.rds") %>% setDT()
 
 # Define a server for the Shiny app
 function(input, output, session) {
@@ -26,40 +32,27 @@ function(input, output, session) {
                                                                         "<p><img src='img/en_new.png' width=30px>&nbsp;&nbsp; English</img></p>"))),
                                          selected = input$selected_language),
                              
-                             actionButton(inputId = "openDetails", 
-                                          label = "", 
-                                          icon = icon("check"))
+                             # actionButton(inputId = "openDetails",
+                             #              label = "",
+                             #              icon = icon("check"))
                          )
                        }),
                        
                        # includeHTML("www/carousel_2.html"),
-                       easyClose = FALSE,
+                       easyClose = TRUE,
                        size = "m",
-                       footer = NULL
+                       footer = div(id = "openDetails", class = "btn btn-default action-button shiny-bound-input",
+                                    tagList(
+                                      modalButton(icon("check"))
+                                      # actionButton(inputId = "openDetails", label = "", icon = icon("check"))
+                                    )
+                       )
                        
                      )
   )
   
   # Show the model on start up ...
   showModal(query_modal)
-  
-  # Second modal with instrctions
-  observeEvent(input$openDetails, {
-    
-    showModal(
-      div(class = "modal_instructions",
-        modalDialog(
-          # title = "Teste",
-          HTML(sprintf("<h1>%s &nbsp<i class=\"fas fa-arrow-right\"></i></h1>", i18n()$t("Comece selecionando uma cidade"))),
-          easyClose = TRUE,
-          size = "s",
-          footer = NULL
-          
-        ))
-    )
-    
-    
-  })
   
   
   # 3) OBSERVER TO TIMEOUT IF USER IS INACTIVE  (inactive) -----------------------------------------------------
@@ -75,6 +68,51 @@ function(input, output, session) {
   #   session$close()
   # })  
   
+
+# RENDER LANDING PAGE -------------------------------------------------------------------------
+
+  observeEvent(input$openDetails, {
+    
+    output$landing_page <- renderUI({
+      
+    if (input$selected_language == "pt") {
+      
+      includeMarkdown("home_pt.md")
+      
+    } else if (input$selected_language == "en") {
+      
+      includeMarkdown("home_en.md")
+    }
+      
+      
+    })
+    
+  })
+  
+  # Second modal with instrctions
+  observeEvent({input$tabs == "tab_mapa"}, once = TRUE, {
+    
+    if (input$tabs == "tab_mapa") {
+      
+      showModal(
+        div(class = "modal_instructions",
+            modalDialog(
+              # title = "Teste",
+              HTML(sprintf("<h1>%s &nbsp<i class=\"fas fa-arrow-right\"></i></h1>", i18n()$t("Comece selecionando uma cidade"))),
+              easyClose = TRUE,
+              size = "s",
+              footer = NULL
+              
+            ))
+      )
+      
+    }
+    
+    
+  })
+  
+  
+  
   
   # 3) RENDER 'UI' HERE SO IT CAN UPDATE FOR THE LANGUAGUES ---------------------------------------------
   
@@ -88,189 +126,324 @@ function(input, output, session) {
   })
   
   
-  # 3.2 Start of the UI -------------------------------------
-  output$page_content <- renderUI({
-    
-    # Create lists that will give the select options to the respective language
-    list_trabalho <- list('Trabalho' = structure(c("TT"), .Names = c(i18n()$t("Trabalho Total"))))
-    list_saude <- list('Saúde' = structure(c("ST", "SB", "SM", "SA"), 
-                                              .Names = c(i18n()$t("Saúde Total"),
-                                                         i18n()$t("Saúde Baixa"),
-                                                         i18n()$t("Saúde Média"),
-                                                         i18n()$t("Saúde Alta"))))
-    list_edu <- list('Educação' = structure(c("ET", "EI", "EF", "EM"), 
-                                              .Names = c(i18n()$t("Educação Total"),
-                                                         i18n()$t("Educação Infantil"),
-                                                         i18n()$t("Educação Fundamental"),
-                                                         i18n()$t("Educação Média"))))
+  
+  # TRANSLATE TAB TITLES ------------------------------------------------------------------------
+  
+  output$title_map = renderText({
+    switch(input$selected_language, "pt"="Mapa", "en"="Map") 
+  })  
+  
+  output$title_graph = renderText({
+    switch(input$selected_language, "pt"="Gráficos", "en"="Plots") 
+  })  
+  
+  
+  # 3.2 Start of the UI (map) -------------------------------------
+  source("modules/map_ui.R", local = TRUE)
+  
+  
+  
+  # 3.2 Start of the UI (graphs) -------------------------------------
+  source("modules/graphs_ui.R", local = TRUE)
+  
 
-    names(list_trabalho) <-c(i18n()$t("Trabalho"))
-    names(list_saude) <-c(i18n()$t("Saúde"))
-    names(list_edu) <-c(i18n()$t("Educação"))
+  # UI FOR THE DOWNLOAD BUTTONS -----------------------------------------------------------------
+
+  output$ui_download_button <- renderUI({
     
-    vector_indicadores <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
-    
-    
-    # Start proper UI here 
     tagList(
-
-      pickerInput(inputId = "cidade",
-                  label = h1(i18n()$t("Escolha a cidade:")),
-                  choices = list(
-                    'Norte' = c("Belém" = "bel",
-                                "Manaus" = "man"),
-                    'Nordeste' = c("Fortaleza" = "for",
-                                   "Maceió" = "mac",
-                                   "Natal" = "nat",
-                                   "Recife" = "rec",
-                                   "Salvador" = "sal",
-                                   "São Luís" = "slz"),
-                    'Sudeste' = c("Belo Horizonte" = "bho",
-                                  "Campinas" = "cam",
-                                  "Duque de Caxias" = "duq",
-                                  "Guarulhos" = "gua",
-                                  "Rio de Janeiro" = "rio",
-                                  "São Gonçalo" = "sgo",
-                                  "São Paulo" = "spo"),
-                    'Sul' = c("Curitiba" = "cur",
-                              "Porto Alegre" = "poa"),
-                    'Centro-Oeste' = c("Brasília" = "bsb",
-                                       "Campo Grande" = "cgr",
-                                       "Goiânia" = "goi")
-                  ),
-                  choicesOpt = list(
-                    icon = c("", 
-                             "",
-                             "fa-bus",
-                             "",
-                             "",
-                             "fa-bus",
-                             "",
-                             "",
-                             "fa-bus",
-                             "",
-                             "",
-                             "",
-                             "fa-bus",
-                             "",
-                             "fa-bus",
-                             "fa-bus",
-                             "fa-bus",
-                             "",
-                             "",
-                             ""
-                    )
-                  ),
-                  options = list('size' = 15,
-                                 'icon-base' = "fa",
-                                 'tickIcon' = "fa-check",
-                                 title = i18n()$t("Selecione aqui"))
-      ),
-      conditionalPanel(condition = "input.cidade != ''",
-                       absolutePanel(id = "controls_animated", class = "w3-container w3-animate-opacity", 
-                                     fixed = TRUE, draggable = FALSE,
-                                     top = 180, right = 20, width = 350,
-                                     awesomeRadio(inputId = "indicador",
-                                                  # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                  label = HTML(sprintf("<h1>%s <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                       i18n()$t("Escolha o indicador de acessibilidade:"))),
-                                                  choices = vector_indicadores,
-                                                  selected = "CMA"),
-                                     div(
-                                       # edit2
-                                       bsPopover(id = "q1", 
-                                                 title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
-                                                 content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
-                                                 placement = "bottom",
-                                                 trigger = "hover",
-                                                 options = list(container = "body"))
-                                     ),
-                                     conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
-                                                      radioGroupButtons(inputId = "modo_todos",
-                                                                        # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                                        label = h1(i18n()$t("Escolha o modo de transporte:")), 
-                                                                        choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
-                                                                                    "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
-                                                                                    "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
-                                                                        selected = "tp",
-                                                                        individual = TRUE,
-                                                                        justified = TRUE
-                                                      )),
-                                     conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
-                                                      radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
-                                     ),
-                                     
-                                     div(
-                                       # edit2
-                                       bsTooltip(id = "modo_des", 
-                                                 title = i18n()$t("Modo não disponível para essa cidade"),
-                                                 placement = "top",
-                                                 trigger = "hover",
-                                                 options = list(container = "body"))
-                                     ),
-                                     # img(src='ipea.jpg', align = "right", width = "150"),
-                                     conditionalPanel(condition = "input.indicador == 'CMA'",
-                                                      pickerInput(inputId = "atividade_cum",
-                                                                  label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                                       i18n()$t("Escolha a atividade"))),
-                                                                  choices = c(list_trabalho, list_saude, list_edu),
-                                                                  selected = "TT")),
-                                     conditionalPanel(condition = "input.indicador == 'TMI'",
-                                                      pickerInput(inputId = "atividade_min",
-                                                                  label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                                       i18n()$t("Escolha a atividade"))),
-                                                                  choices = c(list_saude, list_edu),
-                                                                  selected = "ST")),
-                                     div(
-                                       # edit2
-                                       bsPopover(id = "q3", 
-                                                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                                                 content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
-                                                 placement = "top",
-                                                 trigger = "hover",
-                                                 options = list(container = "body"))
-                                     ),
-                                     div(
-                                       # edit2
-                                       bsPopover(id = "q4", 
-                                                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                                                 content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
-                                                 placement = "top",
-                                                 trigger = "hover",
-                                                 options = list(container = "body"))
-                                     ),
-                                     conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
-                                                      sliderInput(inputId = "tempo_tp",
-                                                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                                                                  min = 30, max = 120,
-                                                                  step = 30, value = 30,
-                                                                  animate = animationOptions(interval = 2000),
-                                                                  post = " min")),
-                                     conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
-                                                      sliderInput(inputId = "tempo_ativo_tp",
-                                                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                                                                  min = 15, max = 60,
-                                                                  step = 15, value = 15,
-                                                                  animate = animationOptions(interval = 2000),
-                                                                  post = " min")),
-                                     conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
-                                                      sliderInput(inputId = "tempo_ativo",
-                                                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                                                                  min = 15, max = 60,
-                                                                  step = 15, value = 15,
-                                                                  animate = animationOptions(interval = 2000),
-                                                                  post = " min")),
-                                     conditionalPanel(condition = "input.indicador == 'TMI'",
-                                                      strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
-                                     
-                    )
-      )
+    downloadButton("downloadData", i18n()$t("Baixe os dados (.csv)")),
+    downloadButton("downloadPlot", i18n()$t("Baixe o gŕafico (.png)"))
     )
     
+  })  
+
+  # SERVER-GRAPHS -------------------------------------------------------------------------------
+  
+  
+  # # Reative para indicador
+  # indicador_filtrado_graph <- reactive({
+  #   
+  #   palma[indicador == input$indicador_graph]
+  #   
+  # })
+  # 
+  
+  # Reactive para a modo
+  modo_filtrado_graph <- reactive({
+    
+    
+    if (input$graph_type == "palma_renda") {
+      
+      aa <- palma_renda[modo == input$modo_todos_graph]
+      
+    } else if (input$graph_type == "palma_cor") {
+      
+      aa <- palma_cor[modo == input$modo_todos_graph]
+      
+    } else if (input$graph_type == "dumbell_renda")  {
+      
+      aa <- dumbell_renda[modo == input$modo_todos_graph]
+      
+    } else if (input$graph_type == "dumbell_cor")  {
+      
+      aa <- dumbell_cor[modo == input$modo_todos_graph]
+      
+    }
+      
+    })  
+  
+  # Reative to activity
+  # Reative to time threshold
+  input_atividade_graph <- reactive({
+    
+    if(input$graph_type %in% c("palma_renda", "palma_cor")) {input$atividade_graph_cum} else {input$atividade_graph_tmi}
+    
+  })
+  
+  
+  atividade_filtrada_graph <- reactive({
+    
+    bb <- modo_filtrado_graph()[atividade == input_atividade_graph()]
+    # bb <- filter(modo_filtrado_graph(), atividade == input$atividade_cum_graph)
+    
+    # print(input$atividade_cum_graph)
+    # print(input$atividade_cum_graph)
+    
+    # return(bb)
+    
+    print(paste0("aaa", nrow(bb)))
+    
+    return(bb)
+    
+  })
+  
+  # Reative to time threshold
+  input_tempo_graph <- reactive({
+    
+    if(input$modo_todos_graph %in% c("caminhada", "bicicleta")) {input$tempo_ativo_graph} else {input$tempo_tp_graph}
+    
+  })
+  
+  tempo_filtrado_graph <- reactive({
+    
+    cc <- atividade_filtrada_graph()[tempo_viagem == input_tempo_graph()]
+    # cc <- filter(atividade_filtrada_graph(), tempo_viagem == input_tempo_graph())
+    
+    # print(input_tempo_graph())
+    
+    # print(nrow(cc))
+    # print(ncol(cc))
+    
+    # return(cc)
+    
+  })
+  
+  
+  
+  # Render graphs
+  output$output_graph <- renderHighchart({
+    
+    # make title plot
+    title_plot_graph <- switch(input$graph_type, 
+                               "palma_renda" = i18n()$t("Desigualdade por renda"), 
+                               "palma_cor" = i18n()$t("Desigualdade por cor"),
+                               "dumbell_renda" = i18n()$t("Desigualdade por renda"),
+                               "dumbell_cor" = i18n()$t("Desigualdade por cor")) 
+    
+    title_plot_modo <- switch(input$modo_todos_graph, 
+                              "tp" = i18n()$t("por transporte público"), 
+                              "caminhada" = i18n()$t("por caminhada"),
+                              "bicicleta" = i18n()$t("por bicicleta")) 
+    
+    title_plot_atividade <- switch(input_atividade_graph(), 
+                                   "TT" = i18n()$t("para trabalho"), 
+                                   "ET" = i18n()$t("para educação"),
+                                   "EI" = i18n()$t("para educação infantil"),
+                                   "EF" = i18n()$t("para educação fundamental"),
+                                   "EM" = i18n()$t("para educação média"),
+                                   "ST" = i18n()$t("para saúde"),
+                                   "SB" = i18n()$t("para saúde baixa"),
+                                   "SM" = i18n()$t("para saúde média"),
+                                   "SA" = i18n()$t("para saúde alta")) 
+    
+    title_plot_atividade_dumbbel <- switch(input_atividade_graph(), 
+                                           "ET" = i18n()$t("à escola mais próxima"),
+                                           "EI" = i18n()$t("à escola infantil mais próxima"),
+                                           "EF" = i18n()$t("à escola fundamental mais próxima"),
+                                           "EM" = i18n()$t("à escola média mais próxima"),
+                                           "ST" = i18n()$t("ao equipamento de saúde mais próximo"),
+                                           "SB" = i18n()$t("ao equipamento de saúde baixo mais próximo"),
+                                           "SM" = i18n()$t("ao equipamento de saúde médio mais próximo"),
+                                           "SA" = i18n()$t("ao equipamento de saúde alto mais próximo")) 
+    
+    
+    if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+    
+    new <- tempo_filtrado_graph() %>%
+      # mutate(sigla_muni = factor(sigla_muni, levels = munis_df$abrev_muni, labels = munis_df$name_muni)) %>%
+      mutate(nome_muni = factor(nome_muni))
+      # mutate(sigla_muni = forcats::fct_reorder(sigla_muni, palma_ratio))
+    
+    new <- arrange(new, desc(palma_ratio))
+    
+    
+    title_plot <- sprintf("%s %s %s em até %s minutos", title_plot_graph, title_plot_modo, title_plot_atividade, input_tempo_graph())
+    legend_plot <- switch(input$graph_type, 
+                          "palma_renda" = "Razão da acessibilidade dos 10% mais ricos pelos 40% mais pobres", 
+                          "palma_cor" = "Razão da acessibilidade da população branca pela população negra") 
+    
+      
+      hchart(new, "bar", hcaes(x = nome_muni, y = palma_ratio),
+             name = "Palma Ratio") %>%
+        hc_title(text = title_plot,
+                 align = "left", x = 50) %>%
+        hc_subtitle(text = legend_plot,
+                    align = "left", x = 50) %>%
+        hc_xAxis(opposite = FALSE,
+                 title = list(text = "")
+                 , labels = list(
+                   # format = "{value}%",
+                   style = list(fontSize = 15))
+        ) %>%
+        hc_yAxis(title = list(text = "Palma Ratio")) %>%
+        # change bar colors
+        hc_colors(colors = "#1D5A79") %>%
+        # change font
+        hc_chart(style = list(fontFamily = "Roboto Condensed")) %>%
+        # add vertical line
+        hc_yAxis(plotLines = list(list(color = "#99A3A4", value = 1, width = 2, zIndex = 5, dashStyle = "LongDash"))) %>%
+        hc_exporting(enabled = FALSE) %>%
+        # add data label at the end of each bar (with values)
+        hc_plotOptions(bar = list(dataLabels = list(enabled = TRUE,
+                                                    align = "right",
+                                                    x = -5,
+                                                    style = list(fontSize = 15,
+                                                                 color = "white",
+                                                                 textOutline = "0.3px white",
+                                                                 fontWeight = "regular"))))
+      
+    } else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+      
+      
+      title_plot <- sprintf("%s %s %s", title_plot_graph, title_plot_modo, title_plot_atividade_dumbbel)
+      legend_plot <- switch(input$graph_type, 
+                            "dumbell_renda" = "Média do tempo mínimo de viagem por renda", 
+                            "dumbell_cor" = "Média do tempo mínimo de viagem por cor") 
+      
+      
+      # arrange by Q1
+      
+      teste_dumbell <- arrange(atividade_filtrada_graph(), -low)
+      
+      highchart() %>%
+        hc_xAxis(categories = teste_dumbell$nome_muni, labels = list(style = list(fontSize = 15))) %>%
+        hc_yAxis(min = 0, labels = list(style = list(fontSize = 15))) %>%
+        hc_chart(inverted = TRUE) %>%
+        hc_title(text = title_plot,
+                 align = "left", x = 25) %>% 
+        # change font
+        hc_chart(style = list(fontFamily = "Roboto Condensed")) %>%
+        hc_subtitle(text = legend_plot,
+                    align = "left", x = 25) %>%
+        hc_legend(itemStyle = list(fontSize = 15)) %>%
+        # add bar
+        hc_add_series(data = teste_dumbell,
+                      type = "errorbar",
+                      color = "#95A5A6",
+                      lineWidth = 5,
+                      opacity = 0.5,
+                      name = "",
+                      tooltip = list(enabled = TRUE,
+                                     valueDecimals = 0),
+                      whiskerWidth = 0) %>%
+        # add total
+        hc_add_series(data = teste_dumbell$total,
+                      type = "scatter",
+                      color = "black",
+                      name = "Total",
+                      size = 5,
+                      marker = list(radius = 7),
+                      tooltip = list(pointFormat = "Valor: {point.y}",
+                                     valueDecimals = 0)) %>%
+        # add Q1
+        hc_add_series(data = teste_dumbell$low,
+                      type = "scatter",
+                      color = "#008B45",
+                      name = ifelse(input$graph_type == "dumbell_renda", "Pobres Q1", "Negros"),
+                      marker = list(radius = 7, symbol = "circle"),
+                      tooltip = list(pointFormat = "Valor: {point.y}",
+                                     valueDecimals = 0)) %>%
+        # add Q5
+        hc_add_series(data = teste_dumbell$high,
+                      type = "scatter",
+                      color = "#36648B",
+                      name = ifelse(input$graph_type == "dumbell_renda", "Ricos Q5", "Brancos"),
+                      marker = list(radius = 7, symbol = "circle"),
+                      tooltip = list(pointFormat = "Valor: {point.y}",
+                                     valueDecimals = 0))
+      
+      
+    }
     
     
   })
   
+
+  # DOWNLOAD BUTTON -----------------------------------------------------------------------------
+  
+  # data
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      sprintf("acess_%s_%s_%s_%s.csv", input$graph_type, input$modo_todos_graph, input$atividade_cum_graph, input_tempo_graph())
+    },
+    content = function(file) {
+      write.csv(tempo_filtrado_graph(), file, row.names = FALSE, quote = FALSE)
+    }
+  )
+  
+  # plot
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      sprintf("acess_%s_%s_%s_%s.png", input$graph_type, input$modo_todos_graph, input$atividade_cum_graph, input_tempo_graph())
+    },
+    content = function(file) {
+      
+      new_save <- tempo_filtrado_graph() %>%
+        mutate(nome_muni = factor(nome_muni)) %>%
+        mutate(nome_muni = forcats::fct_reorder(nome_muni, palma_ratio))
+      
+      legend_plot <- switch(input$graph_type, 
+                            "palma_renda" = "Razão da acessibilidade dos 10% mais ricos pelos 40% mais pobres", 
+                            "palma_cor" = "Razão da acessibilidade da população branca pela população negra") 
+      
+      plot_save <- ggplot(data = new_save)+
+        geom_col(aes(y = palma_ratio, x = nome_muni), fill = "#1D5A79") +
+        geom_text(aes(y = palma_ratio, x = nome_muni, label = round(palma_ratio,1)), size = 3, position = position_stack(vjust = 0.88), color='gray99') +
+        geom_hline(yintercept = 1, color = "grey90", linetype = "dashed") +
+        scale_y_continuous(breaks = c(0, 1, 3, 6, 9))+
+        coord_flip()+
+        theme_ipsum(grid = "X", base_family = "Helvetica")+
+        labs(x = "", y = "Palma Ratio",
+             title = sprintf("Razão de %s por %s para atividade %s em até %s minutos", input$graph_type, input$modo_todos_graph, input$atividade_cum_graph, input_tempo_graph()),
+             subtitle = legend_plot,
+             caption = "Projeto Acesso a Oportunidades - IPEA"
+        )+
+        theme(plot.title = element_text(size=12),
+              plot.subtitle = element_text(size = 10),
+              plot.caption = element_text(size=7),
+              axis.text.y = element_text(size = 6),
+              axis.text.x = element_text(size = 6),
+              axis.title.x = element_text(size = 7),
+              plot.margin = unit(c(3,3,3,3), "mm"))
+      
+      
+      ggsave(filename = file, plot = plot_save, dpi = 300, width = 16.5, height = 10, units = "cm")
+    }
+  )
+  
+  
+    
   
   # 4) REACTIVE TO FILTER THE CITY -----------------------------------------------------------------
   a_city <- reactive({
@@ -396,7 +569,7 @@ function(input, output, session) {
   # Stop the loading page here !
   waiter_hide()
   
-  
+    
   # 10) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
   observeEvent({input$cidade},{
     

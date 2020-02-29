@@ -28,6 +28,53 @@ h1 {
   font: bold 20px 'Roboto Condensed', sans-serif;
 }
 
+#controls_graphs1 {
+  background-color: white;
+  border: transparent;
+  width: calc(100% - 600px) !important;
+  -webkit-box-shadow: none;
+}
+
+.btn-danger {
+  background-color: #1D5A79;
+  border-color: #1D5A79;
+}
+
+.btn-danger:hover {
+  background-color: #12394d;
+  border-color: #12394d;
+}
+
+.btn-danger.active, .btn-danger:active, .open>.dropdown-toggle.btn-danger {
+  background-color: #12394d;
+  border-color: #12394d;
+}
+
+#download_panel {
+  background-color: transparent;
+  border: transparent;
+  z-index: 99;
+  margin: 0;
+  -webkit-box-shadow: none;
+}
+
+#dropdown-menu-download_dropdown {
+ 
+ width: 200px !important;
+  
+}
+
+#controls_graphs {
+  
+/* Appearance */
+  background-color: #F8F9F9;
+  /*width: 350px;*/
+  padding: 0 20px 20px 20px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  cursor: move;
+}
+
 #controls {
 /* Appearance */
   background-color: white;
@@ -108,9 +155,16 @@ h1 {
 
 /* Modificar o tamanho do mapa! */
 #map {
-  height: calc(100vh - 80px) !important;
+  height: calc(100vh - 20px) !important;
 } 
 
+/* Modificar fonte do botao de download */
+#downloadData, #downloadPlot {
+  font-size: 15px;
+  border-color: transparent;
+  padding: 6px 0;
+  
+}
 
 .container-fluid {
   padding-left: 0;
@@ -120,12 +174,14 @@ h1 {
 
 /* Isso aqui que manda na navbar! */
 .navbar-static-top {
-  border-color: black;
-  box-shadow: 0 0 10px black;
+  /* border-color: black; */
+  /* box-shadow: 0 0 10px black; */
   /*Praticamente esconder quando o mouse nao estiver la */
   opacity: 0.7;
   /*zoom: 0.9;*/
-  transition: opacity 300ms 0.5s; 
+  transition: opacity 300ms 0.5s;
+  text-transform: uppercase;
+  letter-spacing: .08em;
   
 }
 
@@ -139,7 +195,7 @@ h1 {
   background-color: white;
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 0;
+  padding-bottom: 10px;
   margin-right: auto;
   margin-left: auto;
   margin-top: 0;
@@ -147,10 +203,46 @@ h1 {
   
 }
 
+.navbar {
+    background: #fff;
+    box-shadow: 0 0.125rem 0.25rem 0 rgba(0,0,0,0.11) !important;
+    font-size: 16.17px !important;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    padding: 0 1rem;
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.25;
+    color: #333 !important;
+    
+}
+
+
 .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
   color: black;
   padding-left: 30px;
 }
+
+/*
+.navbar-default .navbar-nav > .active{
+  color: #000; background: red;
+}
+*/
+
+.navbar-default .navbar-nav > .active > a, 
+.navbar-default .navbar-nav > .active > a:hover, 
+.navbar-default .navbar-nav > .active > a:focus {
+  font-weight: bold !important;
+  color: #2962ff !important;
+  background: transparent;
+}
+
+.navbar-default .navbar-nav>li>a {
+  color: #333;
+}
+
 
 /*Change pickerinput font size */
 .btn {
@@ -203,12 +295,29 @@ h1 {
   margin: 10px 0;
 }
 
+
 #openDetails {
   position: relative;
-    margin: 10px auto;
+    /* margin: 10px auto;
     right: -25%;
-    width: 50%;
+    width: 50%;*/
+    border: transparent;
 }
+
+
+/* Landing page! */
+#landing_page {
+  padding: 50px 100px 0 100px;
+}
+
+#landing_page > h1 {
+  font-size: 50px;
+}
+
+#landing_page > p {
+  font-size: 25px;
+}
+
 
 .carousel-indicators  {
   bottom: 0;
