@@ -294,7 +294,7 @@ make_title_plots <- reactive({
                                                "palma_cor" = i18n()$t("para saúde média"),
                                                "dumbell_renda" = i18n()$t("ao equipamento de saúde médio mais próximo"),
                                                "dumbell_cor" = i18n()$t("ao equipamento de saúde médio mais próximo")),
-                                 "SM" = switch(input$graph_type,
+                                 "SA" = switch(input$graph_type,
                                                "palma_renda" = i18n()$t("para saúde alta"),
                                                "palma_cor" = i18n()$t("para saúde alta"),
                                                "dumbell_renda" = i18n()$t("ao equipamento de saúde alta mais próximo"),
@@ -331,8 +331,8 @@ make_title_plots <- reactive({
     
     title_plot <- sprintf("%s %s %s %s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, i18n()$t("em"), input_tempo_graph(), i18n()$t("minutos"))
     legend_plot <- switch(input$graph_type, 
-                          "palma_renda" = "Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres", 
-                          "palma_cor" = "Razão da acessibilidade cumulativa da população branca pela população negra") 
+                          "palma_renda" = i18n()$t("Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres"), 
+                          "palma_cor" = i18n()$t("Razão da acessibilidade cumulativa da população branca pela população negra")) 
     
     print(title_plot)
     print(legend_plot)
@@ -372,8 +372,8 @@ make_title_plots <- reactive({
       
       title_plot <- sprintf("%s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade)
       legend_plot <- switch(input$graph_type, 
-                            "dumbell_renda" = "Média do tempo mínimo de viagem por renda", 
-                            "dumbell_cor" = "Média do tempo mínimo de viagem por cor") 
+                            "dumbell_renda" = i18n()$t("Média do tempo mínimo de viagem por renda"), 
+                            "dumbell_cor" = i18n()$t("Média do tempo mínimo de viagem por cor")) 
       
       
       # arrange by Q1
@@ -500,10 +500,10 @@ make_title_plots <- reactive({
       if (input$graph_type %in% c("palma_renda", "palma_cor")) {
         
         
-        title_plot <- sprintf("%s %s %s em até %s minutos", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, input_tempo_graph())
+        title_plot <- sprintf("%s %s %s %s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, i18n()$t("em"), input_tempo_graph(), i18n()$t("minutos"))
         legend_plot <- switch(input$graph_type, 
-                              "palma_renda" = "Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres", 
-                              "palma_cor" = "Razão da acessibilidade cumulativa da população branca pela população negra") 
+                              "palma_renda" = i18n()$t("Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres"), 
+                              "palma_cor" = i18n()$t("Razão da acessibilidade cumulativa da população branca pela população negra")) 
       
       new_save <- tempo_filtrado_graph() %>%
         mutate(nome_muni = factor(nome_muni)) %>%
@@ -519,7 +519,7 @@ make_title_plots <- reactive({
         labs(x = "", y = "Palma Ratio",
              title = title_plot,
              subtitle = legend_plot,
-             caption = "Projeto Acesso a Oportunidades - IPEA"
+             caption = i18n()$t("Projeto Acesso a Oportunidades - IPEA")
         )+
         theme(plot.title = element_text(size=10, hjust=-0.1),
               plot.subtitle = element_text(size = 8, hjust=-0.1),
@@ -537,8 +537,8 @@ make_title_plots <- reactive({
         
         title_plot <- sprintf("%s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade)
         legend_plot <- switch(input$graph_type, 
-                              "dumbell_renda" = "Média do tempo mínimo de viagem por renda", 
-                              "dumbell_cor" = "Média do tempo mínimo de viagem por cor") 
+                              "dumbell_renda" = i18n()$t("Média do tempo mínimo de viagem por renda"), 
+                              "dumbell_cor" = i18n()$t("Média do tempo mínimo de viagem por cor")) 
         
       new_save <- atividade_filtrada_graph() %>%
         mutate(nome_muni = factor(nome_muni))
@@ -554,25 +554,6 @@ make_title_plots <- reactive({
           scale_color_manual(values=c('black', 'steelblue4', 'springgreen4'), 
                              name="", 
                              labels=c('Média', 'Pobres low', 'Ricos high')) +
-        # scale_x_continuous(name="", limits = c(0, 24),
-        #                    breaks = c(0, 5, 10, 15, 20),
-        #                    labels = c(0, 5,  10, 15,"20 minutos")) +
-        # geom_text(data = filter(df4, nome_muni == "Goiania"),
-        #           aes(x = low, y = nome_muni),
-        #           label = "Pobres low", fontface = "bold",
-        #           color = "springgreen4",
-        #           hjust = -0.5) +
-        # geom_text(data = filter(df4, nome_muni == "Goiania"),
-        #           aes(x = high, y = nome_muni),
-        #           label = "Ricos high", fontface = "bold",
-        #           color = "steelblue4",
-        #           hjust = 1.5) +
-        # geom_text(data = filter(df4, nome_muni == "Goiania"),
-        #           aes(x = Total, y = nome_muni),
-        #           label = "Total", fontface = "bold",
-        #           color = "black",
-        #           vjust = -1) +
-        # expand_limits(y = 21)+
         theme_ipsum(grid= "X", base_family = "Helvetica") +
         labs(x = "", y = "", title = title_plot, subtitle = legend_plot)+
         theme(plot.title = element_text(size=10, hjust=-0.2),

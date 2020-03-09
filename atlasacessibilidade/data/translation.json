@@ -54,10 +54,10 @@
     {"pt": "à escola infantil mais próxima", "en": "to closest early childhood school"},
     {"pt": "à escola fundamental mais próxima", "en": "to closest primary education school"},
     {"pt": "à escola média mais próxima", "en": "to closest high school"},
-    {"pt": "ao equipamento de saúde mais próximo", "en": "to closest high school"},
+    {"pt": "ao equipamento de saúde mais próximo", "en": "to closest healthcare facility"},
     {"pt": "ao equipamento de saúde baixo mais próximo", "en": "to closest low-complexity healthcare facility"},
     {"pt": "ao equipamento de saúde médio mais próximo", "en": "to closest medium-complexity healthcare facility"},
-    {"pt": "ao equipamento de saúde alto mais próximo", "en": "to closest high-complexity healthcare facility"},
+    {"pt": "ao equipamento de saúde alta mais próximo", "en": "to closest high-complexity healthcare facility"},
     {"pt": "para educação infantil", "en": "to early childhood school"},
     {"pt": "para educação fundamental", "en": "to primary education school"},
     {"pt": "para educação média", "en": "to high school"},
@@ -67,6 +67,19 @@
     {"pt": "para trabalho", "en": "to jobs"},
     {"pt": "para educação", "en": "to schools"},
     {"pt": "para saúde", "en": "to healthcare facilities"},
-    {"pt": "em", "en": "in"}
+    {"pt": "em", "en": "in"},
+    {"pt": "Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres", 
+     "en": "Ratio between the mean cumulative accessibility of the 10% richest and the mean accessibility of the 40% poorest people"},
+    {"pt": "Razão da acessibilidade cumulativa da população branca pela população negra", 
+     "en": "Ratio between the mean cumulative accessibility of the white and black population"},
+    {"pt": "Média do tempo mínimo de viagem por renda", 
+     "en": "Mean of the minimun travel time by income"},
+    {"pt": "Média do tempo mínimo de viagem por cor", 
+     "en": "Mean of the minimun travel time by color"},
+    {"pt": "Projeto Acesso a Oportunidades - IPEA", 
+     "en": "Project Access to Oportunities - IPEA"},
+    {"pt": "Negros", "en": "Blacks"},
+    {"pt": "Brancos", "en": "Whites"}
+     
     ]
 }
