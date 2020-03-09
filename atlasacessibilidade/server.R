@@ -158,6 +158,14 @@ function(input, output, session) {
     
   })  
 
+  # UI FOR THE DOWNLOAD BUTTONS - dictionary -----------------------------------------------------------------
+
+  output$ui_download_dic <- renderUI({
+    
+    downloadButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"))
+    
+  })  
+
   # SERVER-GRAPHS -------------------------------------------------------------------------------
   
   
@@ -408,23 +416,23 @@ make_title_plots <- reactive({
                       name = "Total",
                       size = 5,
                       marker = list(radius = 7),
-                      tooltip = list(pointFormat = "Valor: {point.y}",
+                      tooltip = list(pointFormat = sprintf("%s: {point.y}", i18n()$t("Valor")),
                                      valueDecimals = 0)) %>%
         # add Q1
         hc_add_series(data = teste_dumbell$low,
                       type = "scatter",
                       color = "#008B45",
-                      name = ifelse(input$graph_type == "dumbell_renda", "Pobres Q1", "Negros"),
+                      name = ifelse(input$graph_type == "dumbell_renda", i18n()$t("Pobres Q1"), i18n()$t("Negros")),
                       marker = list(radius = 7, symbol = "circle"),
-                      tooltip = list(pointFormat = "Valor: {point.y}",
+                      tooltip = list(pointFormat = sprintf("%s: {point.y}", i18n()$t("Valor")),
                                      valueDecimals = 0)) %>%
         # add Q5
         hc_add_series(data = teste_dumbell$high,
                       type = "scatter",
                       color = "#36648B",
-                      name = ifelse(input$graph_type == "dumbell_renda", "Ricos Q5", "Brancos"),
+                      name = ifelse(input$graph_type == "dumbell_renda", i18n()$t("Ricos Q5"), i18n()$t("Brancos")),
                       marker = list(radius = 7, symbol = "circle"),
-                      tooltip = list(pointFormat = "Valor: {point.y}",
+                      tooltip = list(pointFormat = sprintf("%s: {point.y}", i18n()$t("Valor")),
                                      valueDecimals = 0))
       
       
@@ -433,6 +441,83 @@ make_title_plots <- reactive({
     
   })
   
+  # prepare data to be downloaded
+  prepare_data_download <- reactive({
+    
+    # select data 
+      
+    if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+      
+      
+      data_out <- tempo_filtrado_graph()
+      
+    } 
+    else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+      
+      data_out <- atividade_filtrada_graph()
+      
+    }
+    
+    # define attributes name based on language
+    attributes_lookup <- data.frame(atividade = c("TT", "ST", "SB", "SM", "SA", "ET", "EI", "EF", "EM"), 
+                                    nome = c(i18n()$t("trabalho_total"), 
+                                             i18n()$t("saude_total"),
+                                             i18n()$t("saude_baixa"),
+                                             i18n()$t("saude_media"),
+                                             i18n()$t("saude_alta"),
+                                             i18n()$t("educacao_total"),
+                                             i18n()$t("educacao_infantil"),
+                                             i18n()$t("educacao_fundamental"),
+                                             i18n()$t("educacao_media")))
+    
+    output_csv_palma <- data_out %>%
+      mutate(modo = case_when(
+        modo == 'bicicleta' ~ i18n()$t('bicicleta'),
+        modo == 'caminhada' ~ i18n()$t('caminhada'),
+        modo == 'tp' ~ i18n()$t('tp'))) %>%
+      left_join(attributes_lookup, by = "atividade")
+    
+    
+    # define column names based on language
+    if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+      
+      output_csv_palma <- output_csv_palma %>% select(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
+                                                      tempo_viagem, pobre, rico, palma_ratio)
+      
+    colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
+                            i18n()$t("sigla_muni"),
+                            i18n()$t("modo"),
+                            i18n()$t("indicador"),
+                            i18n()$t("atividade"),
+                            i18n()$t("tempo_viagem"),
+                            "low",
+                            "high",
+                            "ratio") 
+    
+    }
+    
+    else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+      
+      # define column names based on language
+      
+      output_csv_palma <- output_csv_palma %>% select(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
+                                                      total, low, high)
+      
+      colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
+                              i18n()$t("sigla_muni"),
+                              i18n()$t("modo"),
+                              i18n()$t("indicador"),
+                              i18n()$t("atividade"),
+                              "total",
+                              "low",
+                              "high"
+      )
+      
+    }
+    
+    return(output_csv_palma)
+    
+  })
 
   # DOWNLOAD BUTTON -----------------------------------------------------------------------------
   
@@ -440,39 +525,27 @@ make_title_plots <- reactive({
   output$downloadData <- downloadHandler(
     
 
-    # 
-
     
     # generate button with data
     filename = function() {
         
       if (input$graph_type %in% c("palma_renda", "palma_cor")) {
         
-        sprintf("acess_%s_%s_%s_%s.csv", input$graph_type, input$modo_todos_graph, input_atividade_graph(), input_tempo_graph())
+        sprintf("acess_%s_%s_%s_%s.csv", i18n()$t(input$graph_type), i18n()$t(input$modo_todos_graph), input_atividade_graph(), input_tempo_graph())
         
       } 
       else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
         
-        file_name <- sprintf("acess_%s_%s_%s.csv", input$graph_type, input$modo_todos_graph, input_atividade_graph())
+        file_name <- sprintf("acess_%s_%s_%s.csv", i18n()$t(input$graph_type), i18n()$t(input$modo_todos_graph), input_atividade_graph())
         
       }
       
     },
     content = function(file) {
       
-      if (input$graph_type %in% c("palma_renda", "palma_cor")) {
-        
-        data_out <- tempo_filtrado_graph()
-        
-      } 
-      else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
-        
-        data_out <- atividade_filtrada_graph()
-        
+      write.csv(prepare_data_download(), file, row.names = FALSE, quote = FALSE)
+    
       }
-      
-      write.csv(data_out, file, row.names = FALSE, quote = FALSE)
-    }
   
     
   )
@@ -484,12 +557,12 @@ make_title_plots <- reactive({
       
       if (input$graph_type %in% c("palma_renda", "palma_cor")) {
         
-        sprintf("acess_%s_%s_%s_%s.png", input$graph_type, input$modo_todos_graph, input_atividade_graph(), input_tempo_graph())
+        sprintf("acess_%s_%s_%s_%s.png", i18n()$t(input$graph_type), i18n()$t(input$modo_todos_graph), input_atividade_graph(), input_tempo_graph())
         
       } 
       else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
         
-        sprintf("acess_%s_%s_%s.png", input$graph_type, input$modo_todos_graph, input_atividade_graph())
+        sprintf("acess_%s_%s_%s.png", i18n()$t(input$graph_type), i18n()$t(input$modo_todos_graph), input_atividade_graph())
         
       }
       
