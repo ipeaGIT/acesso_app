@@ -66,6 +66,7 @@
     {"pt": "para saúde alta", "en": "to closest high-complexity healthcare facility"},
     {"pt": "para trabalho", "en": "to jobs"},
     {"pt": "para educação", "en": "to schools"},
-    {"pt": "para saúde", "en": "to healthcare facilities"}
+    {"pt": "para saúde", "en": "to healthcare facilities"},
+    {"pt": "em", "en": "in"}
     ]
 }

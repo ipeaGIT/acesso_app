@@ -329,7 +329,7 @@ make_title_plots <- reactive({
     new <- arrange(new, desc(palma_ratio))
     
     
-    title_plot <- sprintf("%s %s %s em até %s minutos", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, input_tempo_graph())
+    title_plot <- sprintf("%s %s %s %s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, i18n()$t("em"), input_tempo_graph(), i18n()$t("minutos"))
     legend_plot <- switch(input$graph_type, 
                           "palma_renda" = "Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres", 
                           "palma_cor" = "Razão da acessibilidade cumulativa da população branca pela população negra") 
