@@ -16,9 +16,6 @@ output$graphs <- renderUI({
   list_types_graphs_palma <- list('Razão de Desigualdade' = structure(c("palma_renda", "palma_cor"), 
                                                                .Names = c(i18n()$t("Desigualdade por renda (Razão de Palma)"),
                                                                           i18n()$t("Desigualdade por cor"))))
-  list_types_graphs_box <- list('Distribuição por Renda' = structure(c("boxplot_decil", "boxplot_quintil"), 
-                                                                     .Names = c(i18n()$t("Distribuição por decil"),
-                                                                                i18n()$t("Distribuição por quintil"))))
   list_types_graphs_dumbell <- list('Desigualdade à atividade mais próxima' = structure(c("dumbell_renda", "dumbell_cor"), 
                                                                                         .Names = c(i18n()$t("Desigualdade por renda"),
                                                                                                    i18n()$t("Desigualdade por cor"))))
@@ -27,7 +24,6 @@ output$graphs <- renderUI({
   names(list_saude_graph) <-c(i18n()$t("Saúde"))
   names(list_edu_graph) <-c(i18n()$t("Educação"))
   names(list_types_graphs_palma) <-c(i18n()$t("Razão de Desigualdade"))
-  names(list_types_graphs_box) <-c(i18n()$t("Distribuição por Renda"))
   names(list_types_graphs_dumbell) <- c(i18n()$t("Desigualdade à atividade mais próxima"))
   
   vector_indicadores_graph <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
@@ -39,7 +35,7 @@ output$graphs <- renderUI({
                 # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                 label = HTML(sprintf("<h1>%s <button id=\"q15_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
                                      i18n()$t("Escolha o gráfico:"))),
-                choices = c(list_types_graphs_palma, list_types_graphs_box, list_types_graphs_dumbell),
+                choices = c(list_types_graphs_palma, list_types_graphs_dumbell),
                 selected = "palma_renda",
                 width = '100%'),
     div(
