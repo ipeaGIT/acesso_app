@@ -26,7 +26,7 @@ output$graphs <- renderUI({
   names(list_types_graphs_palma) <-c(i18n()$t("Razão de Desigualdade"))
   names(list_types_graphs_dumbell) <- c(i18n()$t("Desigualdade à atividade mais próxima"))
   
-  vector_indicadores_graph <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
+  # vector_indicadores_graph <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
   # vector_types_graphs <- structure(c("palma", "boxplot"), .Names = c(i18n()$t("Razão de Palma"), "Boxplot"))
   
   # Start proper UI here 
@@ -44,21 +44,6 @@ output$graphs <- renderUI({
                 title = sprintf("<strong>%s</strong>", i18n()$t("Gráficos")),
                 content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
                 placement = "left",
-                trigger = "hover",
-                options = list(container = "body"))
-    ),
-    awesomeRadio(inputId = "indicador_graph",
-                 # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                 label = HTML(sprintf("<h1>%s <button id=\"q1_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                      i18n()$t("Escolha o indicador de acessibilidade:"))),
-                 choices = vector_indicadores_graph,
-                 selected = "CMA"),
-    div(
-      # edit2
-      bsPopover(id = "q1_graph", 
-                title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
-                content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
-                placement = "bottom",
                 trigger = "hover",
                 options = list(container = "body"))
     ),
