@@ -1,4 +1,4 @@
-
+  
 # 1) LOAD DATA ----------------------------------------------------------------------------------------
 
 acess <- read_rds("data/acess_wide.rds")
@@ -195,7 +195,7 @@ function(input, output, session) {
   
   # Reative to activity
   # Reative to time threshold
-  input_atividade_graph <- reactive({
+    input_atividade_graph <- reactive({
     
     if(input$graph_type %in% c("palma_renda", "palma_cor")) {input$atividade_graph_cum} else {input$atividade_graph_tmi}
     
@@ -239,45 +239,86 @@ function(input, output, session) {
     
   })
   
+make_title_plots <- reactive({
+  
+  # make title plot
+  title_plot_graph <- switch(input$graph_type, 
+                             "palma_renda" = i18n()$t("Desigualdade por renda"), 
+                             "palma_cor" = i18n()$t("Desigualdade por cor"),
+                             "dumbell_renda" = i18n()$t("Desigualdade por renda"),
+                             "dumbell_cor" = i18n()$t("Desigualdade por cor")) 
+  
+  title_plot_modo <- switch(input$modo_todos_graph, 
+                            "tp" = i18n()$t("por transporte público"), 
+                            "caminhada" = i18n()$t("por caminhada"),
+                            "bicicleta" = i18n()$t("por bicicleta")) 
+  
+  title_plot_atividade <- switch(input_atividade_graph(), 
+                                 "TT" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para trabalho"),
+                                               "palma_cor" = i18n()$t("para trabalho"),
+                                               "dumbell_renda" = "vazio",
+                                               "dumbell_cor" = "vazio"),
+                                 "ET" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para educação"),
+                                               "palma_cor" = i18n()$t("para educação"),
+                                               "dumbell_renda" = i18n()$t("à escola mais próxima"),
+                                               "dumbell_cor" = i18n()$t("à escola mais próxima")),
+                                 "EI" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para educação infantil"),
+                                               "palma_cor" = i18n()$t("para educação infantil"),
+                                               "dumbell_renda" = i18n()$t("à escola infantil mais próxima"),
+                                               "dumbell_cor" = i18n()$t("à escola infantil mais próxima")),
+                                 "EF" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para educação fundamental"),
+                                               "palma_cor" = i18n()$t("para educação fundamental"),
+                                               "dumbell_renda" = i18n()$t("à escola fundamental mais próxima"),
+                                               "dumbell_cor" = i18n()$t("à escola fundamental mais próxima")),
+                                 "EM" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para educação média"),
+                                               "palma_cor" = i18n()$t("para educação média"),
+                                               "dumbell_renda" = i18n()$t("à escola média mais próxima"),
+                                               "dumbell_cor" = i18n()$t("à escola média mais próxima")),
+                                 "ST" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para saúde"),
+                                               "palma_cor" = i18n()$t("para saúde"),
+                                               "dumbell_renda" = i18n()$t("ao equipamento de saúde mais próximo"),
+                                               "dumbell_cor" = i18n()$t("ao equipamento de saúde mais próximo")),
+                                 "SB" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para saúde baixa"),
+                                               "palma_cor" = i18n()$t("para saúde baixa"),
+                                               "dumbell_renda" = i18n()$t("ao equipamento de saúde baixo mais próximo"),
+                                               "dumbell_cor" = i18n()$t("ao equipamento de saúde baixo mais próximo")),
+                                 "SM" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para saúde média"),
+                                               "palma_cor" = i18n()$t("para saúde média"),
+                                               "dumbell_renda" = i18n()$t("ao equipamento de saúde médio mais próximo"),
+                                               "dumbell_cor" = i18n()$t("ao equipamento de saúde médio mais próximo")),
+                                 "SM" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para saúde alta"),
+                                               "palma_cor" = i18n()$t("para saúde alta"),
+                                               "dumbell_renda" = i18n()$t("ao equipamento de saúde alta mais próximo"),
+                                               "dumbell_cor" = i18n()$t("ao equipamento de saúde alta mais próximo")))
+  
+  title_plot_df <- data.frame(graph = title_plot_graph,
+                              modo = title_plot_modo,
+                              atividade = title_plot_atividade)
+  
+  print(title_plot_df$graph)
+  print(title_plot_df$modo)
+  print(title_plot_df$atividade)
+  
+  return(title_plot_df)
+  
+  
+})
   
   
   # Render graphs
   output$output_graph <- renderHighchart({
     
-    # make title plot
-    title_plot_graph <- switch(input$graph_type, 
-                               "palma_renda" = i18n()$t("Desigualdade por renda"), 
-                               "palma_cor" = i18n()$t("Desigualdade por cor"),
-                               "dumbell_renda" = i18n()$t("Desigualdade por renda"),
-                               "dumbell_cor" = i18n()$t("Desigualdade por cor")) 
     
-    title_plot_modo <- switch(input$modo_todos_graph, 
-                              "tp" = i18n()$t("por transporte público"), 
-                              "caminhada" = i18n()$t("por caminhada"),
-                              "bicicleta" = i18n()$t("por bicicleta")) 
-    
-    title_plot_atividade <- switch(input_atividade_graph(), 
-                                   "TT" = i18n()$t("para trabalho"), 
-                                   "ET" = i18n()$t("para educação"),
-                                   "EI" = i18n()$t("para educação infantil"),
-                                   "EF" = i18n()$t("para educação fundamental"),
-                                   "EM" = i18n()$t("para educação média"),
-                                   "ST" = i18n()$t("para saúde"),
-                                   "SB" = i18n()$t("para saúde baixa"),
-                                   "SM" = i18n()$t("para saúde média"),
-                                   "SA" = i18n()$t("para saúde alta")) 
-    
-    title_plot_atividade_dumbbel <- switch(input_atividade_graph(), 
-                                           "ET" = i18n()$t("à escola mais próxima"),
-                                           "EI" = i18n()$t("à escola infantil mais próxima"),
-                                           "EF" = i18n()$t("à escola fundamental mais próxima"),
-                                           "EM" = i18n()$t("à escola média mais próxima"),
-                                           "ST" = i18n()$t("ao equipamento de saúde mais próximo"),
-                                           "SB" = i18n()$t("ao equipamento de saúde baixo mais próximo"),
-                                           "SM" = i18n()$t("ao equipamento de saúde médio mais próximo"),
-                                           "SA" = i18n()$t("ao equipamento de saúde alto mais próximo")) 
-    
-    
+    # GRAPH FOR PALMA RATIO 
     if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
     new <- tempo_filtrado_graph() %>%
@@ -288,10 +329,13 @@ function(input, output, session) {
     new <- arrange(new, desc(palma_ratio))
     
     
-    title_plot <- sprintf("%s %s %s em até %s minutos", title_plot_graph, title_plot_modo, title_plot_atividade, input_tempo_graph())
+    title_plot <- sprintf("%s %s %s em até %s minutos", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, input_tempo_graph())
     legend_plot <- switch(input$graph_type, 
-                          "palma_renda" = "Razão da acessibilidade dos 10% mais ricos pelos 40% mais pobres", 
-                          "palma_cor" = "Razão da acessibilidade da população branca pela população negra") 
+                          "palma_renda" = "Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres", 
+                          "palma_cor" = "Razão da acessibilidade cumulativa da população branca pela população negra") 
+    
+    print(title_plot)
+    print(legend_plot)
     
       
       hchart(new, "bar", hcaes(x = nome_muni, y = palma_ratio),
@@ -326,7 +370,7 @@ function(input, output, session) {
     } else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
       
       
-      title_plot <- sprintf("%s %s %s", title_plot_graph, title_plot_modo, title_plot_atividade_dumbbel)
+      title_plot <- sprintf("%s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade)
       legend_plot <- switch(input$graph_type, 
                             "dumbell_renda" = "Média do tempo mínimo de viagem por renda", 
                             "dumbell_cor" = "Média do tempo mínimo de viagem por cor") 
@@ -394,28 +438,76 @@ function(input, output, session) {
   
   # data
   output$downloadData <- downloadHandler(
+    
+
+    # 
+
+    
+    # generate button with data
     filename = function() {
-      sprintf("acess_%s_%s_%s_%s.csv", input$graph_type, input$modo_todos_graph, input$atividade_cum_graph, input_tempo_graph())
+        
+      if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+        
+        sprintf("acess_%s_%s_%s_%s.csv", input$graph_type, input$modo_todos_graph, input_atividade_graph(), input_tempo_graph())
+        
+      } 
+      else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+        
+        file_name <- sprintf("acess_%s_%s_%s.csv", input$graph_type, input$modo_todos_graph, input_atividade_graph())
+        
+      }
+      
     },
     content = function(file) {
-      write.csv(tempo_filtrado_graph(), file, row.names = FALSE, quote = FALSE)
+      
+      if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+        
+        data_out <- tempo_filtrado_graph()
+        
+      } 
+      else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+        
+        data_out <- atividade_filtrada_graph()
+        
+      }
+      
+      write.csv(data_out, file, row.names = FALSE, quote = FALSE)
     }
+  
+    
   )
   
   # plot
   output$downloadPlot <- downloadHandler(
     filename = function() {
-      sprintf("acess_%s_%s_%s_%s.png", input$graph_type, input$modo_todos_graph, input$atividade_cum_graph, input_tempo_graph())
+      
+      
+      if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+        
+        sprintf("acess_%s_%s_%s_%s.png", input$graph_type, input$modo_todos_graph, input_atividade_graph(), input_tempo_graph())
+        
+      } 
+      else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+        
+        sprintf("acess_%s_%s_%s.png", input$graph_type, input$modo_todos_graph, input_atividade_graph())
+        
+      }
+      
     },
     content = function(file) {
+      
+      
+      if (input$graph_type %in% c("palma_renda", "palma_cor")) {
+        
+        
+        title_plot <- sprintf("%s %s %s em até %s minutos", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, input_tempo_graph())
+        legend_plot <- switch(input$graph_type, 
+                              "palma_renda" = "Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres", 
+                              "palma_cor" = "Razão da acessibilidade cumulativa da população branca pela população negra") 
       
       new_save <- tempo_filtrado_graph() %>%
         mutate(nome_muni = factor(nome_muni)) %>%
         mutate(nome_muni = forcats::fct_reorder(nome_muni, palma_ratio))
-      
-      legend_plot <- switch(input$graph_type, 
-                            "palma_renda" = "Razão da acessibilidade dos 10% mais ricos pelos 40% mais pobres", 
-                            "palma_cor" = "Razão da acessibilidade da população branca pela população negra") 
       
       plot_save <- ggplot(data = new_save)+
         geom_col(aes(y = palma_ratio, x = nome_muni), fill = "#1D5A79") +
@@ -425,20 +517,77 @@ function(input, output, session) {
         coord_flip()+
         theme_ipsum(grid = "X", base_family = "Helvetica")+
         labs(x = "", y = "Palma Ratio",
-             title = sprintf("Razão de %s por %s para atividade %s em até %s minutos", input$graph_type, input$modo_todos_graph, input$atividade_cum_graph, input_tempo_graph()),
+             title = title_plot,
              subtitle = legend_plot,
              caption = "Projeto Acesso a Oportunidades - IPEA"
         )+
-        theme(plot.title = element_text(size=12),
-              plot.subtitle = element_text(size = 10),
+        theme(plot.title = element_text(size=10, hjust=-0.1),
+              plot.subtitle = element_text(size = 8, hjust=-0.1),
               plot.caption = element_text(size=7),
               axis.text.y = element_text(size = 6),
               axis.text.x = element_text(size = 6),
               axis.title.x = element_text(size = 7),
               plot.margin = unit(c(3,3,3,3), "mm"))
+        
+      } 
       
+      
+      else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
+        
+        
+        title_plot <- sprintf("%s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade)
+        legend_plot <- switch(input$graph_type, 
+                              "dumbell_renda" = "Média do tempo mínimo de viagem por renda", 
+                              "dumbell_cor" = "Média do tempo mínimo de viagem por cor") 
+        
+      new_save <- atividade_filtrada_graph() %>%
+        mutate(nome_muni = factor(nome_muni))
+      
+      # para plotar as legendas
+      new_save_legend <- new_save %>% tidyr::gather(tipo, valor, total:high)
+      
+          plot_save <- ggplot(data = new_save) + 
+            geom_point(data = new_save_legend, aes(x = valor, y = nome_muni, color = tipo), size = 2)+
+            geom_dumbbell(aes(x = high, xend = low, y = forcats::fct_reorder(nome_muni, low)), 
+                          size=2, color="gray80", alpha=.8, colour_x = "steelblue4", colour_xend = "springgreen4") +
+          # geom_point(aes(x = total, y = nome_muni), color = "black", size = 2)+
+          scale_color_manual(values=c('black', 'steelblue4', 'springgreen4'), 
+                             name="", 
+                             labels=c('Média', 'Pobres low', 'Ricos high')) +
+        # scale_x_continuous(name="", limits = c(0, 24),
+        #                    breaks = c(0, 5, 10, 15, 20),
+        #                    labels = c(0, 5,  10, 15,"20 minutos")) +
+        # geom_text(data = filter(df4, nome_muni == "Goiania"),
+        #           aes(x = low, y = nome_muni),
+        #           label = "Pobres low", fontface = "bold",
+        #           color = "springgreen4",
+        #           hjust = -0.5) +
+        # geom_text(data = filter(df4, nome_muni == "Goiania"),
+        #           aes(x = high, y = nome_muni),
+        #           label = "Ricos high", fontface = "bold",
+        #           color = "steelblue4",
+        #           hjust = 1.5) +
+        # geom_text(data = filter(df4, nome_muni == "Goiania"),
+        #           aes(x = Total, y = nome_muni),
+        #           label = "Total", fontface = "bold",
+        #           color = "black",
+        #           vjust = -1) +
+        # expand_limits(y = 21)+
+        theme_ipsum(grid= "X", base_family = "Helvetica") +
+        labs(x = "", y = "", title = title_plot, subtitle = legend_plot)+
+        theme(plot.title = element_text(size=10, hjust=-0.2),
+              plot.subtitle = element_text(size = 8, hjust=-0.1),
+              plot.caption = element_text(size=7),
+              axis.text.y = element_text(size = 6),
+              axis.text.x = element_text(size = 6),
+              axis.title.x = element_text(size = 7),
+              plot.margin = unit(c(3,3,3,3), "mm"),
+              legend.position = "bottom")
+      
+    }
       
       ggsave(filename = file, plot = plot_save, dpi = 300, width = 16.5, height = 10, units = "cm")
+      
     }
   )
   

@@ -13,7 +13,9 @@ library(shiny.i18n)
 library(ggplot2)
 library(forcats)
 library(highcharter)
-library(hrbrthemes)
+library(hrbrthemes) # remotes::install_github("hrbrmstr/hrbrthemes")
+library(ggalt) # install.packages("ggalt", dependecies = TRUE)
+library(tidyr)
 
 translator <- Translator$new(translation_json_path = "data/translation.json")
 
