@@ -3,5 +3,6 @@
 .Rhistory
 .RData
 .Ruserdata
+*.rds
 atlasacessibilidade/testes
 atlasacessibilidade/.Rprofile
