@@ -42,7 +42,7 @@ output$graphs <- renderUI({
       # edit2
       bsPopover(id = "q15_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Gráficos")),
-                content = HTML(i18n()$t('<ul><li><strong>Razão de Desiguldade</strong> calcula a desigualdade pelo indicador cumulativo para renda - razão entre a acessibilidade média dos 10% mais ricos pela dos 40% mais pobres - e cor - razão entre a acessibilidade média ponderada pela população branca pela população negra.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara a acessibilidade para renda - acessibilidade média da população em geral x acessibilidade pobres x acessibiidade ricos, e para cor - média x brancos x negros.</li></ul>')),
+                content = HTML(i18n()$t('<ul><li><strong>Razão de Desigualdade</strong> compara o número de oportunidades acessíveis (indicador cumulativo) entre grupos de <strong>cor</strong> ou <strong>renda</strong>. O gráfico mostra a razão entre o número médio de oportunidades acessíveis de pessoas brancas / negras, ou da média de oportunidades acessíveis pelos 10% mais ricos / 40% mais pobres.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara o tempo de viagem até a oportunidade mais próxima para diferentes grupos de cor (brancos e negros) e renda (20% mais ricos e 20% mais pobres)</li></ul>')),
                 placement = "left",
                 trigger = "hover",
                 options = list(container = "body"))

@@ -358,7 +358,9 @@ make_title_plots <- reactive({
                    # format = "{value}%",
                    style = list(fontSize = 15))
         ) %>%
-        hc_yAxis(title = list(text = "Palma Ratio")) %>%
+        hc_yAxis(title = list(text = ifelse(input$graph_type == "palma_renda", 
+                                            i18n()$t("Razão de Palma"), 
+                                            i18n()$t("Razão de Desigualdade por Cor")))) %>%
         # change bar colors
         hc_colors(colors = "#1D5A79") %>%
         # change font
@@ -390,7 +392,7 @@ make_title_plots <- reactive({
       
       highchart() %>%
         hc_xAxis(categories = teste_dumbell$nome_muni, labels = list(style = list(fontSize = 15))) %>%
-        hc_yAxis(min = 0, labels = list(style = list(fontSize = 15))) %>%
+        hc_yAxis(min = 0, labels = list(style = list(fontSize = 15)), title = list(text = i18n()$t("Minutos"))) %>%
         hc_chart(inverted = TRUE) %>%
         hc_title(text = title_plot,
                  align = "left", x = 25) %>% 
@@ -589,17 +591,18 @@ make_title_plots <- reactive({
         scale_y_continuous(breaks = c(0, 1, 3, 6, 9))+
         coord_flip()+
         theme_ipsum(grid = "X", base_family = "Helvetica")+
-        labs(x = "", y = "Palma Ratio",
+        labs(x = "", y = ifelse(input$graph_type == "palma_renda", i18n()$t("Razão de Palma"), i18n()$t("Razão de Desigualdade por Cor")),
              title = title_plot,
              subtitle = legend_plot,
              caption = i18n()$t("Projeto Acesso a Oportunidades - IPEA")
         )+
-        theme(plot.title = element_text(size=10, hjust=-0.1),
-              plot.subtitle = element_text(size = 8, hjust=-0.1),
+        theme(plot.title = element_text(size=9, hjust=0),
+              plot.subtitle = element_text(size = 7, hjust=0),
               plot.caption = element_text(size=7),
               axis.text.y = element_text(size = 6),
               axis.text.x = element_text(size = 6),
-              axis.title.x = element_text(size = 7),
+              axis.title.x = element_text(size = 6),
+              legend.text = element_text(size = 7),
               plot.margin = unit(c(3,3,3,3), "mm"))
         
       } 
@@ -620,22 +623,25 @@ make_title_plots <- reactive({
       new_save_legend <- new_save %>% tidyr::gather(tipo, valor, total:high)
       
           plot_save <- ggplot(data = new_save) + 
-            geom_point(data = new_save_legend, aes(x = valor, y = nome_muni, color = tipo), size = 2)+
             geom_dumbbell(aes(x = high, xend = low, y = forcats::fct_reorder(nome_muni, low)), 
                           size=2, color="gray80", alpha=.8, colour_x = "steelblue4", colour_xend = "springgreen4") +
+            geom_point(data = new_save_legend, aes(x = valor, y = nome_muni, color = tipo), size = 2)+
           # geom_point(aes(x = total, y = nome_muni), color = "black", size = 2)+
           scale_color_manual(values=c('black', 'steelblue4', 'springgreen4'), 
                              name="", 
-                             labels=c('Média', 'Pobres low', 'Ricos high')) +
+                             labels=c('Total', 
+                                      ifelse(input$graph_type == "dumbell_renda", i18n()$t("Pobres Q1"), i18n()$t("Negros")), 
+                                      ifelse(input$graph_type == "dumbell_renda", i18n()$t("Ricos Q5"), i18n()$t("Brancos")))) +
         theme_ipsum(grid= "X", base_family = "Helvetica") +
-        labs(x = "", y = "", title = title_plot, subtitle = legend_plot)+
-        theme(plot.title = element_text(size=10, hjust=-0.2),
-              plot.subtitle = element_text(size = 8, hjust=-0.1),
+        labs(x = i18n()$t("Minutos"), y = "", title = title_plot, subtitle = legend_plot)+
+        theme(plot.title = element_text(size=9, hjust=0),
+              plot.subtitle = element_text(size = 7, hjust=0),
               plot.caption = element_text(size=7),
               axis.text.y = element_text(size = 6),
               axis.text.x = element_text(size = 6),
               axis.title.x = element_text(size = 7),
               plot.margin = unit(c(3,3,3,3), "mm"),
+              legend.text = element_text(size = 7),
               legend.position = "bottom")
       
     }
