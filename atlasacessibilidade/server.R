@@ -502,8 +502,7 @@ make_title_plots <- reactive({
       
       # define column names based on language
       
-      output_csv_palma <- output_csv_palma %>% select(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
-                                                      total, low, high)
+      output_csv_palma <- output_csv_palma %>% select(nome_muni, sigla_muni, modo, indicador, atividade = nome, total, low, high)
       
       colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
                               i18n()$t("sigla_muni"),
