@@ -42,7 +42,7 @@ output$graphs <- renderUI({
       # edit2
       bsPopover(id = "q15_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Gráficos")),
-                content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
+                content = HTML(i18n()$t('<ul><li><strong>Razão de Desiguldade</strong> calcula a desigualdade pelo indicador cumulativo para renda - razão entre a acessibilidade média dos 10% mais ricos pela dos 40% mais pobres - e cor - razão entre a acessibilidade média ponderada pela população branca pela população negra.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara a acessibilidade para renda - acessibilidade média da população em geral x acessibilidade pobres x acessibiidade ricos, e para cor - média x brancos x negros.</li></ul>')),
                 placement = "left",
                 trigger = "hover",
                 options = list(container = "body"))
@@ -60,22 +60,16 @@ output$graphs <- renderUI({
     # img(src='ipea.jpg', align = "right", width = "150"),
     conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1",
                      pickerInput(inputId = "atividade_graph_cum",
-                                 label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                 label = HTML(sprintf("<h1>%s: <button id=\"q3_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
                                                       i18n()$t("Escolha a atividade"))),
                                  choices = c(list_trabalho_graph, list_saude_graph, list_edu_graph),
                                  selected = "TT")),
     conditionalPanel(condition = "graphs_tmi.indexOf(input.graph_type) > -1",
                      pickerInput(inputId = "atividade_graph_tmi",
-                                 label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
+                                 label = HTML(sprintf("<h1>%s: <button id=\"q4_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
                                                       i18n()$t("Escolha a atividade"))),
                                  choices = c(list_saude_graph, list_edu_graph),
                                  selected = "ST")),
-    # conditionalPanel(condition = "input.indicador == 'TMI'",
-    #                  pickerInput(inputId = "atividade_min",
-    #                              label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-    #                                                   i18n()$t("Escolha a atividade"))),
-    #                              choices = c(list_saude, list_edu),
-    #                              selected = "ST")),
     div(
       # edit2
       bsPopover(id = "q3_graph", 
@@ -110,8 +104,9 @@ output$graphs <- renderUI({
                                  animate = animationOptions(interval = 2000),
                                  post = " min",
                                  width = '100%')),
-    conditionalPanel(condition = "input.indicador_graph == 'TMI'",
-                     strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
+    hr(),
+    tagList(i18n()$t('Mais informações podem ser encontradas na seção de resultados do'), 
+            shiny::a('Texto para Discussão', href=i18n()$t('https://www.ipea.gov.br/acessooportunidades/publication/2019_td2535/')))
     
   )
   

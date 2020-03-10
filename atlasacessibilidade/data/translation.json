@@ -108,6 +108,13 @@
     {"pt": "palma_renda", "en": "palma_income"},
     {"pt": "palma_cor", "en": "palma_color"},
     {"pt": "dumbell_renda", "en": "dumbell_income"},
-    {"pt": "dumbell_cor", "en": "dumbell_color"}
+    {"pt": "dumbell_cor", "en": "dumbell_color"},
+    {"pt": "<ul><li><strong>Razão de Desigualdade</strong> calcula a desigualdade pelo indicador cumulativo para renda - razão entre a acessibilidade média dos 10% mais ricos pela dos 40% mais pobres - e cor - razão entre a acessibilidade média ponderada pela população branca pela população negra.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara a acessibilidade para renda - acessibilidade média da população em geral x acessibilidade pobres x acessibiidade ricos, e para cor - média x brancos x negros.</li></ul>", 
+    "en": "<ul><li><strong>Inequality ratio</strong>"},
+    {"pt": "Mais informações podem ser encontradas na seção de resultados do", 
+    "en": "More information (portuguese only) can be found at the results section in our"},
+    {"pt": "Gráficos", "en": "Plots"},
+    {"pt": "https://www.ipea.gov.br/acessooportunidades/publication/2019_td2535/", "en": "https://www.ipea.gov.br/acessooportunidades/en/publication/2019_td2535/"}
+    
     ]
 }

@@ -60,7 +60,7 @@ h1 {
 
 #dropdown-menu-download_dropdown {
  
- width: 200px !important;
+ width: 250px !important;
   
 }
 
@@ -159,14 +159,23 @@ h1 {
 } 
 
 /* Modificar fonte do botao de download */
-#downloadData, #downloadPlot {
+#downloadData, #downloadPlot, #downloadDic {
   font-size: 15px;
   border-color: transparent;
   padding: 6px 0;
   
 }
 
-.container-fluid {
+li > hr {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+hr {
+ border-top: 1px solid #dac3c3 !important;
+}
+
+.container-fluid {  
   padding-left: 0;
   padding-right: 0;
   padding-bottom: 0;

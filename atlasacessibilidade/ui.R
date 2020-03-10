@@ -44,11 +44,14 @@ shinyUI(
                                                         top = 80, right = 380, width = 200, height = 100,
                                                         dropdownButton(
                                                             uiOutput('ui_download_button'),
-                                                            circle = FALSE, status = "danger",
+                                                            hr(),
+                                                            uiOutput('ui_download_dic'),
+                                                            circle = FALSE, 
+                                                            # status = "danger",
                                                             label = "Download",
                                                             right = TRUE,
                                                             up = FALSE,
-                                                            icon = icon("download"), width = "300px",
+                                                            icon = icon("download"), width = "500px",
                                                             # tooltip = tooltipOptions(title = "Click to see inputs !"),
                                                             inputId = "download_dropdown"
                                                             
