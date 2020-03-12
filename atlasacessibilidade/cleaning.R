@@ -10,9 +10,15 @@ acess <- acess %>% filter(!is.na(modo))
 acess_tp <- acess %>% filter(pico == 1)
 
 # filter columns
-acess_tp <- acess_tp %>% dplyr::select(id_hex, sigla_muni, P001, modo, matches("15|30|45|60|90|120"), starts_with("TMI")) %>%
+acess_tp <- acess_tp %>% dplyr::select(id_hex, sigla_muni, 
+                                       # land use variables
+                                       P001:S004,  
+                                       modo, 
+                                       matches("15|30|45|60|90|120"), starts_with("TMI")) %>%
   # por enquanto, nao selecionar TQ e TD
-  dplyr::select(-matches("TQ|TD"))
+  dplyr::select(-matches("TQ|TD")) %>%
+  # por enquanto, nao selecionar variaveis de emprego
+  dplyr::select(-T001, -T002, -T003, -T004)
 
 # separate between indicators
 # acess_tp_cum <- acess_tp %>% dplyr::select(id_hex, sigla_muni, modo, P001, matches("15|30|45|60|90|120"))
@@ -41,7 +47,7 @@ acess_tp_wide <- acess_tp_wide %>%
 write_rds(acess_tp_wide,
           # filter(sigla_muni %in% c("bho", "sal")) %>%
           # filter(nome_muni %nin% c("São Paulo", "Rio de Janeiro")), 
-          "atlasacessibilidade/data/acess_wide.rds") 
+          "data/acess_wide.rds") 
 
 
 # from wide to long cum

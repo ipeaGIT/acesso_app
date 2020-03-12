@@ -672,7 +672,7 @@ make_title_plots <- reactive({
   # 5) REACTIVE TO FILTER THE MODE -----------------------------------------------------------------
   a <- reactive({
     
-    if (a_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {input$modo_todos}
+    if (a_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') | input$indicador == "US") {input$modo_todos}
     
     else if(a_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
       
@@ -691,7 +691,9 @@ make_title_plots <- reactive({
   # 6) REACTIVE TO FILTER THE INDICATOR ------------------------------------------------------------
   indicador_filtrado <- reactive({
     
-    modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$indicador))
+    b_indicador <- ifelse(input$indicador == "US", c("P00|R00|E00|S00"), input$indicador)
+    
+    modo_filtrado() %>% dplyr::select(id_hex, P001, matches(b_indicador))
     
   })
   
@@ -705,7 +707,7 @@ make_title_plots <- reactive({
   })
   
   
-  # # Reactive para a atividade para indicador cumulativo
+  # # Reactive para a atividade para indicador minimo
   atividade_filtrada_min <- reactive({
     
     indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_min)) %>%
@@ -715,9 +717,32 @@ make_title_plots <- reactive({
     
   })
   
+  # Reactive para a atividade para indicador de uso do solo
+  atividade_filtrada_us <- reactive({
+    
+    input_us <- ifelse(input$atividade_us == "ET", "E001",
+                       ifelse(input$atividade_us == "EI", "E002",
+                              ifelse(input$atividade_us == "EF", "E003",
+                                     ifelse(input$atividade_us == "EM", "E004"))))
+    
+    indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input_us)) %>%
+      rename(id_hex = 1, P001 = 2, valor = 3) %>%
+      mutate(id = 1:n()) %>%
+      mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor do indicador:</strong> "), round(valor, 0), " ", i18n()$t("atividades")))
+    
+  })
+  
   atividade_filtrada_min_sf <- reactive({
     
     atividade_filtrada_min() %>% setDT() %>%
+      merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
+      st_sf(crs = 4326)
+    
+  })
+  
+  atividade_filtrada_us_sf <- reactive({
+    
+    atividade_filtrada_us() %>% setDT() %>%
       merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
       st_sf(crs = 4326)
     
