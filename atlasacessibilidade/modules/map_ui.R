@@ -12,17 +12,21 @@ output$page_content <- renderUI({
                                                      i18n()$t("Educação Infantil"),
                                                      i18n()$t("Educação Fundamental"),
                                                      i18n()$t("Educação Média"))))
+  vector_indicadores <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
   
+  # Translate the name of lists accordingly
   names(list_trabalho) <-c(i18n()$t("Trabalho"))
   names(list_saude) <-c(i18n()$t("Saúde"))
   names(list_edu) <-c(i18n()$t("Educação"))
   
-  vector_indicadores <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
   
   
   # Start proper UI here 
   tagList(
     
+
+    # 1. CITY SELECTION -------------------------------------------------------
+
     pickerInput(inputId = "cidade",
                 label = h1(i18n()$t("Escolha a cidade:")),
                 choices = list(
@@ -75,10 +79,16 @@ output$page_content <- renderUI({
                                'tickIcon' = "fa-check",
                                title = i18n()$t("Selecione aqui"))
     ),
+    
+    # THIS CONDITIONAL PANEL WILL UNFOLD NICELY WITH THE REMAINING SELECTIONS WHEN A CITY IS SELECTED
     conditionalPanel(condition = "input.cidade != ''",
                      absolutePanel(id = "controls_animated", class = "w3-container w3-animate-opacity", 
                                    fixed = TRUE, draggable = FALSE,
                                    top = 180, right = 20, width = 350,
+                                   
+
+                                   # 2. INDICATOR SELECTION --------------------------------------------------
+
                                    awesomeRadio(inputId = "indicador",
                                                 # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                                                 label = HTML(sprintf("<h1>%s <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
@@ -94,6 +104,11 @@ output$page_content <- renderUI({
                                                trigger = "hover",
                                                options = list(container = "body"))
                                    ),
+                                   
+
+                                   # 3. MODE SELECTION -------------------------------------------------------
+                                   
+                                   # IF A CITY WITH GTFS IS SELECTED, ALL MODES WILL BE AVAILABLE
                                    conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
                                                     radioGroupButtons(inputId = "modo_todos",
                                                                       # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
@@ -105,6 +120,10 @@ output$page_content <- renderUI({
                                                                       individual = TRUE,
                                                                       justified = TRUE
                                                     )),
+                                   
+                                   # IF A CITY WITHOUT GTFS IS SELECTED, ONLY WALKING AND BIKE WILL BE AVAILABLE
+                                   # THE FUN 'RADIO_BUTTON_CUSTOM' WILL CREATE 3 RADIO BUTTONS WITH 1 BEING UNAVAILABLE
+                                   
                                    conditionalPanel(condition = "cities_ativo.indexOf(input.cidade) > -1", 
                                                     radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
                                    ),
@@ -117,13 +136,21 @@ output$page_content <- renderUI({
                                                trigger = "hover",
                                                options = list(container = "body"))
                                    ),
-                                   # img(src='ipea.jpg', align = "right", width = "150"),
+                                   
+
+                                   # 4. ACTIVITY SELECTION -------------------------------------------------------
+                                   
+                                   # IF THE CMA INDICATOR IS SELECTED, ALL ACTIVITIES WILL BE AVAILABLE
+                                   
                                    conditionalPanel(condition = "input.indicador == 'CMA'",
                                                     pickerInput(inputId = "atividade_cum",
                                                                 label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
                                                                                      i18n()$t("Escolha a atividade"))),
                                                                 choices = c(list_trabalho, list_saude, list_edu),
                                                                 selected = "TT")),
+                                   
+                                   # IF THE TMI INDICATOR IS SELECTED, ONLY HEALTH AND EDUCATIONAL ACTIVITIES WILL BE AVAILABLE
+                                   
                                    conditionalPanel(condition = "input.indicador == 'TMI'",
                                                     pickerInput(inputId = "atividade_min",
                                                                 label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
@@ -148,6 +175,10 @@ output$page_content <- renderUI({
                                                trigger = "hover",
                                                options = list(container = "body"))
                                    ),
+                                   
+
+                                   # 5. TIME THRESHOLD SELECTION ---------------------------------------------
+
                                    conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
                                                     sliderInput(inputId = "tempo_tp",
                                                                 label = h1(i18n()$t("Escolha o tempo de viagem:")),
