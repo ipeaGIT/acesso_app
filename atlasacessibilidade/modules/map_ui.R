@@ -81,6 +81,7 @@ output$page_content <- renderUI({
     ),
     
     # THIS CONDITIONAL PANEL WILL UNFOLD NICELY WITH THE REMAINING SELECTIONS WHEN A CITY IS SELECTED
+    
     conditionalPanel(condition = "input.cidade != ''",
                      absolutePanel(id = "controls_animated", class = "w3-container w3-animate-opacity", 
                                    fixed = TRUE, draggable = FALSE,
@@ -90,13 +91,11 @@ output$page_content <- renderUI({
                                    # 2. INDICATOR SELECTION --------------------------------------------------
 
                                    awesomeRadio(inputId = "indicador",
-                                                # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                                                label = HTML(sprintf("<h1>%s <button id=\"q1\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                     i18n()$t("Escolha o indicador de acessibilidade:"))),
+                                                label = label_with_info(label = i18n()$t("Escolha o indicador de acessibilidade"),
+                                                                        tooltip_id = "q1"),
                                                 choices = vector_indicadores,
                                                 selected = "CMA"),
                                    div(
-                                     # edit2
                                      bsPopover(id = "q1", 
                                                title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
                                                content = HTML(i18n()$t("<ul><li><strong>Indicador cumulativo</strong> representa a proporção de oportunidades em relação ao total da cidade que podem ser alcançadas dado um tempo máximo de viagem</li><li><strong>Tempo mínimo</strong> é o tempo de viagem até a oportunidade mais próxima</li></ul>")),
@@ -111,7 +110,6 @@ output$page_content <- renderUI({
                                    # IF A CITY WITH GTFS IS SELECTED, ALL MODES WILL BE AVAILABLE
                                    conditionalPanel(condition = "cities_todos.indexOf(input.cidade) > -1", 
                                                     radioGroupButtons(inputId = "modo_todos",
-                                                                      # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                                                                       label = h1(i18n()$t("Escolha o modo de transporte:")), 
                                                                       choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
                                                                                   "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
@@ -129,7 +127,6 @@ output$page_content <- renderUI({
                                    ),
                                    
                                    div(
-                                     # edit2
                                      bsTooltip(id = "modo_des", 
                                                title = i18n()$t("Modo não disponível para essa cidade"),
                                                placement = "top",
@@ -144,8 +141,8 @@ output$page_content <- renderUI({
                                    
                                    conditionalPanel(condition = "input.indicador == 'CMA'",
                                                     pickerInput(inputId = "atividade_cum",
-                                                                label = HTML(sprintf("<h1>%s: <button id=\"q3\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                                     i18n()$t("Escolha a atividade"))),
+                                                                label = label_with_info(label = i18n()$t("Escolha a atividade"),
+                                                                                        tooltip_id = "q3"),
                                                                 choices = c(list_trabalho, list_saude, list_edu),
                                                                 selected = "TT")),
                                    
@@ -153,12 +150,11 @@ output$page_content <- renderUI({
                                    
                                    conditionalPanel(condition = "input.indicador == 'TMI'",
                                                     pickerInput(inputId = "atividade_min",
-                                                                label = HTML(sprintf("<h1>%s: <button id=\"q4\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                                                     i18n()$t("Escolha a atividade"))),
+                                                                label = label_with_info(label = i18n()$t("Escolha a atividade"),
+                                                                                        tooltip_id = "q4"),
                                                                 choices = c(list_saude, list_edu),
                                                                 selected = "ST")),
                                    div(
-                                     # edit2
                                      bsPopover(id = "q3", 
                                                title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
                                                content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
@@ -167,7 +163,6 @@ output$page_content <- renderUI({
                                                options = list(container = "body"))
                                    ),
                                    div(
-                                     # edit2
                                      bsPopover(id = "q4", 
                                                title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
                                                content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
@@ -200,6 +195,9 @@ output$page_content <- renderUI({
                                                                 step = 15, value = 15,
                                                                 animate = animationOptions(interval = 2000),
                                                                 post = " min")),
+                                   
+                                   # 6. ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
+                                   
                                    conditionalPanel(condition = "input.indicador == 'TMI'",
                                                     strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
                                    

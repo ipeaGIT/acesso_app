@@ -19,27 +19,28 @@ output$graphs <- renderUI({
   list_types_graphs_dumbell <- list('Desigualdade à atividade mais próxima' = structure(c("dumbell_renda", "dumbell_cor"), 
                                                                                         .Names = c(i18n()$t("Desigualdade por renda"),
                                                                                                    i18n()$t("Desigualdade por cor"))))
-  
+  # Translate the name of lists accordingly
   names(list_trabalho_graph) <-c(i18n()$t("Trabalho"))
   names(list_saude_graph) <-c(i18n()$t("Saúde"))
   names(list_edu_graph) <-c(i18n()$t("Educação"))
   names(list_types_graphs_palma) <-c(i18n()$t("Razão de Desigualdade"))
   names(list_types_graphs_dumbell) <- c(i18n()$t("Desigualdade à atividade mais próxima"))
+
   
-  # vector_indicadores_graph <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
-  # vector_types_graphs <- structure(c("palma", "boxplot"), .Names = c(i18n()$t("Razão de Palma"), "Boxplot"))
-  
+    
   # Start proper UI here 
   tagList(
+    
+
+    # 1. PLOT SELECTION -----------------------------------------------------
+    
     pickerInput(inputId = "graph_type",
-                # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
-                label = HTML(sprintf("<h1>%s <button id=\"q15_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                     i18n()$t("Escolha o gráfico:"))),
+                label = label_with_info(label = i18n()$t("Escolha o gráfico:"),
+                                        tooltip_id = "q15_graph"),
                 choices = c(list_types_graphs_palma, list_types_graphs_dumbell),
                 selected = "palma_renda",
                 width = '100%'),
     div(
-      # edit2
       bsPopover(id = "q15_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Gráficos")),
                 content = HTML(i18n()$t('<ul><li><strong>Razão de Desigualdade</strong> compara o número de oportunidades acessíveis (indicador cumulativo) entre grupos de <strong>cor</strong> ou <strong>renda</strong>. O gráfico mostra a razão entre o número médio de oportunidades acessíveis de pessoas brancas / negras, ou da média de oportunidades acessíveis pelos 10% mais ricos / 40% mais pobres.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara o tempo de viagem até a oportunidade mais próxima para diferentes grupos de cor (brancos e negros) e renda (20% mais ricos e 20% mais pobres)</li></ul>')),
@@ -47,8 +48,10 @@ output$graphs <- renderUI({
                 trigger = "hover",
                 options = list(container = "body"))
     ),
+    
+    # 2. MODE SELECTION -----------------------------------------------------
+    
     radioGroupButtons(inputId = "modo_todos_graph",
-                      # label = HTML("<h1>Escolha o indicador de acessibilidade: <img src=\"ipea.jpg\" align=\"leftright\" width=\"70\"/></h1>"),
                       label = h1(i18n()$t("Escolha o modo de transporte:")), 
                       choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
                                   "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
@@ -57,21 +60,27 @@ output$graphs <- renderUI({
                       individual = TRUE,
                       justified = TRUE
     ),
-    # img(src='ipea.jpg', align = "right", width = "150"),
+    
+    # 3. ACTIVITY SELECTION -------------------------------------------------------
+    
+    # IF GRAPH TYPE IS OF PALMA_RENDA OR PALMA_COR, ALL ACITIVITIES WILL BE AVAILABLE
+    
     conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1",
                      pickerInput(inputId = "atividade_graph_cum",
-                                 label = HTML(sprintf("<h1>%s: <button id=\"q3_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                      i18n()$t("Escolha a atividade"))),
+                                 label = label_with_info(label = i18n()$t("Escolha a atividade"), 
+                                                         tooltip_id = "q3_graph"),
                                  choices = c(list_trabalho_graph, list_saude_graph, list_edu_graph),
                                  selected = "TT")),
+    
+    # IF GRAPH TYPE IS OF DUMBELL, ONLY HEALTH AND EDUCATIONAL ACTIVITIES WILL BE AVAILABLE
+    
     conditionalPanel(condition = "graphs_tmi.indexOf(input.graph_type) > -1",
                      pickerInput(inputId = "atividade_graph_tmi",
-                                 label = HTML(sprintf("<h1>%s: <button id=\"q4_graph\" type=\"button\" class=\"btn btn-light btn-xs\"><i class=\"fa fa-info\"></i></button></h1>", 
-                                                      i18n()$t("Escolha a atividade"))),
+                                 label = label_with_info(label = i18n()$t("Escolha a atividade"), 
+                                                         tooltip_id = "q4_graph"),
                                  choices = c(list_saude_graph, list_edu_graph),
                                  selected = "ST")),
     div(
-      # edit2
       bsPopover(id = "q3_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
                 content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
@@ -80,7 +89,6 @@ output$graphs <- renderUI({
                 options = list(container = "body"))
     ),
     div(
-      # edit2
       bsPopover(id = "q4_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
                 content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
@@ -88,6 +96,13 @@ output$graphs <- renderUI({
                 trigger = "hover",
                 options = list(container = "body"))
     ),
+    
+    
+    # 4. TIME THRESHOLD SELECTION -------------------------------------------------------
+    
+    # IF MODE IS 'TP' (PUBLIC TRANSPORT), TIME THRESHOLD RANGES BETWEEN 30 AND 120 EVERY 30 
+    # IF MODE IS 'CAMINHADA' OR 'BIKE' (WALK OU BIKE), TIME THRESHOLD RANGES BETWEEN 15 AND 60 EVERY 15 
+    
     conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1 && input.modo_todos_graph == 'tp'",
                      sliderInput(inputId = "tempo_tp_graph",
                                  label = h1(i18n()$t("Escolha o tempo de viagem:")),
@@ -104,6 +119,9 @@ output$graphs <- renderUI({
                                  animate = animationOptions(interval = 2000),
                                  post = " min",
                                  width = '100%')),
+
+    # 5. ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
+    
     hr(),
     tagList(i18n()$t('Mais informações podem ser encontradas na seção de resultados do'), 
             shiny::a('Texto para Discussão', href=i18n()$t('https://www.ipea.gov.br/acessooportunidades/publication/2019_td2535/')))

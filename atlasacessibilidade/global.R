@@ -20,6 +20,7 @@ library(tidyr)
 translator <- Translator$new(translation_json_path = "data/translation.json")
 
 source("R/create_radio_button_custom.R")
+source("R/label_with_info.R")
 
 # Use GForce Optimisations in data.table operations
 options(datatable.optimize=Inf)
