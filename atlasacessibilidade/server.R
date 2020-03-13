@@ -906,6 +906,38 @@ make_title_plots <- reactive({
             legend_format = list( fill_colour = as.integer)
           )
         
+      } else if (input$indicador == "US") {
+        
+        # create viridis scale in the reverse direction
+        # create matrix
+        colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+        # invert matrix
+        colorss <- apply(colorss, 2, rev)[, 1:3]
+        
+        proxy %>%
+          clear_polygon(layer_id = "acess_cum_go") %>%
+          clear_legend(layer_id = "acess_cum_go") %>%
+          add_polygon(
+            data = limits_filtrado,
+            stroke_colour = "#616A6B",
+            stroke_width = 100,
+            fill_opacity = 0,
+            update_view = FALSE,
+            focus_layer = FALSE
+          ) %>%
+          add_polygon(
+            data = atividade_filtrada_us(),
+            fill_colour = "valor",
+            fill_opacity = 200,
+            layer_id = "acess_us_go",
+            palette = colorss,
+            update_view = FALSE,
+            tooltip = "popup",
+            legend = TRUE,
+            legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
+            legend_format = list( fill_colour = as.integer)
+          )
+        
       }
       
       
@@ -970,6 +1002,27 @@ make_title_plots <- reactive({
                               legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
                               legend_format = list( fill_colour = as.integer)
                             )
+                          
+                        } else 
+                          
+                          if (input$indicador == "US") {
+                          
+                          mapdeck_update(map_id = "map") %>%
+                            clear_polygon(layer_id = "acess_cum_go") %>%
+                            clear_legend(layer_id = "acess_cum_go") %>%
+                            add_polygon(
+                              data = atividade_filtrada_us(),
+                              fill_colour = "valor",
+                              fill_opacity = 200,
+                              layer_id = "acess_us_go",
+                              palette = 'inferno',
+                              update_view = FALSE,
+                              tooltip = "popup",
+                              legend = TRUE,
+                              legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
+                              legend_format = list( fill_colour = as.integer)
+                            )
+                          
                         }
                       
                       
