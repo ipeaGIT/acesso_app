@@ -1,4 +1,4 @@
-*.Rproj
+.acesso_app.Rproj
 .Rproj.user
 .Rhistory
 .RData
