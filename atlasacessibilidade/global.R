@@ -9,7 +9,7 @@ library(sf)
 library(readr)
 library(data.table)
 library(waiter) # remotes::install_github("JohnCoene/waiter")
-library(shiny.i18n)
+library(shiny.i18n) # devtools::install_github("Appsilon/shiny.i18n")
 
 library(ggplot2)
 library(forcats)
