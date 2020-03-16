@@ -91,8 +91,10 @@ output$page_content <- renderUI({
                                    # 2. INDICATOR SELECTION --------------------------------------------------
 
                                    awesomeRadio(inputId = "indicador",
-                                                label = label_with_info(label = i18n()$t("Escolha o indicador de acessibilidade"),
-                                                                        tooltip_id = "q1"),
+                                                label = label_with_info(
+                                                  label = i18n()$t("Escolha o indicador de acessibilidade"),
+                                                  tooltip_id = "q1"
+                                                ),
                                                 choices = vector_indicadores,
                                                 selected = "CMA"),
                                    div(
@@ -141,8 +143,10 @@ output$page_content <- renderUI({
                                    
                                    conditionalPanel(condition = "input.indicador == 'CMA'",
                                                     pickerInput(inputId = "atividade_cum",
-                                                                label = label_with_info(label = i18n()$t("Escolha a atividade"),
-                                                                                        tooltip_id = "q3"),
+                                                                label = label_with_info(
+                                                                  label = i18n()$t("Escolha a atividade"),
+                                                                  tooltip_id = "q3"
+                                                                ),
                                                                 choices = c(list_trabalho, list_saude, list_edu),
                                                                 selected = "TT")),
                                    
@@ -150,8 +154,10 @@ output$page_content <- renderUI({
                                    
                                    conditionalPanel(condition = "input.indicador == 'TMI'",
                                                     pickerInput(inputId = "atividade_min",
-                                                                label = label_with_info(label = i18n()$t("Escolha a atividade"),
-                                                                                        tooltip_id = "q4"),
+                                                                label = label_with_info(
+                                                                  label = i18n()$t("Escolha a atividade"),
+                                                                  tooltip_id = "q4"
+                                                                ),
                                                                 choices = c(list_saude, list_edu),
                                                                 selected = "ST")),
                                    div(
