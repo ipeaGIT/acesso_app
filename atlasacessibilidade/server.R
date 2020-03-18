@@ -66,11 +66,11 @@ function(input, output, session) {
       
     if (input$selected_language == "pt") {
       
-      includeMarkdown("home_pt.md")
+      includeMarkdown("www/landing_page/home_pt.md")
       
     } else if (input$selected_language == "en") {
       
-      includeMarkdown("home_en.md")
+      includeMarkdown("www/landing_page/home_en.md")
     }
       
       
@@ -106,19 +106,19 @@ function(input, output, session) {
   
   
   # 6) UI: GRAPHS ----------------------------------------------------------------------------------
-  source("modules/graphs_ui.R", local = TRUE)
+  source("app_files/graphs_ui.R", local = TRUE)
   
   # 7) UI: MAP -------------------------------------------------------------------------------------
-  source("modules/map_ui.R", local = TRUE)
+  source("app_files/map_ui.R", local = TRUE)
   
   # 8) DOWNLOAD BUTTON -----------------------------------------------------------------------------
-  source("modules/download_button.R", local = TRUE)
+  source("app_files/download_button.R", local = TRUE)
   
   # 9) SERVER: GRAPHS ------------------------------------------------------------------------------
-  source("modules/graphs_server.R", local = TRUE)
+  source("app_files/graphs_server.R", local = TRUE)
   
   # 10) SERVER: MAP --------------------------------------------------------------------------------
-  source("modules/map_server.R", local = TRUE)
+  source("app_files/map_server.R", local = TRUE)
 
 
 
