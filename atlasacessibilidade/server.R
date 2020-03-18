@@ -1,17 +1,28 @@
   
 # 1) LOAD DATA ----------------------------------------------------------------------------------------
 
+# MAP DATA
+
+# Accessiblity data
 acess <- read_rds("data/acess_wide.rds")
 
+# Hex Spatial Sf Data
 hex <- read_rds("data/hex.rds")
 
+# Cities centroids data
 centroids <- read_rds("data/cities_centroids.rds")
 
+# Cities limits data
 limits <- read_rds(("data/cities_limits.rds"))
 
+#####################################
+
+# GRAPHS DATA
+# Palma data
 palma_renda <- read_rds("data/acess_palma_renda.rds") %>% setDT()
 palma_cor <- read_rds("data/acess_palma_cor.rds") %>% setDT()
 
+# Dumbell data
 dumbell_renda <- read_rds("data/acess_dumbell_renda.rds") %>% setDT()
 dumbell_cor <- read_rds("data/acess_dumbell_cor.rds") %>% setDT()
 
@@ -82,10 +93,12 @@ function(input, output, session) {
   
   # 5) TRANSLATE TAB TITLES ------------------------------------------------------------------------
   
+  # Translate map title stab
   output$title_map = renderText({
     switch(input$selected_language, "pt"="Mapa", "en"="Map") 
   })  
   
+  # Translate graphs title tab
   output$title_graph = renderText({
     switch(input$selected_language, "pt"="Gráficos", "en"="Plots") 
   })  
