@@ -13,26 +13,29 @@ output$graphs <- renderUI({
                                                            i18n()$t("Educação Fundamental"),
                                                            i18n()$t("Educação Média"))))
   
-  list_types_graphs_palma <- list('Razão de Desigualdade' = structure(c("palma_renda", "palma_cor"), 
-                                                               .Names = c(i18n()$t("Desigualdade por renda (Razão de Palma)"),
-                                                                          i18n()$t("Desigualdade por cor"))))
-  list_types_graphs_dumbell <- list('Desigualdade à atividade mais próxima' = structure(c("dumbell_renda", "dumbell_cor"), 
-                                                                                        .Names = c(i18n()$t("Desigualdade por renda"),
-                                                                                                   i18n()$t("Desigualdade por cor"))))
+  list_types_graphs_palma <- list('Razão de Desigualdade' = 
+                                    structure(c("palma_renda", "palma_cor"), 
+                                              .Names = c(i18n()$t("Desigualdade por renda (Razão de Palma)"),
+                                                         i18n()$t("Desigualdade por cor"))))
+  
+  list_types_graphs_dumbell <- list('Desigualdade à atividade mais próxima' = 
+                                      structure(c("dumbell_renda", "dumbell_cor"), 
+                                                .Names = c(i18n()$t("Desigualdade por renda"),
+                                                           i18n()$t("Desigualdade por cor"))))
   # Translate the name of lists accordingly
   names(list_trabalho_graph) <-c(i18n()$t("Trabalho"))
   names(list_saude_graph) <-c(i18n()$t("Saúde"))
   names(list_edu_graph) <-c(i18n()$t("Educação"))
   names(list_types_graphs_palma) <-c(i18n()$t("Razão de Desigualdade"))
   names(list_types_graphs_dumbell) <- c(i18n()$t("Desigualdade à atividade mais próxima"))
-
   
-    
+  
+  
   # Start proper UI here 
   tagList(
     
-
-    # 1. PLOT SELECTION -----------------------------------------------------
+    
+    # 1) PLOT SELECTION -----------------------------------------------------
     
     pickerInput(inputId = "graph_type",
                 label = label_with_info(label = i18n()$t("Escolha o gráfico:"),
@@ -43,13 +46,13 @@ output$graphs <- renderUI({
     div(
       bsPopover(id = "q15_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Gráficos")),
-                content = HTML(i18n()$t('<ul><li><strong>Razão de Desigualdade</strong> compara o número de oportunidades acessíveis (indicador cumulativo) entre grupos de <strong>cor</strong> ou <strong>renda</strong>. O gráfico mostra a razão entre o número médio de oportunidades acessíveis de pessoas brancas / negras, ou da média de oportunidades acessíveis pelos 10% mais ricos / 40% mais pobres.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara o tempo de viagem até a oportunidade mais próxima para diferentes grupos de cor (brancos e negros) e renda (20% mais ricos e 20% mais pobres)</li></ul>')),
+                content = HTML(i18n()$t(includeHTML('www/popovers/popover_graph.html'))),
                 placement = "left",
                 trigger = "hover",
                 options = list(container = "body"))
     ),
     
-    # 2. MODE SELECTION -----------------------------------------------------
+    # 2) MODE SELECTION -----------------------------------------------------
     
     radioGroupButtons(inputId = "modo_todos_graph",
                       label = h1(i18n()$t("Escolha o modo de transporte:")), 
@@ -61,7 +64,7 @@ output$graphs <- renderUI({
                       justified = TRUE
     ),
     
-    # 3. ACTIVITY SELECTION -------------------------------------------------------
+    # 3) ACTIVITY SELECTION -------------------------------------------------------
     
     # IF GRAPH TYPE IS OF PALMA_RENDA OR PALMA_COR, ALL ACITIVITIES WILL BE AVAILABLE
     
@@ -83,7 +86,7 @@ output$graphs <- renderUI({
     div(
       bsPopover(id = "q3_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
+                content = HTML(i18n()$t(includeHTML("www/popovers/popover_activity.html"))),
                 placement = "top",
                 trigger = "hover",
                 options = list(container = "body"))
@@ -91,14 +94,14 @@ output$graphs <- renderUI({
     div(
       bsPopover(id = "q4_graph", 
                 title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                content = HTML(i18n()$t("<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>")),
+                content = HTML(i18n()$t(includeHTML("www/popovers/popover_activity.html"))),
                 placement = "top",
                 trigger = "hover",
                 options = list(container = "body"))
     ),
     
     
-    # 4. TIME THRESHOLD SELECTION -------------------------------------------------------
+    # 4) TIME THRESHOLD SELECTION -------------------------------------------------------
     
     # IF MODE IS 'TP' (PUBLIC TRANSPORT), TIME THRESHOLD RANGES BETWEEN 30 AND 120 EVERY 30 
     # IF MODE IS 'CAMINHADA' OR 'BIKE' (WALK OU BIKE), TIME THRESHOLD RANGES BETWEEN 15 AND 60 EVERY 15 
@@ -119,8 +122,8 @@ output$graphs <- renderUI({
                                  animate = animationOptions(interval = 2000),
                                  post = " min",
                                  width = '100%')),
-
-    # 5. ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
+    
+    # 5) ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
     
     hr(),
     tagList(i18n()$t('Mais informações podem ser encontradas na seção de resultados do'), 

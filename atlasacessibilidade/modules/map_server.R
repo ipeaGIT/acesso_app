@@ -1,12 +1,18 @@
-# MAPS SERVER ---------------------------------------------------------------------------------
+# MAP SERVER
 
 # 1) REACTIVE TO FILTER THE CITY -----------------------------------------------------------------
+
+# First we use a reactive expression to choose the input
+# We created a 'fake' city to represent the Brazil map
+
 a_city <- reactive({
   
   if(input$cidade != "") {input$cidade} else {"fake"}
   
   
 })
+
+# Filter the city
 
 cidade_filtrada <- reactive({
   
@@ -17,13 +23,15 @@ cidade_filtrada <- reactive({
 
 
 # 2) REACTIVE TO FILTER THE MODE -----------------------------------------------------------------
+
+# First we use a reactive expression to choose the input
+
 a <- reactive({
   
   if (a_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {input$modo_todos}
   
   else if(a_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
     
-    # # Reactive para a modo para indicador cumulativo
     input$modo_ativo }
   
 })
@@ -35,7 +43,8 @@ modo_filtrado <- reactive({
   
 })
 
-# 3) REACTIVE TO FILTER THE INDICATOR ------------------------------------------------------------
+# 3) REACTIVE TO FILTER THE INDICATOR --------------------------------------------------------------
+
 indicador_filtrado <- reactive({
   
   modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$indicador))
@@ -43,7 +52,7 @@ indicador_filtrado <- reactive({
 })
 
 
-# 4) REACTIVE TO FILTER THE ACTIVITY ------------------------------------------------------------
+# 4) REACTIVE TO FILTER THE ACTIVITY ---------------------------------------------------------------
 # Reactive para a atividade para indicador cumulativo
 atividade_filtrada <- reactive({
   
@@ -63,7 +72,8 @@ atividade_filtrada_min <- reactive({
 })
 
 
-# 5) REACTIVE TO FILTER THE TIME THRESHOLD -------------------------------------------------------
+# 5) REACTIVE TO FILTER THE TIME THRESHOLD ---------------------------------------------------------
+# This filter is only applied to the cumulative indicator
 
 # Select time threshold
 b <- reactive({
@@ -82,12 +92,12 @@ tempo_filtrado <- reactive({
   atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(b()))) %>%
     rename(id_hex = 1, P001 = 2, valor = 3) %>%
     mutate(id = 1:n()) %>%
-    # create popup
+    # Create tiptool message
     mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%"))
   
 })
 
-# 6) TRANSFORM TO SF -----------------------
+# 6) TRANSFORM TO SF -------------------------------------------------------------------------------
 
 atividade_filtrada_min_sf <- reactive({
   
@@ -110,8 +120,8 @@ tempo_filtrado_sf <- reactive({
 
 
 
-# 7) RENDER BASEMAP -------------------------------------------------------
-# baseMap
+# 7) RENDER BRAZIL'S BASEMAP -------------------------------------------------------
+
 output$map <- renderMapdeck({
   
   mapdeck(location = c(-43.95988, -19.902739), zoom = 3)
@@ -128,13 +138,15 @@ waiter_hide()
 observeEvent({input$cidade},{
   
   
-  # Filtrar limites
+  # Filter cities limits
   limits_filtrado <- filter(limits, abrev_muni == input$cidade)
   
   if (input$cidade != "") {
     
     centroid_go <- filter(centroids, abrev_muni == input$cidade)
     
+    
+    # Choose zoom based on city: some cities are bigger than others
     if(input$cidade %in% c("spo", "man", "cgr", "bsb")) {
       
       zoom1 <- 9
@@ -145,15 +157,19 @@ observeEvent({input$cidade},{
       
     } else {zoom1 <- 10}
     
+    
+    # Zoom in on the city when it's choosen
     proxy <- mapdeck_update(map_id = "map") %>%
       mapdeck_view(location = c(centroid_go$lon, centroid_go$lat), zoom = zoom1,
                    duration = 3000, transition = "fly")
     
+    # Create map with indicators when the city is first selected
     if (input$indicador == "CMA") {
       
       proxy %>%
         clear_polygon(layer_id = "acess_min_go") %>%
         clear_legend(layer_id = "acess_min_go") %>%
+        # Render city limits
         add_polygon(
           data = limits_filtrado,
           stroke_colour = "#616A6B",
@@ -162,6 +178,7 @@ observeEvent({input$cidade},{
           update_view = FALSE,
           focus_layer = FALSE,
         ) %>%
+        # Render city indicator
         add_polygon(
           data = tempo_filtrado_sf(),
           fill_colour = "valor",
@@ -189,6 +206,7 @@ observeEvent({input$cidade},{
       proxy %>%
         clear_polygon(layer_id = "acess_cum_go") %>%
         clear_legend(layer_id = "acess_cum_go") %>%
+        # Render city limits
         add_polygon(
           data = limits_filtrado,
           stroke_colour = "#616A6B",
@@ -197,6 +215,7 @@ observeEvent({input$cidade},{
           update_view = FALSE,
           focus_layer = FALSE
         ) %>%
+        # Render city indicator
         add_polygon(
           data = atividade_filtrada_min_sf(),
           fill_colour = "valor",
@@ -220,6 +239,7 @@ observeEvent({input$cidade},{
 })
 
 
+# Observe any change on the atrributes on the city and change the map accordingly
 observeEvent({c(input$indicador, 
                 input$modo_todos, input$modo_ativo, 
                 input$atividade_cum, input$atividade_min, 
