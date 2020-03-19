@@ -116,7 +116,17 @@
     {"pt": "Mais informações podem ser encontradas na seção de resultados do", 
     "en": "More information (portuguese only) can be found at the results section in the"},
     {"pt": "Gráficos", "en": "Charts"},
-    {"pt": "https://www.ipea.gov.br/acessooportunidades/publication/2019_td2535/", "en": "https://www.ipea.gov.br/acessooportunidades/en/publication/2019_td2535/"}
-    
+    {"pt": "https://www.ipea.gov.br/acessooportunidades/publication/2019_td2535/", "en": "https://www.ipea.gov.br/acessooportunidades/en/publication/2019_td2535/"},
+    {"pt": "Razão entre a média do número de", "en": "Ration between the average number of"},
+    {"pt": "acessíveis pelos 10% mais ricos pelos 40% mais pobres", "en": "accessible by the 10% richest and the 40% poorest"},
+    {"pt": "empregos", "en": "jobs"},
+    {"pt": "escolas", "en": "schools"},
+    {"pt": "escolas de educação infantil", "en": "early childhood schools"},
+    {"pt": "escolas de educação fundamental", "en": "primary education schools"},
+    {"pt": "escolas de educação média", "en": "high schools"},
+    {"pt": "equipamentos de saúde", "en": "healthcare facitilies"},
+    {"pt": "equipamentos de saúde de baixa complexidade", "en": "low-complexity healthcare facitilies"},
+    {"pt": "equipamentos de saúde de média complexidade", "en": "medium-complexity healthcare facitilies"},
+    {"pt": "equipamentos de saúde de alta complexidade", "en": "high-complexity healthcare facitilies"}
     ]
 }
