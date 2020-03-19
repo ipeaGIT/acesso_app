@@ -1,0 +1,13 @@
+name: accessibilityatlas
+title: accessibilityatlas
+username:
+account: rafa-pereira-br
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1963203
+bundleId: 2895371
+url: https://rafa-pereira-br.shinyapps.io/accessibilityatlas/
+when: 1584560920.66803
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .directory|.Rprofile|cleaning.R
