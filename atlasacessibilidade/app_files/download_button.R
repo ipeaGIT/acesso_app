@@ -152,13 +152,45 @@ output$downloadPlot <- downloadHandler(
     
     if (input$graph_type %in% c("palma_renda", "palma_cor")) {
       
+      legend_subtitle <- ifelse(input_atividade_graph() == "TT", i18n()$t("empregos"),
+                                ifelse(
+                                  input_atividade_graph() == "ET", i18n()$t("escolas"),
+                                  ifelse(
+                                    input_atividade_graph() == "EI", i18n()$t("escolas de educação infantil"),
+                                    ifelse(
+                                      input_atividade_graph() == "EF", i18n()$t("escolas de educação fundamental"),
+                                      ifelse(
+                                        input_atividade_graph() == "EM", i18n()$t("escolas de educação média"),
+                                        ifelse(
+                                          input_atividade_graph() == "ST", i18n()$t("equipamentos de saúde"),
+                                          ifelse(
+                                            input_atividade_graph() == "SB", i18n()$t("equipamentos de saúde de baixa complexidade"),
+                                            ifelse(
+                                              input_atividade_graph() == "SM", i18n()$t("equipamentos de saúde de média complexidade"),
+                                              ifelse(
+                                                input_atividade_graph() == "SA", i18n()$t("equipamentos de saúde de alta complexidade"), input_atividade_graph())))))))))
       
-      title_plot <- sprintf("%s %s %s %s %s %s", make_title_plots()$graph, make_title_plots()$modo, 
-                            make_title_plots()$atividade, i18n()$t("em"), 
-                            input_tempo_graph(), i18n()$t("minutos"))
+      
+      title_plot <- sprintf("%s %s %s %s \n%s %s %s %s %s", 
+                            i18n()$t("Desigualdade de acesso a"),
+                            i18n()$t(legend_subtitle),
+                            make_title_plots()$modo, 
+                            i18n()$t("em"), 
+                            input_tempo_graph(), 
+                            i18n()$t("minutos"),
+                            i18n()$t("entre grupos de"),
+                            make_title_plots()$graph,
+                            ifelse(input$selected_language == "en", "groups", "")
+      )
+      
       legend_plot <- switch(input$graph_type, 
-                            "palma_renda" = i18n()$t("Razão da acessibilidade cumulativa dos 10% mais ricos pelos 40% mais pobres"), 
-                            "palma_cor" = i18n()$t("Razão da acessibilidade cumulativa da população branca pela população negra")) 
+                            "palma_renda" = 
+                              sprintf("%s %s %s", 
+                                      i18n()$t("Razão entre a média do número de"), 
+                                      i18n()$t(legend_subtitle),
+                                      i18n()$t("acessíveis pelos 10% mais ricos pelos 40% mais pobres")), 
+                            "palma_cor" = 
+                              i18n()$t("Razão da acessibilidade cumulativa da população branca pela população negra")) 
       
       new_save <- tempo_filtrado_graph() %>%
         mutate(nome_muni = factor(nome_muni)) %>%
@@ -191,12 +223,19 @@ output$downloadPlot <- downloadHandler(
     
     else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
       
+      title_plot <- sprintf("%s %s \n%s %s %s %s", 
+                            i18n()$t("Desigualdade de tempo de viagem"),
+                            make_title_plots()$modo,
+                            make_title_plots()$atividade,
+                            i18n()$t("entre grupos de"),
+                            make_title_plots()$graph,
+                            ifelse(input$selected_language == "en", "groups", "")
+      )
       
-      title_plot <- sprintf("%s %s %s", make_title_plots()$graph, 
-                            make_title_plots()$modo, make_title_plots()$atividade)
       legend_plot <- switch(input$graph_type, 
                             "dumbell_renda" = i18n()$t("Média do tempo mínimo de viagem por renda"), 
                             "dumbell_cor" = i18n()$t("Média do tempo mínimo de viagem por cor")) 
+      
       
       new_save <- atividade_filtrada_graph() %>%
         mutate(nome_muni = factor(nome_muni))

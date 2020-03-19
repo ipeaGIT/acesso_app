@@ -91,7 +91,7 @@
     {"pt": "indicador", "en": "indicator"},
     {"pt": "atividade", "en": "activity"},
     {"pt": "tempo_viagem", "en": "time_threshold"},
-    {"pt": "Desigualdade à atividade mais próxima", "en": "Inequality to the nearest activity"},
+    {"pt": "Desigualdade à atividade mais próxima", "en": "Inequality in access to the closest activity"},
     {"pt": "Pobres Q1", "en": "Poorest Q1"},
     {"pt": "Ricos Q5", "en": "Richest Q5"},
     {"pt": "Valor", "en": "Value"},
@@ -112,7 +112,7 @@
     {"pt": "dumbell_renda", "en": "dumbell_income"},
     {"pt": "dumbell_cor", "en": "dumbell_color"},
     {"pt": "<ul><li><strong>Razão de Desigualdade</strong> compara o número de oportunidades acessíveis (indicador cumulativo) entre grupos de <strong>cor</strong> ou <strong>renda</strong>. O gráfico mostra a razão entre o número médio de oportunidades acessíveis de pessoas brancas / negras, ou da média de oportunidades acessíveis pelos 10% mais ricos / 40% mais pobres.</li><li><strong>Desigualdade à atividade mais próxima</strong> compara o tempo de viagem até a oportunidade mais próxima para diferentes grupos de cor (brancos e negros) e renda (20% mais ricos e 20% mais pobres)</li></ul>", 
-    "en": "<ul><li><strong>Inequality ratio </strong> compares the number of accessible opportunities (cumulative indicador) between groups of <strong>color/race</strong> or <strong>income</strong>. The chart shows the ratio between the average number of opportunities accessible by white and black people, or the average number of opportunities accessible by the richest 10% and the poorest 40%.</li><li><strong>Inequality to the nearest activity</strong> compares travel times to the nearest opportunity for different groups of color/race (whites and blacks) and income (20% richest and 20% poorest)</li></ul>"},
+    "en": "<ul><li><strong>Inequality ratio </strong> compares the number of accessible opportunities (cumulative indicador) between groups of <strong>color/race</strong> or <strong>income</strong>. The chart shows the ratio between the average number of opportunities accessible by white and black people, or the average number of opportunities accessible by the richest 10% and the poorest 40%.</li><li><strong>Inequality in access to the closest activity</strong> compares travel times to the nearest opportunity for different groups of color/race (whites and blacks) and income (20% richest and 20% poorest)</li></ul>"},
     {"pt": "Mais informações podem ser encontradas na seção de resultados do", 
     "en": "More information (portuguese only) can be found at the results section in the"},
     {"pt": "Gráficos", "en": "Charts"},
@@ -127,6 +127,11 @@
     {"pt": "equipamentos de saúde", "en": "healthcare facitilies"},
     {"pt": "equipamentos de saúde de baixa complexidade", "en": "low-complexity healthcare facitilies"},
     {"pt": "equipamentos de saúde de média complexidade", "en": "medium-complexity healthcare facitilies"},
-    {"pt": "equipamentos de saúde de alta complexidade", "en": "high-complexity healthcare facitilies"}
+    {"pt": "equipamentos de saúde de alta complexidade", "en": "high-complexity healthcare facitilies"},
+    {"pt": "Desigualdade de acesso a", "en": "Inequality in access to"},
+    {"pt": "entre grupos de", "en": "between"},
+    {"pt": "renda", "en": "income"},
+    {"pt": "cor", "en": "color"},
+    {"pt": "Desigualdade de tempo de viagem", "en": "Inequality in travel time"}
     ]
 }

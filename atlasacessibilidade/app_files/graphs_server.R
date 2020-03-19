@@ -58,10 +58,10 @@ make_title_plots <- reactive({
   
   # make title plot
   title_plot_graph <- switch(input$graph_type, 
-                             "palma_renda" = i18n()$t("Desigualdade por renda"), 
-                             "palma_cor" = i18n()$t("Desigualdade por cor"),
-                             "dumbell_renda" = i18n()$t("Desigualdade por renda"),
-                             "dumbell_cor" = i18n()$t("Desigualdade por cor")) 
+                             "palma_renda" = i18n()$t("renda"), 
+                             "palma_cor" = i18n()$t("cor"),
+                             "dumbell_renda" = i18n()$t("renda"),
+                             "dumbell_cor" = i18n()$t("cor")) 
   
   title_plot_modo <- switch(input$modo_todos_graph, 
                             "tp" = i18n()$t("por transporte público"), 
@@ -160,7 +160,18 @@ output$output_graph <- renderHighchart({
                                               input_atividade_graph() == "SA", i18n()$t("equipamentos de saúde de alta complexidade"), input_atividade_graph())))))))))
     
     
-    title_plot <- sprintf("%s %s %s %s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade, i18n()$t("em"), input_tempo_graph(), i18n()$t("minutos"))
+    title_plot <- sprintf("%s %s %s %s %s %s %s %s %s", 
+                          i18n()$t("Desigualdade de acesso a"),
+                          i18n()$t(legend_subtitle),
+                          make_title_plots()$modo, 
+                          i18n()$t("em"), 
+                          input_tempo_graph(), 
+                          i18n()$t("minutos"),
+                          i18n()$t("entre grupos de"),
+                          make_title_plots()$graph,
+                          ifelse(input$selected_language == "en", "groups", "")
+                          )
+    
     legend_plot <- switch(input$graph_type, 
                           "palma_renda" = 
                             sprintf("%s %s %s", 
@@ -208,7 +219,15 @@ output$output_graph <- renderHighchart({
   } else if (input$graph_type %in% c("dumbell_renda", "dumbell_cor")) {
     
     
-    title_plot <- sprintf("%s %s %s", make_title_plots()$graph, make_title_plots()$modo, make_title_plots()$atividade)
+    title_plot <- sprintf("%s %s %s %s %s %s", 
+                          i18n()$t("Desigualdade de tempo de viagem"),
+                          make_title_plots()$modo,
+                          make_title_plots()$atividade,
+                          i18n()$t("entre grupos de"),
+                          make_title_plots()$graph,
+                          ifelse(input$selected_language == "en", "groups", "")
+                          )
+    
     legend_plot <- switch(input$graph_type, 
                           "dumbell_renda" = i18n()$t("Média do tempo mínimo de viagem por renda"), 
                           "dumbell_cor" = i18n()$t("Média do tempo mínimo de viagem por cor")) 
