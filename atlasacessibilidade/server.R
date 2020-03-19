@@ -1,4 +1,4 @@
-  
+
 # 1) LOAD DATA ----------------------------------------------------------------------------------------
 
 # MAP DATA
@@ -36,10 +36,10 @@ function(input, output, session) {
                        renderUI({
                          div(style = "width: 50%;margin: 0 auto;", 
                              pickerInput(inputId = 'selected_language',
-                                         # label = "Escolha a lingua:",
                                          choices = c(a = "pt", b = "en"),
-                                         choicesOpt = list(content = (c("<p><img src='img/pt.png' width=30px>&nbsp;&nbsp;Português</img></p>",
-                                                                        "<p><img src='img/en_new.png' width=30px>&nbsp;&nbsp; English</img></p>"))),
+                                         choicesOpt = list(
+                                           content = (c("<p><img src='img/pt.png' width=30px>&nbsp;&nbsp;Português</img></p>",
+                                                        "<p><img src='img/en_new.png' width=30px>&nbsp;&nbsp; English</img></p>"))),
                                          selected = input$selected_language),
                          )
                        }),
@@ -57,21 +57,21 @@ function(input, output, session) {
   # Show the model on start up ...
   showModal(query_modal)
   
-
+  
   # 3) RENDER LANDING PAGE -------------------------------------------------------------------------
-
+  
   observeEvent(input$openDetails, {
     
     output$landing_page <- renderUI({
       
-    if (input$selected_language == "pt") {
-      
-      includeMarkdown("www/landing_page/home_pt.md")
-      
-    } else if (input$selected_language == "en") {
-      
-      includeMarkdown("www/landing_page/home_en.md")
-    }
+      if (input$selected_language == "pt") {
+        
+        includeMarkdown("www/landing_page/home_pt.md")
+        
+      } else if (input$selected_language == "en") {
+        
+        includeMarkdown("www/landing_page/home_en.md")
+      }
       
       
     })
@@ -100,7 +100,7 @@ function(input, output, session) {
   
   # Translate graphs title tab
   output$title_graph = renderText({
-    switch(input$selected_language, "pt"="Gráficos", "en"="Plots") 
+    switch(input$selected_language, "pt"="Gráficos", "en"="Charts") 
   })  
   
   
@@ -119,8 +119,8 @@ function(input, output, session) {
   
   # 10) SERVER: MAP --------------------------------------------------------------------------------
   source("app_files/map_server.R", local = TRUE)
-
-
-
+  
+  
+  
   
 }
