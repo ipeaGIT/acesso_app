@@ -2,7 +2,7 @@
 
 ## Instructions
 
-After cloning the repository, start by locating the `atlasacessibilidade/acesso_app.Rproj` file and opening it in RStudio. 
+After cloning the repository, start by locating the `acesso_app.Rproj` file and opening it in RStudio. 
 
 ### Data setup
 
