@@ -95,12 +95,16 @@ function(input, output, session) {
   
   # Translate map title stab
   output$title_map = renderText({
-    switch(input$selected_language, "pt"="Mapa", "en"="Map") 
+    
+    ifelse(input$selected_language == "pt", "Mapa", "Map")
+    
   })  
   
   # Translate graphs title tab
   output$title_graph = renderText({
-    switch(input$selected_language, "pt"="Gráficos", "en"="Charts") 
+    
+    ifelse(input$selected_language == "pt", "Gráficos", "Charts")
+    
   })  
   
   

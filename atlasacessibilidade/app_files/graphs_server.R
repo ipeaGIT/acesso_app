@@ -26,7 +26,9 @@ modo_filtrado_graph <- reactive({
 # Reative to time threshold
 input_atividade_graph <- reactive({
   
-  if(input$graph_type %in% c("palma_renda", "palma_cor")) {input$atividade_graph_cum} else {input$atividade_graph_tmi}
+  ifelse(input$graph_type %in% c("palma_renda", "palma_cor"), 
+         input$atividade_graph_cum, 
+         input$atividade_graph_tmi)
   
 })
 
@@ -42,7 +44,9 @@ atividade_filtrada_graph <- reactive({
 # Reative to time threshold
 input_tempo_graph <- reactive({
   
-  if(input$modo_todos_graph %in% c("caminhada", "bicicleta")) {input$tempo_ativo_graph} else {input$tempo_tp_graph}
+  ifelse(input$modo_todos_graph %in% c("caminhada", "bicicleta"),
+         input$tempo_ativo_graph, 
+         input$tempo_tp_graph)
   
 })
 
@@ -132,6 +136,8 @@ make_title_plots <- reactive({
 # Render graphs
 output$output_graph <- renderHighchart({
   
+  
+  req(input$graph_type)
   
   # GRAPH FOR PALMA RATIO 
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
