@@ -179,7 +179,10 @@ output$output_graph <- renderHighchart({
                                     i18n()$t(legend_subtitle),
                                     i18n()$t("acessíveis pelos 10% mais ricos pelos 40% mais pobres")), 
                           "palma_cor" = 
-                            i18n()$t("Razão da acessibilidade cumulativa da população branca pela população negra")) 
+                            sprintf("%s %s %s", 
+                                    i18n()$t("Razão entre a média do número de"), 
+                                    i18n()$t(legend_subtitle),
+                                    i18n()$t("acessíveis pelos brancos pelos negros"))) 
     
     print(title_plot)
     print(legend_plot)

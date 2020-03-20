@@ -27,7 +27,7 @@ output$graphs <- renderUI({
   names(list_saude_graph) <-c(i18n()$t("Saúde"))
   names(list_edu_graph) <-c(i18n()$t("Educação"))
   names(list_types_graphs_palma) <-c(i18n()$t("Razão de Desigualdade"))
-  names(list_types_graphs_dumbell) <- c(i18n()$t("Desigualdade à atividade mais próxima"))
+  names(list_types_graphs_dumbell) <- c(i18n()$t("Desigualdade de acesso à atividade mais próxima"))
   
   
   

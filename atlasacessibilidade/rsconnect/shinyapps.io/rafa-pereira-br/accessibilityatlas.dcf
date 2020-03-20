@@ -5,9 +5,9 @@ account: rafa-pereira-br
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1963203
-bundleId: 2898662
+bundleId: 2899311
 url: https://rafa-pereira-br.shinyapps.io/accessibilityatlas/
-when: 1584636664.56109
+when: 1584648388.33913
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .directory|.Rprofile|cleaning.R
