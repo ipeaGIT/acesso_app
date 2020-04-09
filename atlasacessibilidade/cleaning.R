@@ -1,4 +1,4 @@
-source("../../acesso_oport/R/fun/setup.R")
+source("../acesso_oport/R/fun/setup.R")
 
 # abrir base final
 acess <- read_rds("../../data/output_base_final/dados2019_AcessOport_v1.0_20200116_interno.rds")
@@ -128,11 +128,13 @@ write_rds(hex_n_vazios %>% setDT(), "atlasacessibilidade/data/hex.rds")
 
 # get city limits
 
-limits <- lapply(munis_df$code_muni, geobr::read_municipality)
+
+limits <- lapply(munis_df_2019$code_muni, geobr::read_municipality)
 
 limits1 <- do.call(rbind, limits) %>%
   st_sf(crs = 4326) %>%
-  left_join(munis_df %>% dplyr::select(code_muni, abrev_muni), by = c("code_muni"))
+  left_join(munis_df_2019 %>% dplyr::select(code_muni, abrev_muni), by = c("code_muni")) %>%
+  st_cast("POLYGON")
 
 
 # save

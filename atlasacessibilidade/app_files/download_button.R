@@ -185,7 +185,7 @@ output$downloadPlot <- downloadHandler(
       
       legend_plot <- switch(input$graph_type, 
                             "palma_renda" = 
-                              sprintf("%s %s %s", 
+                              sprintf("%s %s \n%s", 
                                       i18n()$t("Razão entre a média do número de"), 
                                       i18n()$t(legend_subtitle),
                                       i18n()$t("acessíveis pelos 10% mais ricos pelos 40% mais pobres")), 
@@ -201,7 +201,7 @@ output$downloadPlot <- downloadHandler(
         geom_text(aes(y = palma_ratio, x = nome_muni, label = round(palma_ratio,1)), 
                   size = 3, position = position_stack(vjust = 0.88), color='gray99') +
         geom_hline(yintercept = 1, color = "grey90", linetype = "dashed") +
-        scale_y_continuous(breaks = c(0, 1, 3, 6, 9))+
+        # scale_y_continuous(breaks = c(0, 1, 3, 6, 9))+
         coord_flip()+
         theme_ipsum(grid = "X", base_family = "Helvetica")+
         labs(x = "", y = ifelse(input$graph_type == "palma_renda", i18n()$t("Razão de Palma"), i18n()$t("Razão de Desigualdade por Cor")),
@@ -254,6 +254,7 @@ output$downloadPlot <- downloadHandler(
                                     ifelse(input$graph_type == "dumbell_renda", i18n()$t("Ricos Q5"), i18n()$t("Brancos")))) +
         theme_ipsum(grid= "X", base_family = "Helvetica") +
         labs(x = i18n()$t("Minutos"), y = "", title = title_plot, subtitle = legend_plot)+
+        expand_limits(x = 0)+
         theme(plot.title = element_text(size=9, hjust=0),
               plot.subtitle = element_text(size = 7, hjust=0),
               plot.caption = element_text(size=7),
