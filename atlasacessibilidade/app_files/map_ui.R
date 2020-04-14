@@ -28,6 +28,7 @@ output$page_content <- renderUI({
     
     
     # 1) CITY SELECTION -------------------------------------------------------
+    # https://www.rapidtables.com/code/text/unicode-characters.html
     
     pickerInput(inputId = "cidade",
                 label = h1(i18n()$t("Escolha a cidade:")),
@@ -35,23 +36,23 @@ output$page_content <- renderUI({
                   'Norte' = c("Belém" = "bel",
                               "Manaus" = "man"),
                   'Nordeste' = c("Fortaleza" = "for",
-                                 "Maceió" = "mac",
+                                 "Macei\u00F3" = "mac",
                                  "Natal" = "nat",
                                  "Recife" = "rec",
                                  "Salvador" = "sal",
-                                 "São Luís" = "slz"),
+                                 "S\u00E3o Lu\u00EDs" = "slz"),
                   'Sudeste' = c("Belo Horizonte" = "bho",
                                 "Campinas" = "cam",
                                 "Duque de Caxias" = "duq",
                                 "Guarulhos" = "gua",
                                 "Rio de Janeiro" = "rio",
-                                "São Gonçalo" = "sgo",
-                                "São Paulo" = "spo"),
+                                "S\u00E3o Gon\u00E7alo" = "sgo",
+                                "S\u00E3o Paulo" = "spo"),
                   'Sul' = c("Curitiba" = "cur",
                             "Porto Alegre" = "poa"),
-                  'Centro-Oeste' = c("Brasília" = "bsb",
+                  'Centro-Oeste' = c("Bras\u00EDlia" = "bsb",
                                      "Campo Grande" = "cgr",
-                                     "Goiânia" = "goi")
+                                     "Goi\u00E3nia" = "goi")
                 ),
                 choicesOpt = list(
                   icon = c("", 
