@@ -1,5 +1,12 @@
-# Accessibility Atlas
+<div align="center">
 
-Welcome to the Accessibility Atlas, an app to visualize and explore estimates of people’s access to employment, education and health services by transport mode in the largest cities of Brazil. Start choosing the type of data visualization: `Map` or `Charts`
+<img width="700" src="img/logo_en_teste.png" hspace="50" vspace="0">
 
-* The Accessibility Atlas app presents the results of the [Access to Opportunities Project](https://www.ipea.gov.br/acessooportunidades/en/).
+<h1 style="font-size: 30px;">Explore the results</h1>
+
+<p style="max-width: 1000px; padding-left: 50px; font-size: 30px; ; padding-top: 20px;">
+Start choosing the type of data visualization: <code>Map</code> or <code>Charts</code>
+</a>
+
+
+</div>
