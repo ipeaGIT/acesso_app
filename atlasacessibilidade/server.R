@@ -110,19 +110,19 @@ function(input, output, session) {
   
   
   # 6) UI: GRAPHS ----------------------------------------------------------------------------------
-  source("app_files/graphs_ui.R", local = TRUE, encoding = "UTF-8")
+  source("app_files/graphs_ui.R", local = TRUE)
   
   # 7) UI: MAP -------------------------------------------------------------------------------------
-  source("app_files/map_ui.R", local = TRUE, encoding = "UTF-8")
+  source("app_files/map_ui.R", local = TRUE)
   
   # 8) DOWNLOAD BUTTON -----------------------------------------------------------------------------
-  source("app_files/download_button.R", local = TRUE, encoding = "UTF-8")
+  source("app_files/download_button.R", local = TRUE)
   
   # 9) SERVER: GRAPHS ------------------------------------------------------------------------------
-  source("app_files/graphs_server.R", local = TRUE, encoding = "UTF-8")
+  source("app_files/graphs_server.R", local = TRUE)
   
   # 10) SERVER: MAP --------------------------------------------------------------------------------
-  source("app_files/map_server.R", local = TRUE, encoding = "UTF-8")
+  source("app_files/map_server.R", local = TRUE)
   
   
   
