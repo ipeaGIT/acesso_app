@@ -17,7 +17,6 @@ shinyUI(
         # https://divadnojnarg.github.io/blog/customsliderinput/
         chooseSliderSkin("HTML5", color = "#112446")
         # Use loading page
-        , use_waiter(include_js = FALSE)
         , waiter_show_on_load(html = spin_loader(), color = "##F4F6F6")
         # Start navbar page
         , navbarPage("", id = "tabs",
