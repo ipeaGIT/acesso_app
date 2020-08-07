@@ -90,7 +90,7 @@ output$page_content <- renderUI({
       absolutePanel(
         id = "controls_animated", class = "w3-container w3-animate-opacity", 
         fixed = TRUE, draggable = FALSE,
-        top = 180, right = 20, width = 350,
+        top = 155, right = 10, width = 350,
         
         
         # 2) INDICATOR SELECTION --------------------------------------------------

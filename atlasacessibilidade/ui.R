@@ -31,7 +31,7 @@ shinyUI(
                               # Create the side panel  
                               absolutePanel(id = "controls", class = "panel panel-default", 
                                             fixed = TRUE, draggable = FALSE,
-                                            top = 80, right = 20, width = 350, height = 615,
+                                            top = 60, right = 10, width = 350, height = 550,
                                             # Output the 'UI' that was generated in the server
                                             uiOutput('page_content')
                               )
@@ -41,13 +41,13 @@ shinyUI(
                               # Create the side panel
                               absolutePanel(id = "controls_graphs", class = "panel panel-default", 
                                             fixed = TRUE, draggable = FALSE,
-                                            top = 80, right = 20, width = 420, height = 615,
+                                            top = 60, right = 10, width = 350,
                                             uiOutput('graphs')
                               ),
                               # Panel to put download button
                               absolutePanel(id = "download_panel", class = "panel panel-default", 
                                             fixed = TRUE, draggable = FALSE,
-                                            top = 80, right = 380, width = 200, height = 100,
+                                            top = 70, right = 300, width = 200, height = 100,
                                             dropdownButton(
                                                 uiOutput('ui_download_button'),
                                                 hr(),
@@ -66,7 +66,7 @@ shinyUI(
                               absolutePanel(id = "controls_graphs1", class = "panel panel-default", 
                                             fixed = TRUE, draggable = FALSE,
                                             top = 80, left = 80, height = "100%",
-                                            highchartOutput('output_graph', height = "90%")
+                                            highchartOutput('output_graph', height = "90%", width = "100%")
                               )
                      )
                      

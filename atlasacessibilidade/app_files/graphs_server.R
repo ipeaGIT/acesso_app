@@ -197,9 +197,9 @@ output$output_graph <- renderHighchart({
     hchart(new, "bar", hcaes(x = nome_muni, y = palma_ratio),
            name = "Palma Ratio") %>%
       hc_title(text = title_plot,
-               align = "left", x = 50) %>%
+               align = "left", x = 10) %>%
       hc_subtitle(text = legend_plot,
-                  align = "left", x = 50) %>%
+                  align = "left", x = 10) %>%
       hc_xAxis(opposite = FALSE,
                title = list(text = "")
                , labels = list(
