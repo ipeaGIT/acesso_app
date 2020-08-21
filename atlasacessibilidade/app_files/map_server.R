@@ -12,6 +12,7 @@ a_city <- reactive({
   
 })
 
+
 # Filter the city
 
 cidade_filtrada <- reactive({
@@ -138,10 +139,11 @@ waiter_hide()
 observeEvent({input$cidade},{
   
   
-  # Filter cities limits
-  limits_filtrado <- filter(limits, abrev_muni == input$cidade)
   
   if (input$cidade != "") {
+    
+    # Filter cities limits
+    limits_filtrado <- filter(limits, abrev_muni == input$cidade)
     
     centroid_go <- filter(centroids, abrev_muni == input$cidade)
     
