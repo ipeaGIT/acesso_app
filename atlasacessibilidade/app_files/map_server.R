@@ -154,16 +154,26 @@ output$map <- renderMapdeck({
 # Stop the loading page here !
 waiter_hide()
 
-
-# 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
-observeEvent({v_city$city},{
-  
+# reactive to get city limits
+limits_filtrado <- reactive({
   
   # Filter cities limits
   limits_filtrado <- filter(limits, abrev_muni == v_city$city)
   
+  print(limits_filtrado)
+  
+})
+
+
+centroid_go <- reactive({
   centroid_go <- filter(centroids, abrev_muni == v_city$city)
   
+  print(centroid_go)
+})
+
+
+
+zoom1 <- reactive ({
   
   # Choose zoom based on city: some cities are bigger than others
   if(v_city$city %in% c("spo", "man", "cgr", "bsb")) {
@@ -176,10 +186,20 @@ observeEvent({v_city$city},{
     
   } else {zoom1 <- 10}
   
+  print(zoom1)
+  
+})
+
+
+# 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
+observeEvent({v_city$city},{
+  
+  
+  
   
   # Zoom in on the city when it's choosen
   proxy <- mapdeck_update(map_id = "map") %>%
-    mapdeck_view(location = c(centroid_go$lon, centroid_go$lat), zoom = zoom1,
+    mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
                  duration = 3000, transition = "fly")
   
   # Create map with indicators when the city is first selected
@@ -190,7 +210,7 @@ observeEvent({v_city$city},{
       clear_legend(layer_id = "acess_min_go") %>%
       # Render city limits
       add_polygon(
-        data = limits_filtrado,
+        data = limits_filtrado(),
         stroke_colour = "#616A6B",
         stroke_width = 100,
         fill_opacity = 0,
@@ -227,7 +247,7 @@ observeEvent({v_city$city},{
       clear_legend(layer_id = "acess_cum_go") %>%
       # Render city limits
       add_polygon(
-        data = limits_filtrado,
+        data = limits_filtrado(),
         stroke_colour = "#616A6B",
         stroke_width = 100,
         fill_opacity = 0,
@@ -315,4 +335,3 @@ observeEvent({c(input$indicador,
                   
                   
                 })
-
