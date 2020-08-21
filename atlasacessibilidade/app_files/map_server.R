@@ -5,19 +5,39 @@
 # First we use a reactive expression to choose the input
 # We created a 'fake' city to represent the Brazil map
 
-a_city <- reactive({
+# a_city <- reactive({
+#   
+#   if(input$cidade != "") {input$cidade} else {"fake"}
+#   
+#   
+# })
+
+v_city <- reactiveValues()
+
+observeEvent({input$cidade},{
   
-  if(input$cidade != "") {input$cidade} else {"fake"}
+  if(input$cidade != "") {
+    
+    v_city$city <- input$cidade }
   
+  else {v_city$city <- NULL}
+  
+  
+  
+  print(v_city$city)
   
 })
+
 
 
 # Filter the city
 
 cidade_filtrada <- reactive({
   
-  acess[sigla_muni == a_city()]
+  # only run when city value is not NULL
+  req(v_city$city)
+  
+  acess[sigla_muni == v_city$city]
   
 })
 
@@ -29,9 +49,9 @@ cidade_filtrada <- reactive({
 
 a <- reactive({
   
-  if (a_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {input$modo_todos}
+  if (v_city$city %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {input$modo_todos}
   
-  else if(a_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
+  else if(v_city$city %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
     
     input$modo_ativo }
   
@@ -79,11 +99,11 @@ atividade_filtrada_min <- reactive({
 # Select time threshold
 b <- reactive({
   
-  if (a_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "tp") {input$tempo_tp}
+  if (v_city$city %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "tp") {input$tempo_tp}
   
-  else if  (a_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% c("caminhada", "bicicleta")) {input$tempo_ativo_tp}
+  else if  (v_city$city %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% c("caminhada", "bicicleta")) {input$tempo_ativo_tp}
   
-  else if (a_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {input$tempo_ativo}
+  else if (v_city$city %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {input$tempo_ativo}
   
 })
 
@@ -136,105 +156,101 @@ waiter_hide()
 
 
 # 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
-observeEvent({input$cidade},{
+observeEvent({v_city$city},{
   
   
+  # Filter cities limits
+  limits_filtrado <- filter(limits, abrev_muni == v_city$city)
   
-  if (input$cidade != "") {
+  centroid_go <- filter(centroids, abrev_muni == v_city$city)
+  
+  
+  # Choose zoom based on city: some cities are bigger than others
+  if(v_city$city %in% c("spo", "man", "cgr", "bsb")) {
     
-    # Filter cities limits
-    limits_filtrado <- filter(limits, abrev_muni == input$cidade)
+    zoom1 <- 9
     
-    centroid_go <- filter(centroids, abrev_muni == input$cidade)
+  } else if(v_city$city %in% c("mac", "for", "nat", "rec", "sal", "slz", "bho")) {
     
+    zoom1 <- 11
     
-    # Choose zoom based on city: some cities are bigger than others
-    if(input$cidade %in% c("spo", "man", "cgr", "bsb")) {
-      
-      zoom1 <- 9
-      
-    } else if(input$cidade %in% c("mac", "for", "nat", "rec", "sal", "slz", "bho")) {
-      
-      zoom1 <- 11
-      
-    } else {zoom1 <- 10}
+  } else {zoom1 <- 10}
+  
+  
+  # Zoom in on the city when it's choosen
+  proxy <- mapdeck_update(map_id = "map") %>%
+    mapdeck_view(location = c(centroid_go$lon, centroid_go$lat), zoom = zoom1,
+                 duration = 3000, transition = "fly")
+  
+  # Create map with indicators when the city is first selected
+  if (input$indicador == "CMA") {
     
-    
-    # Zoom in on the city when it's choosen
-    proxy <- mapdeck_update(map_id = "map") %>%
-      mapdeck_view(location = c(centroid_go$lon, centroid_go$lat), zoom = zoom1,
-                   duration = 3000, transition = "fly")
-    
-    # Create map with indicators when the city is first selected
-    if (input$indicador == "CMA") {
-      
-      proxy %>%
-        clear_polygon(layer_id = "acess_min_go") %>%
-        clear_legend(layer_id = "acess_min_go") %>%
-        # Render city limits
-        add_polygon(
-          data = limits_filtrado,
-          stroke_colour = "#616A6B",
-          stroke_width = 100,
-          fill_opacity = 0,
-          update_view = FALSE,
-          focus_layer = FALSE,
-        ) %>%
-        # Render city indicator
-        add_polygon(
-          data = tempo_filtrado_sf(),
-          fill_colour = "valor",
-          fill_opacity = 200,
-          layer_id = "acess_cum_go",
-          palette = "inferno",
-          update_view = FALSE,
-          focus_layer = FALSE,
-          # auto_highlight = TRUE,
-          tooltip = "popup",
-          legend = TRUE,
-          legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
-          legend_format = list( fill_colour = as.integer)
-        )
-      
-      
-    } else if (input$indicador == "TMI") {
-      
-      # create viridis scale in the reverse direction
-      # create matrix
-      colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-      # invert matrix
-      colorss <- apply(colorss, 2, rev)[, 1:3]
-      
-      proxy %>%
-        clear_polygon(layer_id = "acess_cum_go") %>%
-        clear_legend(layer_id = "acess_cum_go") %>%
-        # Render city limits
-        add_polygon(
-          data = limits_filtrado,
-          stroke_colour = "#616A6B",
-          stroke_width = 100,
-          fill_opacity = 0,
-          update_view = FALSE,
-          focus_layer = FALSE
-        ) %>%
-        # Render city indicator
-        add_polygon(
-          data = atividade_filtrada_min_sf(),
-          fill_colour = "valor",
-          fill_opacity = 200,
-          layer_id = "acess_min_go",
-          palette = colorss,
-          update_view = FALSE,
-          tooltip = "popup",
-          legend = TRUE,
-          legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
-          legend_format = list( fill_colour = as.integer)
-        )
-      
-    }
+    proxy %>%
+      clear_polygon(layer_id = "acess_min_go") %>%
+      clear_legend(layer_id = "acess_min_go") %>%
+      # Render city limits
+      add_polygon(
+        data = limits_filtrado,
+        stroke_colour = "#616A6B",
+        stroke_width = 100,
+        fill_opacity = 0,
+        update_view = FALSE,
+        focus_layer = FALSE,
+      ) %>%
+      # Render city indicator
+      add_polygon(
+        data = tempo_filtrado_sf(),
+        fill_colour = "valor",
+        fill_opacity = 200,
+        layer_id = "acess_cum_go",
+        palette = "inferno",
+        update_view = FALSE,
+        focus_layer = FALSE,
+        # auto_highlight = TRUE,
+        tooltip = "popup",
+        legend = TRUE,
+        legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
+        legend_format = list( fill_colour = as.integer)
+      )
     
     
-  } 
+  } else if (input$indicador == "TMI") {
+    
+    # create viridis scale in the reverse direction
+    # create matrix
+    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+    # invert matrix
+    colorss <- apply(colorss, 2, rev)[, 1:3]
+    
+    proxy %>%
+      clear_polygon(layer_id = "acess_cum_go") %>%
+      clear_legend(layer_id = "acess_cum_go") %>%
+      # Render city limits
+      add_polygon(
+        data = limits_filtrado,
+        stroke_colour = "#616A6B",
+        stroke_width = 100,
+        fill_opacity = 0,
+        update_view = FALSE,
+        focus_layer = FALSE
+      ) %>%
+      # Render city indicator
+      add_polygon(
+        data = atividade_filtrada_min_sf(),
+        fill_colour = "valor",
+        fill_opacity = 200,
+        layer_id = "acess_min_go",
+        palette = colorss,
+        update_view = FALSE,
+        tooltip = "popup",
+        legend = TRUE,
+        legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
+        legend_format = list( fill_colour = as.integer)
+      )
+    
+  }
+  
+  
   
   
   
@@ -248,57 +264,55 @@ observeEvent({c(input$indicador,
                 input$tempo_tp, input$tempo_ativo_tp, input$tempo_ativo)},{
                   
                   
-                  if (a_city() != "fake") {
+                  
+                  
+                  if (input$indicador == "TMI") {
                     
+                    # create viridis scale in the reverse direction
+                    # create matrix
+                    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+                    # invert matrix
+                    colorss <- apply(colorss, 2, rev)[, 1:3]
                     
-                    if (input$indicador == "TMI") {
-                      
-                      # create viridis scale in the reverse direction
-                      # create matrix
-                      colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-                      # invert matrix
-                      colorss <- apply(colorss, 2, rev)[, 1:3]
+                    mapdeck_update(map_id = "map") %>%
+                      clear_polygon(layer_id = "acess_cum_go") %>%
+                      clear_legend(layer_id = "acess_cum_go") %>%
+                      add_polygon(
+                        data = atividade_filtrada_min_sf(),
+                        fill_colour = "valor",
+                        fill_opacity = 200,
+                        layer_id = "acess_min_go",
+                        palette = colorss,
+                        update_view = FALSE,
+                        tooltip = "popup",
+                        legend = TRUE,
+                        legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
+                        legend_format = list( fill_colour = as.integer)
+                      )
+                    
+                  } else 
+                    
+                    if (input$indicador == "CMA") {
                       
                       mapdeck_update(map_id = "map") %>%
-                        clear_polygon(layer_id = "acess_cum_go") %>%
-                        clear_legend(layer_id = "acess_cum_go") %>%
+                        clear_polygon(layer_id = "acess_min_go") %>%
+                        clear_legend(layer_id = "acess_min_go") %>%
                         add_polygon(
-                          data = atividade_filtrada_min_sf(),
+                          data = tempo_filtrado_sf(),
                           fill_colour = "valor",
                           fill_opacity = 200,
-                          layer_id = "acess_min_go",
-                          palette = colorss,
+                          layer_id = "acess_cum_go",
+                          palette = "inferno",
                           update_view = FALSE,
+                          focus_layer = FALSE,
+                          # auto_highlight = TRUE,
                           tooltip = "popup",
                           legend = TRUE,
-                          legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
+                          legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
                           legend_format = list( fill_colour = as.integer)
                         )
-                      
-                    } else 
-                      
-                      if (input$indicador == "CMA") {
-                        
-                        mapdeck_update(map_id = "map") %>%
-                          clear_polygon(layer_id = "acess_min_go") %>%
-                          clear_legend(layer_id = "acess_min_go") %>%
-                          add_polygon(
-                            data = tempo_filtrado_sf(),
-                            fill_colour = "valor",
-                            fill_opacity = 200,
-                            layer_id = "acess_cum_go",
-                            palette = "inferno",
-                            update_view = FALSE,
-                            focus_layer = FALSE,
-                            # auto_highlight = TRUE,
-                            tooltip = "popup",
-                            legend = TRUE,
-                            legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
-                            legend_format = list( fill_colour = as.integer)
-                          )
-                      }
-                    
-                    
-                  }
+                    }
+                  
+                  
                 })
 
