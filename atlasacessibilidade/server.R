@@ -4,27 +4,27 @@
 # MAP DATA
 
 # Accessiblity data
-acess <- read_rds("data/acess_wide.rds")
+acess <- readRDS("data/acess_wide.rds")
 
 # Hex Spatial Sf Data
-hex <- read_rds("data/hex.rds")
+hex <- readRDS("data/hex.rds")
 
 # Cities centroids data
-centroids <- read_rds("data/cities_centroids.rds")
+centroids <- readRDS("data/cities_centroids.rds") %>% setDT()
 
 # Cities limits data
-limits <- read_rds(("data/cities_limits.rds"))
+limits <- readRDS(("data/cities_limits.rds")) %>% setDT()
 
 #####################################
 
 # GRAPHS DATA
 # Palma data
-palma_renda <- read_rds("data/acess_palma_renda.rds") %>% setDT()
-palma_cor <- read_rds("data/acess_palma_cor.rds") %>% setDT()
+palma_renda <- readRDS("data/acess_palma_renda.rds") %>% setDT()
+palma_cor <- readRDS("data/acess_palma_cor.rds") %>% setDT()
 
 # Dumbell data
-dumbell_renda <- read_rds("data/acess_dumbell_renda.rds") %>% setDT()
-dumbell_cor <- read_rds("data/acess_dumbell_cor.rds") %>% setDT()
+dumbell_renda <- readRDS("data/acess_dumbell_renda.rds") %>% setDT()
+dumbell_cor <- readRDS("data/acess_dumbell_cor.rds") %>% setDT()
 
 # Define a server for the Shiny app
 function(input, output, session) {

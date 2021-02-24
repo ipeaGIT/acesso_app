@@ -68,7 +68,12 @@ modo_filtrado <- reactive({
 
 indicador_filtrado <- reactive({
   
-  modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$indicador))
+  cols <- c('id_hex', 'P001', grep(input$indicador, colnames(modo_filtrado()), ignore.case = TRUE, value = TRUE))
+  
+  modo_filtrado()[, ..cols]
+  
+  
+  # modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$indicador))
   
 })
 
@@ -77,7 +82,11 @@ indicador_filtrado <- reactive({
 # Reactive para a atividade para indicador cumulativo
 atividade_filtrada <- reactive({
   
-  indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_cum))
+  cols <- c('id_hex', 'P001', grep(input$atividade_cum, colnames(indicador_filtrado()), ignore.case = TRUE, value = TRUE))
+  
+  indicador_filtrado()[, ..cols]
+  
+  # indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_cum))
   
 })
 
@@ -85,10 +94,17 @@ atividade_filtrada <- reactive({
 # Reactive para a atividade para indicador tempo minimo
 atividade_filtrada_min <- reactive({
   
-  indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_min)) %>%
-    rename(id_hex = 1, P001 = 2, valor = 3) %>%
-    mutate(id = 1:n()) %>%
-    mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos")))
+  cols <- c('id_hex', 'P001', grep(input$atividade_min, colnames(indicador_filtrado()), ignore.case = TRUE, value = TRUE))
+  
+  indicador_filtrado1 <- indicador_filtrado()[, ..cols]
+  colnames(indicador_filtrado1) <- c('id_hex', 'P001', 'valor')
+  indicador_filtrado1[, id := 1:nrow(indicador_filtrado1)]
+  indicador_filtrado1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos"))]
+  
+  # indicador_filtrado() %>% dplyr::select(id_hex, P001, matches(input$atividade_min)) %>%
+  #   rename(id_hex = 1, P001 = 2, valor = 3) %>%
+  #   mutate(id = 1:n()) %>%
+  #   mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos")))
   
 })
 
@@ -110,11 +126,19 @@ b <- reactive({
 # Reactive for time threshold
 tempo_filtrado <- reactive({
   
-  atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(b()))) %>%
-    rename(id_hex = 1, P001 = 2, valor = 3) %>%
-    mutate(id = 1:n()) %>%
-    # Create tiptool message
-    mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%"))
+  cols <- c('id_hex', 'P001', grep(b(), colnames(atividade_filtrada()), ignore.case = TRUE, value = TRUE))
+  
+  atividade_filtrada1 <- atividade_filtrada()[, ..cols]
+  colnames(atividade_filtrada1) <- c('id_hex', 'P001', 'valor')
+  atividade_filtrada1[, id := 1:nrow(atividade_filtrada1)]
+  atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%")]
+  
+  
+  # atividade_filtrada() %>% dplyr::select(id_hex, P001, matches(as.character(b()))) %>%
+  #   rename(id_hex = 1, P001 = 2, valor = 3) %>%
+  #   mutate(id = 1:n()) %>%
+  #   # Create tiptool message
+  #   mutate(popup = paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%"))
   
 })
 
@@ -122,18 +146,27 @@ tempo_filtrado <- reactive({
 
 atividade_filtrada_min_sf <- reactive({
   
-  atividade_filtrada_min() %>% setDT() %>%
-    merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
-    st_sf(crs = 4326)
+  atividade_filtrada_min_sf1 <- merge(atividade_filtrada_min(), hex, by = "id_hex", all.x = TRUE, sort = FALSE)
+  
+  atividade_filtrada_min_sf1 <- st_sf(atividade_filtrada_min_sf1, crs = 4326)
+  
+  # atividade_filtrada_min() %>% setDT() %>%
+  #   merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
+  #   st_sf(crs = 4326)
   
 })
 
 
 tempo_filtrado_sf <- reactive({
   
-  tempo_filtrado() %>% setDT() %>%
-    merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
-    st_sf(crs = 4326)
+  tempo_filtrado_sf1 <- merge(tempo_filtrado(), hex, by = "id_hex", all.x = TRUE, sort = FALSE)
+  
+  tempo_filtrado_sf1 <- st_sf(tempo_filtrado_sf1, crs = 4326)
+  
+  
+  # tempo_filtrado() %>% setDT() %>%
+  #   merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
+  #   st_sf(crs = 4326)
   
   
 })
@@ -158,7 +191,7 @@ waiter_hide()
 limits_filtrado <- reactive({
   
   # Filter cities limits
-  limits_filtrado <- filter(limits, abrev_muni == v_city$city)
+  limits_filtrado <- limits[abrev_muni == v_city$city] %>% st_sf(crs = 4326)
   
   print(limits_filtrado)
   
@@ -166,7 +199,8 @@ limits_filtrado <- reactive({
 
 
 centroid_go <- reactive({
-  centroid_go <- filter(centroids, abrev_muni == v_city$city)
+  
+  centroid_go <- centroids[abrev_muni == v_city$city]
   
   print(centroid_go)
 })

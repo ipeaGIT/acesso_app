@@ -38,8 +38,8 @@ prepare_data_download <- reactive({
   # define column names based on language
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
-    output_csv_palma <- output_csv_palma %>% select(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
-                                                    tempo_viagem, pobre, rico, palma_ratio)
+    output_csv_palma <- output_csv_palma[.(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
+                                                    tempo_viagem, pobre, rico, palma_ratio)]
     
     colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
                                     i18n()$t("sigla_muni"),
@@ -57,7 +57,7 @@ prepare_data_download <- reactive({
     
     # define column names based on language
     
-    output_csv_palma <- output_csv_palma %>% select(nome_muni, sigla_muni, modo, indicador, atividade = nome, total, low, high)
+    output_csv_palma <- output_csv_palma[.(nome_muni, sigla_muni, modo, indicador, atividade = nome, total, low, high)]
     
     colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
                                     i18n()$t("sigla_muni"),
@@ -203,7 +203,7 @@ output$downloadPlot <- downloadHandler(
         geom_hline(yintercept = 1, color = "grey90", linetype = "dashed") +
         # scale_y_continuous(breaks = c(0, 1, 3, 6, 9))+
         coord_flip()+
-        theme_ipsum(grid = "X", base_family = "Helvetica")+
+        theme_bw()+
         labs(x = "", y = ifelse(input$graph_type == "palma_renda", i18n()$t("Razão de Palma"), i18n()$t("Razão de Desigualdade por Cor")),
              title = title_plot,
              subtitle = legend_plot,
@@ -252,7 +252,7 @@ output$downloadPlot <- downloadHandler(
                            labels=c('Total', 
                                     ifelse(input$graph_type == "dumbell_renda", i18n()$t("Pobres Q1"), i18n()$t("Negros")), 
                                     ifelse(input$graph_type == "dumbell_renda", i18n()$t("Ricos Q5"), i18n()$t("Brancos")))) +
-        theme_ipsum(grid= "X", base_family = "Helvetica") +
+        theme_bw() +
         labs(x = i18n()$t("Minutos"), y = "", title = title_plot, subtitle = legend_plot)+
         expand_limits(x = 0)+
         theme(plot.title = element_text(size=9, hjust=0),
