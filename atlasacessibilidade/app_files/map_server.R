@@ -253,15 +253,15 @@ observeEvent({v_city$city},{
                  duration = 3000, transition = "fly") %>%
     clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
     clear_legend(layer_id = mapdeck_options$layer_id1) %>%
-    # Render city limits
-    add_polygon(
-      data = limits_filtrado(),
-      stroke_colour = "#616A6B",
-      stroke_width = 100,
-      fill_opacity = 0,
-      update_view = FALSE,
-      focus_layer = FALSE,
-    ) %>%
+    # # Render city limits
+    # add_polygon(
+    #   data = limits_filtrado(),
+    #   stroke_colour = "#616A6B",
+    #   stroke_width = 100,
+    #   fill_opacity = 0,
+    #   update_view = FALSE,
+    #   focus_layer = FALSE,
+    # ) %>%
     # Render city indicator
     add_polygon(
       data = mapdeck_options$data,
