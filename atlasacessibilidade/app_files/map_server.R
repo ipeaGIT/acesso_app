@@ -228,81 +228,56 @@ zoom1 <- reactive ({
 # 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
 observeEvent({v_city$city},{
   
+  # create viridis scale in the reverse direction
+  # create matrix
+  colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+  # invert matrix
+  colorss <- apply(colorss, 2, rev)[, 1:3]
   
+  # create list with values for mapdeck options
+  mapdeck_options <- list(
+    'layer_id1'       = ifelse(input$indicador == "CMA", "acess_min_go", "acess_cum_go"),
+    'data'            = if    (input$indicador == "CMA") tempo_filtrado_sf() else atividade_filtrada_min_sf(),
+    'layer_id2'       = ifelse(input$indicador == "CMA", "acess_cum_go", "acess_min_go"),
+    'palette1'        = ifelse(input$indicador == "CMA", "inferno", colorss),
+    'legend_options1' = ifelse(input$indicador == "CMA",
+                               "Porcentagem de Oportunidades Acessíveis",
+                               "Minutos até a oportunidade mais próxima")
+  )
   
+  # print(mapdeck_options$data)
   
   # Zoom in on the city when it's choosen
-  proxy <- mapdeck_update(map_id = "map") %>%
+  mapdeck_update(map_id = "map") %>%
     mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
-                 duration = 3000, transition = "fly")
+                 duration = 3000, transition = "fly") %>%
+    clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
+    clear_legend(layer_id = mapdeck_options$layer_id1) %>%
+    # Render city limits
+    add_polygon(
+      data = limits_filtrado(),
+      stroke_colour = "#616A6B",
+      stroke_width = 100,
+      fill_opacity = 0,
+      update_view = FALSE,
+      focus_layer = FALSE,
+    ) %>%
+    # Render city indicator
+    add_polygon(
+      data = mapdeck_options$data,
+      fill_colour = "valor",
+      fill_opacity = 200,
+      layer_id = mapdeck_options$layer_id2,
+      palette = mapdeck_options$palette1,
+      update_view = FALSE,
+      focus_layer = FALSE,
+      # auto_highlight = TRUE,
+      tooltip = "popup",
+      legend = TRUE,
+      legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
+      legend_format = list( fill_colour = as.integer)
+    )
   
-  # Create map with indicators when the city is first selected
-  if (input$indicador == "CMA") {
-    
-    proxy %>%
-      clear_polygon(layer_id = "acess_min_go") %>%
-      clear_legend(layer_id = "acess_min_go") %>%
-      # Render city limits
-      add_polygon(
-        data = limits_filtrado(),
-        stroke_colour = "#616A6B",
-        stroke_width = 100,
-        fill_opacity = 0,
-        update_view = FALSE,
-        focus_layer = FALSE,
-      ) %>%
-      # Render city indicator
-      add_polygon(
-        data = tempo_filtrado_sf(),
-        fill_colour = "valor",
-        fill_opacity = 200,
-        layer_id = "acess_cum_go",
-        palette = "inferno",
-        update_view = FALSE,
-        focus_layer = FALSE,
-        # auto_highlight = TRUE,
-        tooltip = "popup",
-        legend = TRUE,
-        legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
-        legend_format = list( fill_colour = as.integer)
-      )
-    
-    
-  } else if (input$indicador == "TMI") {
-    
-    # create viridis scale in the reverse direction
-    # create matrix
-    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-    # invert matrix
-    colorss <- apply(colorss, 2, rev)[, 1:3]
-    
-    proxy %>%
-      clear_polygon(layer_id = "acess_cum_go") %>%
-      clear_legend(layer_id = "acess_cum_go") %>%
-      # Render city limits
-      add_polygon(
-        data = limits_filtrado(),
-        stroke_colour = "#616A6B",
-        stroke_width = 100,
-        fill_opacity = 0,
-        update_view = FALSE,
-        focus_layer = FALSE
-      ) %>%
-      # Render city indicator
-      add_polygon(
-        data = atividade_filtrada_min_sf(),
-        fill_colour = "valor",
-        fill_opacity = 200,
-        layer_id = "acess_min_go",
-        palette = colorss,
-        update_view = FALSE,
-        tooltip = "popup",
-        legend = TRUE,
-        legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
-        legend_format = list( fill_colour = as.integer)
-      )
-    
-  }
   
   
   
