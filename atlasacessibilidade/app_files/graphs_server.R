@@ -142,10 +142,10 @@ output$output_graph <- renderHighchart({
   # GRAPH FOR PALMA RATIO 
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
-    new <- tempo_filtrado_graph() %>%
-      mutate(nome_muni = factor(nome_muni))
+    new <- tempo_filtrado_graph()[, nome_muni := factor(nome_muni)]
+      
     
-    new <- arrange(new, desc(palma_ratio))
+    new <- setorder(new, -palma_ratio)
     
     legend_subtitle <- ifelse(input_atividade_graph() == "TT", i18n()$t("empregos"),
                               ifelse(
@@ -244,7 +244,7 @@ output$output_graph <- renderHighchart({
     
     # arrange by Q1
     
-    teste_dumbell <- arrange(atividade_filtrada_graph(), -low)
+    teste_dumbell <- setorder(atividade_filtrada_graph(), -low)
     
     highchart() %>%
       hc_xAxis(categories = teste_dumbell$nome_muni, labels = list(style = list(fontSize = 15))) %>%
