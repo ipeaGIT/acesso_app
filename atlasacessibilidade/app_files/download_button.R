@@ -112,7 +112,7 @@ output$ui_download_button <- renderUI({
 output$ui_download_dic <- renderUI({
   
   actionButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"), 
-               onclick = "window.open('http://repositorio.ipea.gov.br/bitstream/11058/9586/5/dicionario2019_v1.0_20200116.xlsx')")
+               onclick = "location.href='http://repositorio.ipea.gov.br/bitstream/11058/9586/5/dicionario2019_v1.0_20200116.xlsx';")
   
   # downloadButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"))
   
