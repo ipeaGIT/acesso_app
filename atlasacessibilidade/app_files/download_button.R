@@ -16,7 +16,7 @@ prepare_data_download <- reactive({
   }
   
   # define attributes name based on language
-  attributes_lookup <- data.frame(atividade = c("TT", "ST", "SB", "SM", "SA", "ET", "EI", "EF", "EM"), 
+  attributes_lookup <- data.table(atividade = c("TT", "ST", "SB", "SM", "SA", "ET", "EI", "EF", "EM"), 
                                   nome = c(i18n()$t("trabalho_total"), 
                                            i18n()$t("saude_total"),
                                            i18n()$t("saude_baixa"),
@@ -27,19 +27,38 @@ prepare_data_download <- reactive({
                                            i18n()$t("educacao_fundamental"),
                                            i18n()$t("educacao_media")))
   
-  output_csv_palma <- data_out %>%
-    mutate(modo = case_when(
-      modo == 'bicicleta' ~ i18n()$t('bicicleta'),
-      modo == 'caminhada' ~ i18n()$t('caminhada'),
-      modo == 'tp' ~ i18n()$t('tp'))) %>%
-    left_join(attributes_lookup, by = "atividade")
+  # output_csv_palma <- data_out %>%
+  #   mutate(modo = case_when(
+  #     modo == 'bicicleta' ~ i18n()$t('bicicleta'),
+  #     modo == 'caminhada' ~ i18n()$t('caminhada'),
+  #     modo == 'tp' ~ i18n()$t('tp'))) %>%
+  #   left_join(attributes_lookup, by = "atividade")
+  
+  # data_out[, modo := ifelse(modo == 'bicicleta', i18n()$t('bicicleta'),
+  #                           ifelse(modo == 'caminhada', i18n()$t('caminhada'),
+  #                                  ifelse(modo == 'tp', i18n()$t('tp'), modo)))]
+  
+  # print(data_out)
+  # print(attributes_lookup)
+  
+  output_csv_palma <- merge(
+    data_out, attributes_lookup,
+    by = "atividade",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  
+  # print(output_csv_palma)
   
   
   # define column names based on language
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
-    output_csv_palma <- output_csv_palma[.(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
+    output_csv_palma <- output_csv_palma[, .(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
                                                     tempo_viagem, pobre, rico, palma_ratio)]
+    
+    
+    print(output_csv_palma)
     
     colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
                                     i18n()$t("sigla_muni"),
@@ -57,7 +76,7 @@ prepare_data_download <- reactive({
     
     # define column names based on language
     
-    output_csv_palma <- output_csv_palma[.(nome_muni, sigla_muni, modo, indicador, atividade = nome, total, low, high)]
+    output_csv_palma <- output_csv_palma[, .(nome_muni, sigla_muni, modo, indicador, atividade = nome, total, low, high)]
     
     colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
                                     i18n()$t("sigla_muni"),
@@ -192,9 +211,13 @@ output$downloadPlot <- downloadHandler(
                             "palma_cor" = 
                               i18n()$t("Razão da acessibilidade cumulativa da população branca pela população negra")) 
       
-      new_save <- tempo_filtrado_graph() %>%
-        mutate(nome_muni = factor(nome_muni)) %>%
-        mutate(nome_muni = forcats::fct_reorder(nome_muni, palma_ratio))
+      # new_save <- tempo_filtrado_graph() %>%
+      #   mutate(nome_muni = factor(nome_muni)) %>%
+      #   mutate(nome_muni = forcats::fct_reorder(nome_muni, palma_ratio))
+      
+      tempo_filtrado_graph()[, nome_muni := factor(nome_muni)]
+      tempo_filtrado_graph()[, nome_muni := forcats::fct_reorder(nome_muni, palma_ratio)]
+      new_save <- copy(tempo_filtrado_graph())
       
       plot_save <- ggplot(data = new_save)+
         geom_col(aes(y = palma_ratio, x = nome_muni), fill = "#1D5A79") +
@@ -236,9 +259,12 @@ output$downloadPlot <- downloadHandler(
                             "dumbell_renda" = i18n()$t("Média do tempo mínimo de viagem por renda"), 
                             "dumbell_cor" = i18n()$t("Média do tempo mínimo de viagem por cor")) 
       
-      
-      new_save <- atividade_filtrada_graph() %>%
-        mutate(nome_muni = factor(nome_muni))
+      # 
+      # new_save <- atividade_filtrada_graph() %>%
+      #   mutate(nome_muni = factor(nome_muni))
+        
+      atividade_filtrada_graph()[, nome_muni := factor(nome_muni)]
+      new_save <- copy(atividade_filtrada_graph())
       
       # para plotar as legendas
       new_save_legend <- new_save %>% tidyr::gather(tipo, valor, total:high)
