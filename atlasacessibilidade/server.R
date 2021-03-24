@@ -32,7 +32,7 @@ function(input, output, session) {
   # 2) MODAL WITH LANGUAGE OPTION AT STARTUP ----------------------------------------------------------
   query_modal <- div(id = "modal_lang", 
                      modalDialog(
-                       title = HTML("<h1>Lingua // Language</h1>"),
+                       title = HTML("<h1>Linguaa // Language</h1>"),
                        renderUI({
                          div(style = "width: 50%;margin: 0 auto;", 
                              pickerInput(inputId = 'selected_language',
