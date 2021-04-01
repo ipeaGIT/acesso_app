@@ -15,7 +15,7 @@ shinyUI(
         tags$head(tags$script("var graphs_tmi = ['dumbell_renda', 'dumbell_cor'];")),
         # Select custom slider
         # https://divadnojnarg.github.io/blog/customsliderinput/
-        chooseSliderSkin("HTML5", color = "#112446")
+        chooseSliderSkin("Flat", color = "#112446")
         # Use loading page
         , waiter_show_on_load(html = spin_loader(), color = "##F4F6F6")
         # Start navbar page
