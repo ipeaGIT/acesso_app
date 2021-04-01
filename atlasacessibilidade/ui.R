@@ -12,10 +12,10 @@ shinyUI(
         tags$head(tags$script("var cities_ativo = ['bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat'];")),
         tags$head(tags$script("var modos_ativos = ['caminhada', 'bicicleta'];")),
         tags$head(tags$script("var graphs_cma = ['palma_renda', 'palma_cor'];")),
-        tags$head(tags$script("var graphs_tmi = ['dumbell_renda', 'dumbell_cor'];")),
+        tags$head(tags$script("var graphs_tmi = ['dumbell_renda', 'dumbell_cor'];"))
         # Select custom slider
         # https://divadnojnarg.github.io/blog/customsliderinput/
-        chooseSliderSkin("Flat", color = "#112446")
+        # chooseSliderSkin("Flat", color = "#112446")
         # Use loading page
         , waiter_show_on_load(html = spin_loader(), color = "##F4F6F6")
         # Start navbar page
