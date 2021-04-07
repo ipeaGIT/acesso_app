@@ -233,6 +233,8 @@ observeEvent({v_city$city},{
   colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
   # invert matrix
   colorss <- apply(colorss, 2, rev)[, 1:3]
+  # add alpha
+  colorss <- cbind(colorss, 170)
   
   # create list with values for mapdeck options
   mapdeck_options <- list(
@@ -266,7 +268,7 @@ observeEvent({v_city$city},{
     add_polygon(
       data = mapdeck_options$data,
       fill_colour = "valor",
-      fill_opacity = 200,
+      fill_opacity = 170,
       layer_id = mapdeck_options$layer_id2,
       palette = mapdeck_options$palette1,
       update_view = FALSE,
@@ -302,6 +304,8 @@ observeEvent({c(input$indicador,
                     colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
                     # invert matrix
                     colorss <- apply(colorss, 2, rev)[, 1:3]
+                    # add alpha
+                    colorss <- cbind(colorss, 170)
                     
                     mapdeck_update(map_id = "map") %>%
                       clear_polygon(layer_id = "acess_cum_go") %>%
@@ -309,7 +313,7 @@ observeEvent({c(input$indicador,
                       add_polygon(
                         data = atividade_filtrada_min_sf(),
                         fill_colour = "valor",
-                        fill_opacity = 200,
+                        # fill_opacity = 200,
                         layer_id = "acess_min_go",
                         palette = colorss,
                         update_view = FALSE,
@@ -329,7 +333,7 @@ observeEvent({c(input$indicador,
                         add_polygon(
                           data = tempo_filtrado_sf(),
                           fill_colour = "valor",
-                          fill_opacity = 200,
+                          fill_opacity = 170,
                           layer_id = "acess_cum_go",
                           palette = "inferno",
                           update_view = FALSE,
