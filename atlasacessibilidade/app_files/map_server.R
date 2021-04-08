@@ -277,7 +277,10 @@ observeEvent({v_city$city},{
       tooltip = "popup",
       legend = TRUE,
       legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
-      legend_format = list( fill_colour = as.integer)
+      legend_format = list( fill_colour = as.integer),
+      stroke_width = NULL,
+      stroke_colour = NULL,
+      stroke_opacity = 0
     )
   
   
@@ -320,7 +323,10 @@ observeEvent({c(input$indicador,
                         tooltip = "popup",
                         legend = TRUE,
                         legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
-                        legend_format = list( fill_colour = as.integer)
+                        legend_format = list( fill_colour = as.integer),
+                        stroke_width = 0,
+                        stroke_colour = NULL,
+                        stroke_opacity = 0
                       )
                     
                   } else 
@@ -342,7 +348,10 @@ observeEvent({c(input$indicador,
                           tooltip = "popup",
                           legend = TRUE,
                           legend_options = list(title = i18n()$t("Porcentagem de Oportunidades Acessíveis")),
-                          legend_format = list( fill_colour = as.integer)
+                          legend_format = list( fill_colour = as.integer),
+                          stroke_width = NULL,
+                          stroke_colour = NULL,
+                          stroke_opacity = 0
                         )
                     }
                   
