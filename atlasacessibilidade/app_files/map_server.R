@@ -193,7 +193,7 @@ limits_filtrado <- reactive({
   # Filter cities limits
   limits_filtrado <- limits[abrev_muni == v_city$city] %>% st_sf(crs = 4326)
   
-  print(limits_filtrado)
+  # print(limits_filtrado)
   
 })
 
@@ -202,7 +202,7 @@ centroid_go <- reactive({
   
   centroid_go <- centroids[abrev_muni == v_city$city]
   
-  print(centroid_go)
+  # print(centroid_go)
 })
 
 
@@ -220,7 +220,7 @@ zoom1 <- reactive ({
     
   } else {zoom1 <- 10}
   
-  print(zoom1)
+  # print(zoom1)
   
 })
 
@@ -241,13 +241,14 @@ observeEvent({v_city$city},{
     'layer_id1'       = ifelse(input$indicador == "CMA", "acess_min_go", "acess_cum_go"),
     'data'            = if    (input$indicador == "CMA") tempo_filtrado_sf() else atividade_filtrada_min_sf(),
     'layer_id2'       = ifelse(input$indicador == "CMA", "acess_cum_go", "acess_min_go"),
-    'palette1'        = ifelse(input$indicador == "CMA", "inferno", colorss),
+    'palette1'        = if (input$indicador == "CMA") "inferno" else colorss,
     'legend_options1' = ifelse(input$indicador == "CMA",
                                "Porcentagem de Oportunidades Acessíveis",
                                "Minutos até a oportunidade mais próxima")
   )
   
-  # print(mapdeck_options$data)
+  print(head(mapdeck_options$data))
+  print(nrow(mapdeck_options$data))
   
   # Zoom in on the city when it's choosen
   mapdeck_update(map_id = "map") %>%
@@ -297,7 +298,7 @@ observeEvent({c(input$indicador,
                 input$atividade_cum, input$atividade_min, 
                 input$tempo_tp, input$tempo_ativo_tp, input$tempo_ativo)},{
                   
-                  
+                  print(nrow(atividade_filtrada_min_sf))
                   
                   
                   if (input$indicador == "TMI") {
