@@ -83,7 +83,7 @@ function(input, output, session) {
   # 4) Reactive to select the translator for the active langague -------------
   i18n <- reactive({
     selected <- input$selected_language
-    if (length(selected) > 0 && selected %in% translator$languages) {
+    if (length(selected) > 0) {
       translator$set_translation_language(selected)
     }
     translator
