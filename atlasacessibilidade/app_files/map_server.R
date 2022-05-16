@@ -12,23 +12,26 @@
 #   
 # })
 
-v_city <- reactiveValues()
+v_city <- reactiveValues(cidade = NULL)
+
 
 observeEvent({input$cidade},{
+
   
-  if(input$cidade != "") {
-    
-    v_city$city <- input$cidade }
-  
-  else {v_city$city <- NULL}
-  
-  
-  
-  print(v_city$city)
-  
+  req(input$cidade)
+  # print(input$cidade)
+  # if(input$cidade != "") {
+  # 
+  #   v_city$city <- input$cidade }
+  # 
+  # else {v_city$city <- NULL}
+  v_city$city <- if(input$cidade != "") input$cidade
+
+
+
+  # print(v_city$city)
+
 })
-
-
 
 # Filter the city
 
@@ -36,6 +39,7 @@ cidade_filtrada <- reactive({
   
   # only run when city value is not NULL
   req(v_city$city)
+  # print(v_city$city)
   
   acess[sigla_muni == v_city$city]
   
@@ -48,6 +52,8 @@ cidade_filtrada <- reactive({
 # First we use a reactive expression to choose the input
 
 a <- reactive({
+  
+  req(v_city$city)
   
   if (v_city$city %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {input$modo_todos}
   
@@ -114,6 +120,8 @@ atividade_filtrada_min <- reactive({
 
 # Select time threshold
 b <- reactive({
+  
+  req(v_city$city)
   
   if (v_city$city %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "tp") {input$tempo_tp}
   

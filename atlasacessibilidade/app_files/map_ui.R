@@ -14,7 +14,8 @@ output$page_content <- renderUI({
                                                      i18n()$t("Educação Infantil"),
                                                      i18n()$t("Educação Fundamental"),
                                                      i18n()$t("Educação Média"))))
-  vector_indicadores <- structure(c("CMA", "TMI"), .Names = c(i18n()$t("Cumulativo"), i18n()$t("Tempo Mínimo")))
+  vector_indicadores_us <- structure(c("access", "us"), .Names = c("Acessibilidade", "Uso do solo"))
+  vector_indicadores <- structure(c("CMA", "CMAP", "TMI"), .Names = c(i18n()$t("CumulativoA"), i18n()$t("CumulativoP"), i18n()$t("TempoM")))
   
   # Translate the name of lists accordingly
   names(list_trabalho) <-c(i18n()$t("Trabalho"))
@@ -95,131 +96,161 @@ output$page_content <- renderUI({
         
         # 2) INDICATOR SELECTION --------------------------------------------------
         
-        awesomeRadio(inputId = "indicador",
-                     label = label_with_info(
-                       label = i18n()$t("Escolha o indicador de acessibilidade"),
-                       tooltip_id = "q1"
-                     ),
-                     choices = vector_indicadores,
-                     selected = "CMA"),
-        div(
-          bsPopover(id = "q1", 
-                    title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
-                    content = HTML(i18n()$t(includeHTML('www/popovers/popover_indicator.html'))),
-                    placement = "bottom",
-                    trigger = "hover",
-                    options = list(container = "body"))
+        radioGroupButtons(inputId = "indicador_us",
+                          label = "Escolha o indicador",
+                          choices = vector_indicadores_us,
+                          individual = TRUE,
+                          justified = TRUE,
+                          selected = "access"),
+        conditionalPanel(
+          condition = "input.indicador_us == 'access'",
+          
+          div(style="display:inline-block",
+              awesomeRadio(inputId = "indicador",
+                           label = label_with_info(
+                             label = i18n()$t("Indicador de acessibilidade"),
+                             tooltip_id = "q1"
+                           ),
+                           choices = vector_indicadores,
+                           width = "210px",
+                           selected = "CMA"),
+              div(
+                bsPopover(id = "q1",
+                          title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
+                          content = HTML(i18n()$t(includeHTML('www/popovers/popover_indicator.html'))),
+                          placement = "bottom",
+                          trigger = "hover",
+                          options = list(container = "body"))
+              )
+          ),
+          div(style="display:inline-block", 
+              awesomeRadio(inputId = "ano", 
+                           label = "Ano", 
+                           choices = c(2017, 2018, 2019),
+                           width = "70px"
+              )),
+          
+          # 3) MODE SELECTION -------------------------------------------------------
+          
+          # IF A CITY WITH GTFS IS SELECTED, ALL MODES WILL BE AVAILABLE
+          conditionalPanel(
+            condition = "cities_todos.indexOf(input.cidade) > -1", 
+            radioGroupButtons(inputId = "modo_todos",
+                              label = h1(i18n()$t("Escolha o modo de transporte:")), 
+                              choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
+                                          "<i class=\"fas fa-car fa-2x\"></i>" = "carro",
+                                          "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
+                                          "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
+                              selected = "tp",
+                              individual = TRUE,
+                              justified = TRUE
+            )),
+          
+          # IF A CITY WITHOUT GTFS IS SELECTED, ONLY WALKING AND BIKE WILL BE AVAILABLE
+          # THE FUN 'RADIO_BUTTON_CUSTOM' WILL CREATE 3 RADIO BUTTONS WITH 1 BEING UNAVAILABLE
+          
+          conditionalPanel(
+            condition = "cities_ativo.indexOf(input.cidade) > -1", 
+            radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
+          ),
+          
+          div(
+            bsTooltip(id = "modo_des", 
+                      title = i18n()$t("Modo não disponível para essa cidade"),
+                      placement = "top",
+                      trigger = "hover",
+                      options = list(container = "body"))
+          ),
+          
+          
+          # 4) ACTIVITY SELECTION -------------------------------------------------------
+          
+          # IF THE CMA INDICATOR IS SELECTED, ALL ACTIVITIES WILL BE AVAILABLE
+          
+          conditionalPanel(
+            condition = "input.indicador == 'CMA'",
+            pickerInput(inputId = "atividade_cum",
+                        label = label_with_info(
+                          label = i18n()$t("Escolha a atividade"),
+                          tooltip_id = "q3"
+                        ),
+                        choices = c(list_trabalho, list_saude, list_edu),
+                        selected = "TT")),
+          
+          # IF THE TMI INDICATOR IS SELECTED, ONLY HEALTH AND EDUCATIONAL ACTIVITIES WILL BE AVAILABLE
+          
+          conditionalPanel(
+            condition = "input.indicador == 'TMI'",
+            pickerInput(inputId = "atividade_min",
+                        label = label_with_info(
+                          label = i18n()$t("Escolha a atividade"),
+                          tooltip_id = "q4"
+                        ),
+                        choices = c(list_saude, list_edu),
+                        selected = "ST")),
+          div(
+            bsPopover(id = "q3", 
+                      title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
+                      content = HTML(i18n()$t(includeHTML("www/popovers/popover_activity.html"))),
+                      placement = "top",
+                      trigger = "hover",
+                      options = list(container = "body"))
+          ),
+          div(
+            bsPopover(id = "q4", 
+                      title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
+                      content = HTML(i18n()$t(includeHTML("www/popovers/popover_activity.html"))),
+                      placement = "top",
+                      trigger = "hover",
+                      options = list(container = "body"))
+          ),
+          
+          
+          # 5) TIME THRESHOLD SELECTION ---------------------------------------------
+          
+          conditionalPanel(
+            condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
+            sliderInput(inputId = "tempo_tp",
+                        label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                        min = 30, max = 120,
+                        step = 30, value = 30,
+                        animate = animationOptions(interval = 2000),
+                        post = " min")),
+          conditionalPanel(
+            condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
+            sliderInput(inputId = "tempo_ativo_tp",
+                        label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                        min = 15, max = 60,
+                        step = 15, value = 15,
+                        animate = animationOptions(interval = 2000),
+                        post = " min")),
+          conditionalPanel(
+            condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
+            sliderInput(inputId = "tempo_ativo",
+                        label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                        min = 15, max = 60,
+                        step = 15, value = 15,
+                        animate = animationOptions(interval = 2000),
+                        post = " min")),
+          
+          # 6. ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
+          
+          conditionalPanel(condition = "input.indicador == 'TMI'",
+                           strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
+          
         ),
-        
-        
-        # 3) MODE SELECTION -------------------------------------------------------
-        
-        # IF A CITY WITH GTFS IS SELECTED, ALL MODES WILL BE AVAILABLE
-        conditionalPanel(
-          condition = "cities_todos.indexOf(input.cidade) > -1", 
-          radioGroupButtons(inputId = "modo_todos",
-                            label = h1(i18n()$t("Escolha o modo de transporte:")), 
-                            choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
-                                        "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
-                                        "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
-                            selected = "tp",
-                            individual = TRUE,
-                            justified = TRUE
-          )),
-        
-        # IF A CITY WITHOUT GTFS IS SELECTED, ONLY WALKING AND BIKE WILL BE AVAILABLE
-        # THE FUN 'RADIO_BUTTON_CUSTOM' WILL CREATE 3 RADIO BUTTONS WITH 1 BEING UNAVAILABLE
-        
-        conditionalPanel(
-          condition = "cities_ativo.indexOf(input.cidade) > -1", 
-          radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
-        ),
-        
-        div(
-          bsTooltip(id = "modo_des", 
-                    title = i18n()$t("Modo não disponível para essa cidade"),
-                    placement = "top",
-                    trigger = "hover",
-                    options = list(container = "body"))
-        ),
-        
-        
-        # 4) ACTIVITY SELECTION -------------------------------------------------------
-        
-        # IF THE CMA INDICATOR IS SELECTED, ALL ACTIVITIES WILL BE AVAILABLE
-        
-        conditionalPanel(
-          condition = "input.indicador == 'CMA'",
-          pickerInput(inputId = "atividade_cum",
-                      label = label_with_info(
-                        label = i18n()$t("Escolha a atividade"),
-                        tooltip_id = "q3"
-                      ),
-                      choices = c(list_trabalho, list_saude, list_edu),
-                      selected = "TT")),
-        
-        # IF THE TMI INDICATOR IS SELECTED, ONLY HEALTH AND EDUCATIONAL ACTIVITIES WILL BE AVAILABLE
-        
-        conditionalPanel(
-          condition = "input.indicador == 'TMI'",
-          pickerInput(inputId = "atividade_min",
-                      label = label_with_info(
-                        label = i18n()$t("Escolha a atividade"),
-                        tooltip_id = "q4"
-                      ),
-                      choices = c(list_saude, list_edu),
-                      selected = "ST")),
-        div(
-          bsPopover(id = "q3", 
-                    title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                    content = HTML(i18n()$t(includeHTML("www/popovers/popover_activity.html"))),
-                    placement = "top",
-                    trigger = "hover",
-                    options = list(container = "body"))
-        ),
-        div(
-          bsPopover(id = "q4", 
-                    title = sprintf("<strong>%s</strong>", i18n()$t("Atividades")),
-                    content = HTML(i18n()$t(includeHTML("www/popovers/popover_activity.html"))),
-                    placement = "top",
-                    trigger = "hover",
-                    options = list(container = "body"))
-        ),
-        
-        
-        # 5) TIME THRESHOLD SELECTION ---------------------------------------------
-        
-        conditionalPanel(
-          condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
-          sliderInput(inputId = "tempo_tp",
-                      label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                      min = 30, max = 120,
-                      step = 30, value = 30,
-                      animate = animationOptions(interval = 2000),
-                      post = " min")),
-        conditionalPanel(
-          condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
-          sliderInput(inputId = "tempo_ativo_tp",
-                      label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                      min = 15, max = 60,
-                      step = 15, value = 15,
-                      animate = animationOptions(interval = 2000),
-                      post = " min")),
-        conditionalPanel(
-          condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
-          sliderInput(inputId = "tempo_ativo",
-                      label = h1(i18n()$t("Escolha o tempo de viagem:")),
-                      min = 15, max = 60,
-                      step = 15, value = 15,
-                      animate = animationOptions(interval = 2000),
-                      post = " min")),
-        
-        # 6. ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
-        
-        conditionalPanel(condition = "input.indicador == 'TMI'",
-                         strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
+    conditionalPanel(
+      condition = "input.indicador_us == 'us'",
+      pickerInput(inputId = "atividade_us",
+                  label = "Atividade",
+                  choices = c(list_trabalho, list_saude, list_edu),
+                  selected = "TT")
+      
+      
+    )
         
       )
+      
     )
   )
   
