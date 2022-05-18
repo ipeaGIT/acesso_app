@@ -14,13 +14,48 @@ output$page_content <- renderUI({
                                                      i18n()$t("Educação Infantil"),
                                                      i18n()$t("Educação Fundamental"),
                                                      i18n()$t("Educação Média"))))
+  list_cras <- list('CRAS' = structure(c("CT"), 
+                                       .Names = c(i18n()$t("Cras Total"))))
+  
+  list_pop_total <- list('População' = structure(c("PT"), 
+                                                 .Names = c(i18n()$t("População Total"))))
+  
+  list_pop_sexo <- list('População por sexo' = structure(c("PH", "PM"), 
+                                                         .Names = c(i18n()$t("População Homens"),
+                                                                    i18n()$t("População Mulheres"))))
+  
+  list_pop_cor <- list('População por cor' = structure(c("PB", "PN", "PA", "PI"), 
+                                                       .Names = c(i18n()$t("População Branca"),
+                                                                  i18n()$t("População Negra"),
+                                                                  i18n()$t("População Asiática"),
+                                                                  i18n()$t("População Indígena"))))
+  
+  list_pop_idade <- list('População por idade' = structure(c("P0005I", "P0614I", "P1518I", "P1924I",
+                                                             "P2539I", "P4069I", "P70I"), 
+                                                           .Names = c(i18n()$t("População 0 a 5 anos"),
+                                                                      i18n()$t("População 6 a 14 anos"),
+                                                                      i18n()$t("População 15 a 18 anos"),
+                                                                      i18n()$t("População 19 a 24 anos"),
+                                                                      i18n()$t("População 25 a 39 anos"),
+                                                                      i18n()$t("População 40 a 69 anos"),
+                                                                      i18n()$t("População + 70 anos"))))
+  
+  
+  list_idade <- list('Saúde' = structure(c("ST", "SB", "SM", "SA"), 
+                                         .Names = c(i18n()$t("Saúde Total"),
+                                                    i18n()$t("Saúde Baixa"),
+                                                    i18n()$t("Saúde Média"),
+                                                    i18n()$t("Saúde Alta"))))
+  
   vector_indicadores_us <- structure(c("access", "us"), .Names = c("Acessibilidade", "Uso do solo"))
-  vector_indicadores <- structure(c("CMA", "CMAP", "TMI"), .Names = c(i18n()$t("CumulativoA"), i18n()$t("CumulativoP"), i18n()$t("TempoM")))
+  vector_indicadores_us_go <- structure(c("demo", "activity"), .Names = c("Demograficos", "Atividades"))
+  vector_indicadores <- structure(c("CMA", "CMP", "TMI"), .Names = c(i18n()$t("CumulativoA"), i18n()$t("CumulativoP"), i18n()$t("TempoM")))
   
   # Translate the name of lists accordingly
   names(list_trabalho) <-c(i18n()$t("Trabalho"))
   names(list_saude) <-c(i18n()$t("Saúde"))
   names(list_edu) <-c(i18n()$t("Educação"))
+  names(list_cras) <-c("CRAS")
   
   
   
@@ -113,7 +148,7 @@ output$page_content <- renderUI({
                            ),
                            choices = vector_indicadores,
                            width = "210px",
-                           selected = "CMA"),
+                           selected = "CMP"),
               div(
                 bsPopover(id = "q1",
                           title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
@@ -137,11 +172,11 @@ output$page_content <- renderUI({
             condition = "cities_todos.indexOf(input.cidade) > -1", 
             radioGroupButtons(inputId = "modo_todos",
                               label = h1(i18n()$t("Escolha o modo de transporte:")), 
-                              choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
+                              choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "public_transport", 
                                           "<i class=\"fas fa-car fa-2x\"></i>" = "carro",
-                                          "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
-                                          "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
-                              selected = "tp",
+                                          "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
+                                          "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicycle"),
+                              selected = "public_transport",
                               individual = TRUE,
                               justified = TRUE
             )),
@@ -156,7 +191,7 @@ output$page_content <- renderUI({
           
           div(
             bsTooltip(id = "modo_des", 
-                      title = i18n()$t("Modo não disponível para essa cidade"),
+                      title = i18n()$t("Modo não disponível para essa cidade/ano"),
                       placement = "top",
                       trigger = "hover",
                       options = list(container = "body"))
@@ -169,13 +204,24 @@ output$page_content <- renderUI({
           
           conditionalPanel(
             condition = "input.indicador == 'CMA'",
-            pickerInput(inputId = "atividade_cum",
+            pickerInput(inputId = "atividade_cma",
                         label = label_with_info(
                           label = i18n()$t("Escolha a atividade"),
                           tooltip_id = "q3"
                         ),
-                        choices = c(list_trabalho, list_saude, list_edu),
-                        selected = "TT")),
+                        choices = c(list_trabalho, list_saude, list_edu, list_cras),
+                        selected = "TT")
+          ),
+          
+          conditionalPanel(
+            condition = "input.indicador == 'CMP'",
+            pickerInput(inputId = "atividade_cmp",
+                        label = label_with_info(
+                          label = i18n()$t("Escolha a atividade"),
+                          tooltip_id = "q3"
+                        ),
+                        choices = c(list_pop_total, list_pop_sexo, list_pop_cor, list_pop_idade),
+                        selected = "PT")),
           
           # IF THE TMI INDICATOR IS SELECTED, ONLY HEALTH AND EDUCATIONAL ACTIVITIES WILL BE AVAILABLE
           
@@ -186,7 +232,7 @@ output$page_content <- renderUI({
                           label = i18n()$t("Escolha a atividade"),
                           tooltip_id = "q4"
                         ),
-                        choices = c(list_saude, list_edu),
+                        choices = c(list_saude, list_edu, list_cras),
                         selected = "ST")),
           div(
             bsPopover(id = "q3", 
@@ -209,23 +255,25 @@ output$page_content <- renderUI({
           # 5) TIME THRESHOLD SELECTION ---------------------------------------------
           
           conditionalPanel(
-            condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && input.modo_todos == 'tp'",
+            condition = "cities_todos.indexOf(input.cidade) > -1 && ind_cum.indexOf(input.indicador) > -1 && input.modo_todos == 'public_transport'",
             sliderInput(inputId = "tempo_tp",
                         label = h1(i18n()$t("Escolha o tempo de viagem:")),
                         min = 30, max = 120,
                         step = 30, value = 30,
                         animate = animationOptions(interval = 2000),
-                        post = " min")),
+                        post = " min")
+          ),
           conditionalPanel(
-            condition = "cities_todos.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_todos) > -1",
+            condition = "cities_todos.indexOf(input.cidade) > -1 && ind_cum.indexOf(input.indicador) > -1 && modos_ativos.indexOf(input.modo_todos) > -1",
             sliderInput(inputId = "tempo_ativo_tp",
                         label = h1(i18n()$t("Escolha o tempo de viagem:")),
                         min = 15, max = 60,
                         step = 15, value = 15,
                         animate = animationOptions(interval = 2000),
-                        post = " min")),
+                        post = " min")
+          ),
           conditionalPanel(
-            condition = "cities_ativo.indexOf(input.cidade) > -1 && input.indicador == 'CMA' && modos_ativos.indexOf(input.modo_ativo) > -1",
+            condition = "cities_ativo.indexOf(input.cidade) > -1 && ind_cum.indexOf(input.indicador) > -1 && modos_ativos.indexOf(input.modo_ativo) > -1",
             sliderInput(inputId = "tempo_ativo",
                         label = h1(i18n()$t("Escolha o tempo de viagem:")),
                         min = 15, max = 60,
@@ -239,15 +287,34 @@ output$page_content <- renderUI({
                            strong(h1(i18n()$t("Observação"))), p(i18n()$t("Valores truncados para 30 minutos")))
           
         ),
-    conditionalPanel(
-      condition = "input.indicador_us == 'us'",
-      pickerInput(inputId = "atividade_us",
-                  label = "Atividade",
-                  choices = c(list_trabalho, list_saude, list_edu),
-                  selected = "TT")
-      
-      
-    )
+        conditionalPanel(
+          condition = "input.indicador_us == 'us'",
+          radioGroupButtons(inputId = "demo_ou_us",
+                            label = h1(i18n()$t("Tipo de indicador:")), 
+                            choices = vector_indicadores_us_go,
+                            selected = "demo",
+                            individual = TRUE,
+                            justified = TRUE
+          ),
+          conditionalPanel(
+            condition = "input.demo_ou_us == 'demo'",
+            pickerInput(inputId = "atividade_demo",
+                        label = "Indicador:",
+                        choices = c(list_pop_total, list_pop_sexo, list_pop_cor, list_pop_idade),
+                        selected = "PT")
+          ),
+          conditionalPanel(
+            condition = "input.demo_ou_us == 'activity'",
+            pickerInput(inputId = "atividade_us",
+                        label = "Indicador:",
+                        choices = c(list_trabalho, list_saude, list_edu),
+                        selected = "TT")
+          )
+          
+          
+          
+          
+        )
         
       )
       

@@ -10,7 +10,8 @@ shinyUI(
         # Create some variables in JS
         tags$head(tags$script("var cities_todos = ['for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec'];")),
         tags$head(tags$script("var cities_ativo = ['bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat'];")),
-        tags$head(tags$script("var modos_ativos = ['caminhada', 'bicicleta'];")),
+        tags$head(tags$script("var ind_cum = ['CMA', 'CMP'];")),
+        tags$head(tags$script("var modos_ativos = ['walk', 'bicycle'];")),
         tags$head(tags$script("var graphs_cma = ['palma_renda', 'palma_cor'];")),
         tags$head(tags$script("var graphs_tmi = ['dumbell_renda', 'dumbell_cor'];"))
         # Select custom slider

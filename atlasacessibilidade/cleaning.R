@@ -10,7 +10,8 @@ acess <- acess %>% filter(!is.na(modo))
 acess_tp <- acess %>% filter(pico == 1)
 
 # filter columns
-acess_tp <- acess_tp %>% dplyr::select(id_hex, sigla_muni, P001, modo, matches("15|30|45|60|90|120"), starts_with("TMI")) %>%
+acess_tp <- acess_tp %>% 
+  dplyr::select(id_hex, sigla_muni, P001, modo, matches("15|30|45|60|90|120"), starts_with("TMI")) %>%
   # por enquanto, nao selecionar TQ e TD
   dplyr::select(-matches("TQ|TD"))
 

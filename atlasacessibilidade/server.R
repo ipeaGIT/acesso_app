@@ -4,10 +4,10 @@
 # MAP DATA
 
 # Accessiblity data
-acess <- readRDS("data/acess_wide.rds")
+# acess <- readRDS("data/acess_wide.rds")
 
 # Hex Spatial Sf Data
-hex <- readRDS("data/hex.rds")
+# hex <- readRDS("data/hex.rds")
 
 # Cities centroids data
 centroids <- readRDS("data/cities_centroids.rds") %>% setDT()
