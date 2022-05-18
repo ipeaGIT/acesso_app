@@ -8,9 +8,21 @@ library(data.table)
 
 
 # download data - get walk only for testing
-acess <- aopdata::read_access(city = c("for", "spo"), 
-                              mode = c("walk", "bicycle", "public_transport"), 
-                              year = 2019, geometry = TRUE)
+acess_2017 <- aopdata::read_access(city = c("for", "spo"), 
+                                   mode = c("walk", "bicycle", "public_transport"), 
+                                   year = 2017, geometry = TRUE) %>%
+  filter(year == 2017)
+acess_2018 <- aopdata::read_access(city = c("for", "spo"), 
+                                   mode = c("walk", "bicycle", "public_transport"), 
+                                   year = 2018, geometry = TRUE) %>%
+  filter(year == 2018)
+acess_2019 <- aopdata::read_access(city = c("for", "spo"), 
+                                   mode = c("walk", "bicycle", "public_transport"), 
+                                   year = 2019, geometry = TRUE) %>%
+  filter(year == 2019)
+
+# juntar
+acess <- rbind(acess_2017, acess_2018, acess_2019)
 
 # deletar geometria
 acess <- st_set_geometry(acess, NULL)
@@ -39,7 +51,7 @@ acess <- acess %>%
 cities <- unique(acess$abbrev_muni)
 
 purrr::walk(cities, function(x) readr::write_rds(setDT(acess)[abbrev_muni == x], 
-                                                  sprintf("atlasacessibilidade/data/new/access_%s.rds", x)))
+                                                 sprintf("atlasacessibilidade/data/new/access_%s.rds", x)))
 
 
 

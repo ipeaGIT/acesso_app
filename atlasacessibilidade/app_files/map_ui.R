@@ -162,6 +162,7 @@ output$page_content <- renderUI({
               awesomeRadio(inputId = "ano", 
                            label = "Ano", 
                            choices = c(2017, 2018, 2019),
+                           selected = 2019,
                            width = "70px"
               )),
           

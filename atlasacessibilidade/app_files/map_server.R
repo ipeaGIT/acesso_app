@@ -56,6 +56,7 @@ cidade_filtrada <- reactive({
   readRDS(sprintf("data/new/access_%s.rds", v_city()))
   
   # acess[sigla_muni == v_city$city]
+
   
 })
 
@@ -68,6 +69,18 @@ hex_filtrado <- reactive({
   readRDS(sprintf("data/new/hex/hex_%s.rds", v_city()))
   
 })
+
+# reactive to filter the year -----------------------------------------------------------------
+
+ano_filtrado <- reactive({
+  
+  print(table(cidade_filtrada()$year))
+  
+  cidade_filtrada()[year == input$ano]
+  
+})
+
+
 
 
 
@@ -90,7 +103,7 @@ a <- reactive({
 # Reactive para a modo
 modo_filtrado <- reactive({
   
-  cidade_filtrada()[mode == a()]
+  ano_filtrado()[mode == a()]
   
 })
 
