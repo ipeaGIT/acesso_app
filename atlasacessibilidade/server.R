@@ -140,6 +140,8 @@ function(input, output, session) {
     # runjs('$("#modo_ativo button:eq(0)").prop("disabled", true).prop("onclick",null).off("click");')
     # delete the button (not wanted)
     # runjs('$("#modo_ativo button:eq(0)").remove();')
+    # runjs("$('input[value=B]').parent().attr('disabled', true);")
+    
     
   })
   
