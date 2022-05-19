@@ -7,21 +7,33 @@ library(data.table)
 
 
 # download data - get walk only for testing
-acess_2017 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
-                                   mode = c("walk", "bicycle", "public_transport"), 
+acess_20171 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+                                   mode = c("walk"), 
                                    year = 2017) %>%
   filter(year == 2017)
-acess_2018 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
-                                   mode = c("walk", "bicycle", "public_transport"), 
+acess_20172 <- aopdata::read_access(city = c("for", "spo"), 
+                                   mode = c("public_transport"), 
+                                   year = 2017) %>%
+  filter(year == 2017)
+acess_20181 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+                                   mode = c("walk"), 
                                    year = 2018) %>%
   filter(year == 2018)
-acess_2019 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
-                                   mode = c("walk", "bicycle", "public_transport"), 
+acess_20182 <- aopdata::read_access(city = c("for", "spo", "rio"), 
+                                   mode = c("public_transport"), 
+                                   year = 2018) %>%
+  filter(year == 2018)
+acess_20191 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+                                   mode = c("walk"), 
+                                   year = 2019) %>%
+  filter(year == 2019)
+acess_20192 <- aopdata::read_access(city = c("for", "spo", "rio"), 
+                                   mode = c("public_transport"), 
                                    year = 2019) %>%
   filter(year == 2019)
 
 # juntar
-acess <- rbind(acess_2017, acess_2018, acess_2019)
+acess <- rbind(acess_20171, acess_20172, acess_20181,acess_20182, acess_20191, acess_20192, fill = TRUE)
 
 # por enquanto, so pico
 acess <- acess %>% filter(peak == 1)

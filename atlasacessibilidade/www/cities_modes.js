@@ -7,8 +7,7 @@ var cities_todos = ['for_2017', 'for_2018', 'for_2019', 'spo_2017', 'spo_2018', 
 'cam_2017', 'cam_2018', 'cam_2019'
 ];
 
-var cities_ativo = [
-  'rio_2017',
+var cities_ativo = ['rio_2017',
   'rec_2017', 'rec_2018',
   'goi_2017', 'goi_2018',
 'bsb_2017','bsb_2018','bsb_2019', 

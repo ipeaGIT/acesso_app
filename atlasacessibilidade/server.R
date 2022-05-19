@@ -29,6 +29,8 @@ dumbell_cor <- readRDS("data/acess_dumbell_cor.rds") %>% setDT()
 # Define a server for the Shiny app
 function(input, output, session) {
   
+  
+  
   # 2) MODAL WITH LANGUAGE OPTION AT STARTUP ----------------------------------------------------------
   query_modal <- div(id = "modal_lang", 
                      modalDialog(
@@ -124,7 +126,21 @@ function(input, output, session) {
   # 10) SERVER: MAP --------------------------------------------------------------------------------
   source("app_files/map_server.R", local = TRUE)
   
-  
-  
+  observe({
+    req(input$modo_ativo)
+    # disable the button
+    runjs('$("#modo_ativo button:eq(0)").attr("disabled", true);')
+    # change background color to white
+    runjs('$("#modo_ativo button:eq(0)").css("background-color", "#FFF");')
+    # remove the reactivity
+    runjs('$("input[value=public_transport]").remove();')
+    
+    # disable(selector = "#modo_ativo button:eq(0)")
+    # disable the button (still reactive tough)
+    # runjs('$("#modo_ativo button:eq(0)").prop("disabled", true).prop("onclick",null).off("click");')
+    # delete the button (not wanted)
+    # runjs('$("#modo_ativo button:eq(0)").remove();')
+    
+  })
   
 }

@@ -2,6 +2,7 @@
 # load packages ---------------------------
 library(shiny)
 library(shinyWidgets)
+library(shinyjs)
 library(mapdeck)
 library(shinyBS)
 # library(dplyr)

@@ -18,11 +18,11 @@
 
 
 v_city <- reactive({
-  
+
   req(input$cidade)
   # print(input$cidade)
   if(input$cidade != "") input$cidade else NULL
-  
+
 })
 
 # observeEvent({input$cidade},{
@@ -49,8 +49,8 @@ cidade_filtrada <- reactive({
   
   # only run when city value is not NULL
   # req(v_city())
-  print(v_city$city)
-  print(input$cidade)
+  print(v_city())
+  # print(input$cidade)
   
   # open city and hex here!!!!!!!!!!!!
   readRDS(sprintf("data/new/access_%s.rds", v_city()))
@@ -76,11 +76,12 @@ hex_filtrado <- reactive({
 ano_filtrado <- reactive({
   
   # print(table(cidade_filtrada()$year))
-  print(a())
+  print(sprintf("a: %s", a()))
   print(sprintf("Year selected: %s", input$ano))
   
   cidade_filtrada()[year == input$ano]
   
+  # print(nrow(cidade_filtrada()[year == input$ano]))
   
 })
 
@@ -107,22 +108,27 @@ a <- reactive({
   else if(v_city() %in% c('rec', 'goi') & input$ano %in% c(2019)) {
     
     
-    input$modo_todos }
+    input$modo_todos
   
   
   # else if(v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
     
     
-    else {input$modo_ativo }
+    } else input$modo_ativo 
   
-  # print(input$modo_ativo)
+  # print(sprintf("teste1 %s", input$modo_todos))
+  # print(sprintf("teste2 %s", input$modo_ativo))
   
 })
+
+
+
+
 
 # Reactive para a modo
 modo_filtrado <- reactive({
   
-  print(nrow(ano_filtrado()))
+  print(sprintf("ano filtrado nrow: %s", nrow(ano_filtrado())))
   print(sprintf("Mode selected: %s", a()))
   
   ano_filtrado()[mode == a()]
@@ -181,7 +187,7 @@ modo_filtrado <- reactive({
 indicador_filtrado <- reactive({
   
   print(sprintf("go: %s", input$indicador))
-  print(nrow(modo_filtrado()))
+  print(sprintf("modo filtrado nrow: %s", nrow(modo_filtrado())))
   
   cols <- c('id_hex', 'P001', grep(input$indicador, colnames(modo_filtrado()), ignore.case = TRUE, value = TRUE))
   
@@ -203,8 +209,8 @@ indicador_ok <- reactive({
   
   if (input$indicador == "CMA") {
     
-    input$atividade_cma  }
-  else if (input$indicador == "CMP"){ 
+    input$atividade_cma  
+    } else if (input$indicador == "CMP"){ 
     
     input$atividade_cmp
   }
@@ -219,6 +225,7 @@ atividade_filtrada_cma <- reactive({
   print(sprintf("Indicador ok: %s", indicador_ok()))
   # print(input$atividade_cma)
   # print(input$atividade_cmp)
+  # print(colnames(indicador_filtrado()))
   
   cols <- c('id_hex', 'P001', grep(indicador_ok(), colnames(indicador_filtrado()), ignore.case = TRUE, value = TRUE))
   
@@ -278,15 +285,18 @@ b <- reactive({
 # Reactive for time threshold
 tempo_filtrado <- reactive({
   
-  print(sprintf("b: %s", b()))
+  # print(sprintf("b: %s", b()))
+  # print(colnames(atividade_filtrada_cma()))
   
   cols <- c('id_hex', 'P001', grep(b(), colnames(atividade_filtrada_cma()), ignore.case = TRUE, value = TRUE))
+  
   
   atividade_filtrada1 <- atividade_filtrada_cma()[, ..cols]
   colnames(atividade_filtrada1) <- c('id_hex', 'P001', 'valor')
   atividade_filtrada1[, id := 1:nrow(atividade_filtrada1)]
   atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%")]
   
+  # print(head(atividade_filtrada1))
   
 })
 
@@ -354,7 +364,7 @@ centroid_go <- reactive({
   
   centroid_go <- centroids[abrev_muni == v_city()]
   
-  print(centroid_go)
+  # print(centroid_go)
 })
 
 
@@ -372,7 +382,7 @@ zoom1 <- reactive ({
     
   } else {zoom1 <- 10}
   
-  print(zoom1)
+  print(sprintf("zoom: %s", zoom1))
   
 })
 
@@ -452,7 +462,7 @@ observeEvent({c(input$indicador,
                 input$ano,
                 input$modo_todos, input$modo_ativo, 
                 input$atividade_cma, input$atividade_cmp, input$atividade_min, 
-                input$tempo_tp, input$tempo_ativo_tp, input$tempo_ativo)},{
+                input$tempo_tp, input$tempo_ativo)},{
                   
                   # print(nrow(atividade_filtrada_min_sf))
                   

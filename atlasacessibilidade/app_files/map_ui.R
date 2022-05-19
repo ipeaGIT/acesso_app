@@ -162,7 +162,7 @@ output$page_content <- renderUI({
               awesomeRadio(inputId = "ano", 
                            label = "Ano", 
                            choices = c(2017, 2018, 2019),
-                           selected = 2019,
+                           selected = 2017,
                            width = "70px"
               )),
           
@@ -187,7 +187,17 @@ output$page_content <- renderUI({
           
           conditionalPanel(
             condition = "cities_ativo.indexOf(''.concat(input.cidade, '_', input.ano)) > -1", 
-            radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
+            radioGroupButtons(inputId = "modo_ativo",
+                              label = h1(i18n()$t("Escolha o modo de transporte:")), 
+                              choices = c("<i id=\"modo_des\" class=\"fas fa-bus fa-2x\" style=\"color: #e6e8eb;\"></i>" = "public_transport",
+                                          "<i class=\"fas fa-car fa-2x\"></i>" = "carro",
+                                          "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
+                                          "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicycle"),
+                              selected = "walk",
+                              individual = TRUE,
+                              justified = TRUE
+            )
+            # radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
           ),
           
           div(
@@ -256,7 +266,7 @@ output$page_content <- renderUI({
           # 5) TIME THRESHOLD SELECTION ---------------------------------------------
           
           conditionalPanel(
-            condition = "ind_cum.indexOf(input.indicador) > -1 && (input.modo_todos == 'public_transport')",
+            condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && (input.modo_todos == 'public_transport')",
             # condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && modos_todos.indexOf(input.modo_todos) > -1",
             sliderInput(inputId = "tempo_tp",
                         label = h1(i18n()$t("Escolha o tempo de viagem:")),
