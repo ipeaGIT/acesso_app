@@ -49,14 +49,15 @@ cidade_filtrada <- reactive({
   
   # only run when city value is not NULL
   # req(v_city())
-  # print(v_city$city)
-  # print(input$cidade)
+  print(v_city$city)
+  print(input$cidade)
   
   # open city and hex here!!!!!!!!!!!!
   readRDS(sprintf("data/new/access_%s.rds", v_city()))
   
   # acess[sigla_muni == v_city$city]
-
+  # print(head(readRDS(sprintf("data/new/access_%s.rds", v_city()))))
+  
   
 })
 
@@ -74,9 +75,12 @@ hex_filtrado <- reactive({
 
 ano_filtrado <- reactive({
   
-  print(table(cidade_filtrada()$year))
+  # print(table(cidade_filtrada()$year))
+  print(a())
+  print(sprintf("Year selected: %s", input$ano))
   
   cidade_filtrada()[year == input$ano]
+  
   
 })
 
@@ -92,16 +96,34 @@ a <- reactive({
   
   req(v_city())
   
-  if (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec')) {input$modo_todos}
-  
-  else if(v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
+  if (v_city() %in% c('for', 'spo', 'cur', 'poa', 'bho', 'cam') & input$ano %in% c(2017, 2018, 2019)) 
     
-    input$modo_ativo }
+  {input$modo_todos}
+  
+  else if(v_city() %in% c('rio') & input$ano %in% c(2018, 2019)) {
+    
+    input$modo_todos }
+  
+  else if(v_city() %in% c('rec', 'goi') & input$ano %in% c(2019)) {
+    
+    
+    input$modo_todos }
+  
+  
+  # else if(v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
+    
+    
+    else {input$modo_ativo }
+  
+  # print(input$modo_ativo)
   
 })
 
 # Reactive para a modo
 modo_filtrado <- reactive({
+  
+  print(nrow(ano_filtrado()))
+  print(sprintf("Mode selected: %s", a()))
   
   ano_filtrado()[mode == a()]
   
@@ -159,6 +181,7 @@ modo_filtrado <- reactive({
 indicador_filtrado <- reactive({
   
   print(sprintf("go: %s", input$indicador))
+  print(nrow(modo_filtrado()))
   
   cols <- c('id_hex', 'P001', grep(input$indicador, colnames(modo_filtrado()), ignore.case = TRUE, value = TRUE))
   
@@ -234,16 +257,28 @@ b <- reactive({
   
   req(v_city())
   
-  if (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport") {input$tempo_tp}
+  # switch (v_city(),
+  #   c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport"  = input$tempo_tp,
+  #   c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport"  = input$tempo_tp,
+  #   c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport"  = input$tempo_tp,
+  #   
+  # )
   
-  else if  (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% c("walk", "bicycle")) {input$tempo_ativo_tp}
+  if (a() == "public_transport") input$tempo_tp else if(a() %in% c("walk", "bicycle")) input$tempo_ativo
   
-  else if (v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {input$tempo_ativo}
+  # if (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport") {input$tempo_tp}
+  # 
+  # else if  (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% c("walk", "bicycle")) {input$tempo_ativo_tp}
+  # 
+  # else if (v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {input$tempo_ativo}
+  # else {input$tempo_tp}
   
 })
 
 # Reactive for time threshold
 tempo_filtrado <- reactive({
+  
+  print(sprintf("b: %s", b()))
   
   cols <- c('id_hex', 'P001', grep(b(), colnames(atividade_filtrada_cma()), ignore.case = TRUE, value = TRUE))
   
@@ -264,10 +299,6 @@ atividade_filtrada_min_sf <- reactive({
   atividade_filtrada_min_sf1 <- merge(atividade_filtrada_min(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
   
   atividade_filtrada_min_sf1 <- st_sf(atividade_filtrada_min_sf1, crs = 4326)
-  
-  # atividade_filtrada_min() %>% setDT() %>%
-  #   merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
-  #   st_sf(crs = 4326)
   
 })
 
@@ -418,6 +449,7 @@ observeEvent({v_city()},{
 
 # Observe any change on the atrributes on the city and change the map accordingly
 observeEvent({c(input$indicador, 
+                input$ano,
                 input$modo_todos, input$modo_ativo, 
                 input$atividade_cma, input$atividade_cmp, input$atividade_min, 
                 input$tempo_tp, input$tempo_ativo_tp, input$tempo_ativo)},{

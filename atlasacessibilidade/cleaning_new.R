@@ -6,26 +6,23 @@ library(data.table)
 # access and land use data for each city ------------------------------------------------------
 
 
-
 # download data - get walk only for testing
-acess_2017 <- aopdata::read_access(city = c("for", "spo"), 
+acess_2017 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
                                    mode = c("walk", "bicycle", "public_transport"), 
-                                   year = 2017, geometry = TRUE) %>%
+                                   year = 2017) %>%
   filter(year == 2017)
-acess_2018 <- aopdata::read_access(city = c("for", "spo"), 
+acess_2018 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
                                    mode = c("walk", "bicycle", "public_transport"), 
-                                   year = 2018, geometry = TRUE) %>%
+                                   year = 2018) %>%
   filter(year == 2018)
-acess_2019 <- aopdata::read_access(city = c("for", "spo"), 
+acess_2019 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
                                    mode = c("walk", "bicycle", "public_transport"), 
-                                   year = 2019, geometry = TRUE) %>%
+                                   year = 2019) %>%
   filter(year == 2019)
 
 # juntar
 acess <- rbind(acess_2017, acess_2018, acess_2019)
 
-# deletar geometria
-acess <- st_set_geometry(acess, NULL)
 # por enquanto, so pico
 acess <- acess %>% filter(peak == 1)
 # filtrar hexagonos vazios
