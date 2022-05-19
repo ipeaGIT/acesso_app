@@ -126,6 +126,8 @@ function(input, output, session) {
   # 10) SERVER: MAP --------------------------------------------------------------------------------
   source("app_files/map_server.R", local = TRUE)
   
+  
+  # change to be made to UI afterwards
   observe({
     req(input$modo_ativo)
     # disable the button

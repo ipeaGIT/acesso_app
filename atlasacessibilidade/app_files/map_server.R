@@ -382,7 +382,7 @@ zoom1 <- reactive ({
     
   } else {zoom1 <- 10}
   
-  print(sprintf("zoom: %s", zoom1))
+  # print(sprintf("zoom: %s", zoom1))
   
 })
 
@@ -409,7 +409,7 @@ observeEvent({v_city()},{
                                "Minutos até a oportunidade mais próxima")
   )
   
-  # print(head(mapdeck_options$data))
+  print(head(mapdeck_options$data))
   # print(nrow(mapdeck_options$data))
   # print(class(mapdeck_options$data))
   
