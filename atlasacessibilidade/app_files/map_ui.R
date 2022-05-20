@@ -266,8 +266,8 @@ output$page_content <- renderUI({
           # 5) TIME THRESHOLD SELECTION ---------------------------------------------
           
           conditionalPanel(
-            condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && (input.modo_todos == 'public_transport')",
-            # condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && modos_todos.indexOf(input.modo_todos) > -1",
+            condition = "ind_cum.indexOf(input.indicador) > -1 && output.tp",
+            # condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && (input.modo_todos == 'public_transport')",
             sliderInput(inputId = "tempo_tp",
                         label = h1(i18n()$t("Escolha o tempo de viagem:")),
                         min = 30, max = 120,
@@ -285,8 +285,8 @@ output$page_content <- renderUI({
           #               post = " min")
           # ),
           conditionalPanel(
-            condition = "ind_cum.indexOf(input.indicador) > -1 && (modos_ativos.indexOf(input.modo_ativo)  > -1 || modos_ativos.indexOf(input.modo_todos)  > -1)",
-            # condition = "cities_ativo.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && modos_ativos.indexOf(input.modo_ativo) > -1",
+            condition = "ind_cum.indexOf(input.indicador) > -1 && !output.tp",
+            # condition = "ind_cum.indexOf(input.indicador) > -1 && (modos_ativos.indexOf(input.modo_ativo)  > -1 || modos_ativos.indexOf(input.modo_todos)  > -1)",
             sliderInput(inputId = "tempo_ativo",
                         label = h1(i18n()$t("Escolha o tempo de viagem:")),
                         min = 15, max = 60,

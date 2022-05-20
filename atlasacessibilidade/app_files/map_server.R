@@ -121,7 +121,10 @@ a <- reactive({
   
 })
 
-
+output$tp <- reactive({
+  a() == "public_transport"
+})
+outputOptions(output, 'tp', suspendWhenHidden = FALSE)
 
 
 
