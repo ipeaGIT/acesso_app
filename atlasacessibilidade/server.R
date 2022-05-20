@@ -133,9 +133,10 @@ function(input, output, session) {
     # disable the button
     runjs('$("#modo_ativo button:eq(0)").attr("disabled", true);')
     # change background color to white
-    runjs('$("#modo_ativo button:eq(0)").css("background-color", "#FFF");')
-    # remove the reactivity
-    runjs('$("input[value=public_transport]").remove();')
+    # runjs('$("#modo_ativo button:eq(0)").css("background-color", "#FFF");')
+    # remove the reactivity only when the element is child of #modo_ativo
+    runjs('$("#modo_ativo > div > div:nth-child(1) > button > input[value=public_transport]").remove();')
+    # runjs('$("#modo_ativo > input[value=public_transport]").remove();')
     
     # disable(selector = "#modo_ativo button:eq(0)")
     # disable the button (still reactive tough)
@@ -146,5 +147,7 @@ function(input, output, session) {
     
     
   })
+  
+  
   
 }
