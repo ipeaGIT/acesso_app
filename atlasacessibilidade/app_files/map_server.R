@@ -87,6 +87,13 @@ ano_filtrado <- reactive({
 
 
 
+# here we should create the observer for the landuse indicator --------------------------------
+landuse_ind_filtrado <- reactive({
+  
+  ano_filtrado()[, ]
+  
+})
+
 
 
 # 2) REACTIVE TO FILTER THE MODE -----------------------------------------------------------------
