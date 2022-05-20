@@ -148,7 +148,7 @@ output$page_content <- renderUI({
                            ),
                            choices = vector_indicadores,
                            width = "210px",
-                           selected = "CMP"),
+                           selected = "CMA"),
               div(
                 bsPopover(id = "q1",
                           title = sprintf("<strong>%s</strong>", i18n()$t("Indicadores de acessibilidade")),
