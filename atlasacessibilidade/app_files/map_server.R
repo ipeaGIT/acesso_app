@@ -76,9 +76,9 @@ hex_filtrado <- reactive({
 ano_filtrado <- reactive({
   
   # print(table(cidade_filtrada()$year))
-  print(sprintf("a: %s", a()))
-  print(sprintf("Year selected: %s", input$ano))
-  print(sprintf("US: %s", input$demo_ou_us))
+  # print(sprintf("a: %s", a()))
+  # print(sprintf("Year selected: %s", input$ano))
+  # print(sprintf("US: %s", input$demo_ou_us))
   
   cidade_filtrada()[year == input$ano]
   
@@ -91,6 +91,8 @@ ano_filtrado <- reactive({
 # here we should create the observer for the landuse indicator --------------------------------
 us_filtrado <- reactive({
   
+  print(sprintf("Us deu certo? %s", input$indicador_us))
+  
   if (input$indicador_us == "us") {
     
     # open city and hex here!!!!!!!!!!!!
@@ -101,13 +103,120 @@ us_filtrado <- reactive({
   
 })
 
-us_filtrado_ano <- reactive({
+us_filtrado_type <- reactive({
   
   req(us_filtrado())
+  # print(sprintf("aaiaiai %s", input$demo_ou_us))
   
-  us_filtrado()[year == input$ano]
+  
+  if (input$demo_ou_us == "demo") {
     
+    # get pop variables
+    pop <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("P"))]
+    # print(pop)
+    # get renda variables
+    renda <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("R"))]
+    # print(renda)
+    
+    cols <- c('id_hex', 'year', pop, renda)
+    # print(cols)
+    us_filtrado()[, ..cols]
+    
+    
+  } else if (input$demo_ou_us == "activity") {
+    
+    # get us variables
+    us1 <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("T"))]
+    us2 <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("E"))]
+    us3 <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("M"))]
+    us4 <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("S"))]
+    us5 <- colnames(us_filtrado())[startsWith(colnames(us_filtrado()), c("C"))]
+    
+    
+    cols <- c('id_hex', 'year', us1, us2, us3, us4, us5)
+    us_filtrado()[, ..cols]
+    
+  }
   
+})
+
+us_filtrado_ano <- reactive({
+  
+  # nrow(us_filtrado_type()[year == input$ano_us])
+  us_filtrado_type()[year == input$ano_us]
+  
+  
+})
+
+# para selecionar o input de uso do solo correto
+indicador_us_ok <- reactive({
+  
+  # print(input$indicador)
+  
+  if (input$demo_ou_us == "demo") {
+    
+    input$atividade_demo
+    
+  } else if (input$demo_ou_us == "activity"){
+    
+    input$atividade_us
+  }
+  
+  
+})
+
+# observeEvent(input$demo_ou_us, {
+#   
+#   if (input$demo_ou_us == "demo") {
+#     
+#     vars <- c("gua", "gua")
+#     
+#   } else if (input$demo_ou_us == "activity") {
+#     
+#     vars <- c("gu", "gu")
+#     
+#   }
+# 
+# updatePickerInput(session = session,
+#                   inputId = "atividade_demo",
+#                   label = "Teste",
+#                   choices = vars)
+#   
+# })
+
+# filter final indicator for us
+
+us_filtrado_ano_atividade <- reactive({
+  
+  
+  # print(nrow(us_filtrado_ano()))
+  # print(colnames(us_filtrado_ano()))
+  print(sprintf("Indicador us ok: %s", indicador_us_ok()))
+  # print(colnames(us_filtrado_ano()))
+  cols <- c("id_hex", indicador_us_ok())
+  # print(cols)
+  a <- us_filtrado_ano()[, ..cols]
+  colnames(a) <- c('id_hex', 'valor')
+  # print(head(a))
+  a[, id := 1:nrow(a)]
+  return(a)
+  # atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%")]
+  
+  
+  # print(head(a))
+  # return(a)
+  
+  
+})
+
+us_filtrado_ano_atividade_sf <- reactive({
+  
+  
+  # print(head(us_filtrado_ano_atividade()))
+  a <- merge(us_filtrado_ano_atividade(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
+  # print(head(a))
+  a <- st_sf(a, crs = 4326)
+  return(a)
 })
 
 
@@ -415,66 +524,76 @@ zoom1 <- reactive ({
 # 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
 observeEvent({v_city()},{
   
-  # create viridis scale in the reverse direction
-  # create matrix
-  colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-  # invert matrix
-  colorss <- apply(colorss, 2, rev)[, 1:3]
-  # add alpha
-  colorss <- cbind(colorss, 170)
   
-  # create list with values for mapdeck options
-  mapdeck_options <- list(
-    'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
-    'data'            = if    (input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else atividade_filtrada_min_sf(),
-    'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
-    'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else colorss,
-    'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
-                               "Oportunidades Acessíveis",
-                               "Minutos até a oportunidade mais próxima")
-  )
-  
-  # print(head(mapdeck_options$data))
-  # print(nrow(mapdeck_options$data))
-  # print(class(mapdeck_options$data))
-  
-  # saveRDS(mapdeck_options$data, "data/new/teste.rds")
-  
-  # Zoom in on the city when it's choosen
-  mapdeck_update(map_id = "map") %>%
-    mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
-                 duration = 3000, transition = "fly") %>%
-    clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
-    clear_legend(layer_id = mapdeck_options$layer_id1) %>%
-    # # Render city limits
-    # add_polygon(
-    #   data = limits_filtrado(),
-    #   stroke_colour = "#616A6B",
-    #   stroke_width = 100,
-    #   fill_opacity = 0,
-    #   update_view = FALSE,
-    #   focus_layer = FALSE,
-    # ) %>%
-    # Render city indicator
-    add_polygon(
-      data = mapdeck_options$data,
-      fill_colour = "valor",
-      fill_opacity = 170,
-      layer_id = mapdeck_options$layer_id2,
-      palette = mapdeck_options$palette1,
-      update_view = FALSE,
-      focus_layer = FALSE,
-      # auto_highlight = TRUE,
-      tooltip = "popup",
-      legend = TRUE,
-      legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
-      legend_format = list( fill_colour = as.integer),
-      stroke_width = NULL,
-      stroke_colour = NULL,
-      stroke_opacity = 0
+  if (input$indicador_us == "access") {
+    
+    # create viridis scale in the reverse direction
+    # create matrix
+    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+    # invert matrix
+    colorss <- apply(colorss, 2, rev)[, 1:3]
+    # add alpha
+    colorss <- cbind(colorss, 170)
+    
+    # create list with values for mapdeck options
+    mapdeck_options <- list(
+      'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
+      'data'            = if    (input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else atividade_filtrada_min_sf(),
+      'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
+      'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else colorss,
+      'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
+                                 "Oportunidades Acessíveis",
+                                 "Minutos até a oportunidade mais próxima")
     )
-  
-  
+    
+    # print(head(mapdeck_options$data))
+    # print(nrow(mapdeck_options$data))
+    # print(class(mapdeck_options$data))
+    
+    # saveRDS(mapdeck_options$data, "data/new/teste.rds")
+    
+    # Zoom in on the city when it's choosen
+    mapdeck_update(map_id = "map") %>%
+      mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
+                   duration = 3000, transition = "fly") %>%
+      clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
+      clear_legend(layer_id = mapdeck_options$layer_id1) %>%
+      # # Render city limits
+      # add_polygon(
+      #   data = limits_filtrado(),
+      #   stroke_colour = "#616A6B",
+      #   stroke_width = 100,
+      #   fill_opacity = 0,
+      #   update_view = FALSE,
+      #   focus_layer = FALSE,
+      # ) %>%
+      # Render city indicator
+      add_polygon(
+        data = mapdeck_options$data,
+        fill_colour = "valor",
+        fill_opacity = 170,
+        layer_id = mapdeck_options$layer_id2,
+        palette = mapdeck_options$palette1,
+        update_view = FALSE,
+        focus_layer = FALSE,
+        # auto_highlight = TRUE,
+        tooltip = "popup",
+        legend = TRUE,
+        legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
+        legend_format = list( fill_colour = as.integer),
+        stroke_width = NULL,
+        stroke_colour = NULL,
+        stroke_opacity = 0
+      )
+    
+  } else if (input$indicador_us == "us") {
+    
+    
+    
+    
+    
+    
+  }
   
   
   
@@ -546,6 +665,47 @@ observeEvent({c(input$indicador,
                           stroke_opacity = 0
                         )
                     }
+                  
+                  
+                })
+
+# Observe any change on the atrributes on the city and change the map accordingly
+# only for land use
+observeEvent({c(input$indicador_us, 
+                input$ano_us,
+                input$demo_ou_us,
+                input$atividade_demo, input$atividade_us)},{
+                  
+                  # print(nrow(atividade_filtrada_min_sf))
+                  
+                  
+                  # create viridis scale in the reverse direction
+                  # create matrix
+                  colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+                  # invert matrix
+                  colorss <- apply(colorss, 2, rev)[, 1:3]
+                  # add alpha
+                  colorss <- cbind(colorss, 170)
+                  
+                  mapdeck_update(map_id = "map") %>%
+                    clear_polygon(layer_id = "acess_cum_go") %>%
+                    clear_legend(layer_id = "acess_cum_go") %>%
+                    add_polygon(
+                      data = us_filtrado_ano_atividade_sf(),
+                      fill_colour = "valor",
+                      fill_opacity = 170,
+                      layer_id = "acess_atividades",
+                      palette = "inferno",
+                      update_view = FALSE,
+                      focus_layer = FALSE,
+                      # tooltip = "popup",
+                      legend = TRUE,
+                      legend_options = list(title = "ui!"),
+                      legend_format = list( fill_colour = as.integer),
+                      stroke_width = NULL,
+                      stroke_colour = NULL,
+                      stroke_opacity = 0
+                    )
                   
                   
                 })

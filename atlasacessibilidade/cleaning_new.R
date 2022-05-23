@@ -69,19 +69,19 @@ purrr::walk(cities, function(x) readr::write_rds(setDT(acess)[abbrev_muni == x],
 landuse_2017 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"), 
                                     year = 2017,
                                     geometry = FALSE) %>%
-  filter(year == 2017)
+  dplyr::filter(year == 2017)
 landuse_2018 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"), 
                                     year = 2018,
                                     geometry = FALSE) %>%
-  filter(year == 2018)
+  dplyr::filter(year == 2018)
 landuse_2019 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"), 
                                      geometry = FALSE,
                                     year = 2019) %>%
-  filter(year == 2019)
+  dplyr::filter(year == 2019)
 
 # juntar
 landuse <- rbind(landuse_2017, landuse_2018,landuse_2019, fill = TRUE)
-landuse <- landuse %>% filter(P001 > 0)
+landuse <- landuse %>% dplyr::filter(P001 > 0)
 
 # filter columns
 landuse <- landuse %>% 
@@ -92,10 +92,10 @@ landuse <- landuse %>%
                 PB = P002, PN = P003, PI = P004, PA = P005,
                 P0005I = P010, P0614I = P011, P1518I = P012, P1924I = P013, P2539I = P014, P4069I = P015, P70I = P016,
                 starts_with("R0"),
-                TT = T001, TB = T001, TM = T001, TA = T001,
-                ET = E002, EI = E002, EF = E002, EM = E002,
-                MT = M003, MI = M003, MF = M003, MM = M003,
-                ST = S004, SB = S004, SM = S004, SA = S004,
+                TT = T001, TB = T002, TM = T003, TA = T004,
+                ET = E001, EI = E002, EF = E003, EM = E004,
+                MT = M001, MI = M002, MF = M003, MM = M004,
+                ST = S001, SB = S002, SM = S003, SA = S004,
                 CT = C001)
                 
 

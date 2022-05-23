@@ -305,6 +305,13 @@ output$page_content <- renderUI({
                             individual = TRUE,
                             justified = TRUE
           ),
+          awesomeRadio(inputId = "ano_us", 
+                       label = "Ano", 
+                       choices = c(2017, 2018, 2019),
+                       selected = 2019,
+                       inline = TRUE,
+                       width = "100%"
+          ),
           conditionalPanel(
             condition = "input.demo_ou_us == 'demo'",
             pickerInput(inputId = "atividade_demo",
