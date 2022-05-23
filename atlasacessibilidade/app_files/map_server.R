@@ -18,11 +18,11 @@
 
 
 v_city <- reactive({
-
+  
   req(input$cidade)
   # print(input$cidade)
   if(input$cidade != "") input$cidade else NULL
-
+  
 })
 
 # observeEvent({input$cidade},{
@@ -53,7 +53,7 @@ cidade_filtrada <- reactive({
   # print(input$cidade)
   
   # open city and hex here!!!!!!!!!!!!
-  readRDS(sprintf("data/new/access_%s.rds", v_city()))
+  readRDS(sprintf("data/new/access/access_%s.rds", v_city()))
   
   # acess[sigla_muni == v_city$city]
   # print(head(readRDS(sprintf("data/new/access_%s.rds", v_city()))))
@@ -78,6 +78,7 @@ ano_filtrado <- reactive({
   # print(table(cidade_filtrada()$year))
   print(sprintf("a: %s", a()))
   print(sprintf("Year selected: %s", input$ano))
+  print(sprintf("US: %s", input$demo_ou_us))
   
   cidade_filtrada()[year == input$ano]
   
@@ -88,12 +89,26 @@ ano_filtrado <- reactive({
 
 
 # here we should create the observer for the landuse indicator --------------------------------
-landuse_ind_filtrado <- reactive({
+us_filtrado <- reactive({
   
-  ano_filtrado()[, ]
+  if (input$indicador_us == "us") {
+    
+    # open city and hex here!!!!!!!!!!!!
+    readRDS(sprintf("data/new/landuse/landuse_%s.rds", v_city()))
+    
+  } 
+  
   
 })
 
+us_filtrado_ano <- reactive({
+  
+  req(us_filtrado())
+  
+  us_filtrado()[year == input$ano]
+    
+  
+})
 
 
 # 2) REACTIVE TO FILTER THE MODE -----------------------------------------------------------------
@@ -116,12 +131,12 @@ a <- reactive({
     
     
     input$modo_todos
-  
-  
-  # else if(v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
     
     
-    } else input$modo_ativo 
+    # else if(v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
+    
+    
+  } else input$modo_ativo 
   
   # print(sprintf("teste1 %s", input$modo_todos))
   # print(sprintf("teste2 %s", input$modo_ativo))
@@ -220,7 +235,7 @@ indicador_ok <- reactive({
   if (input$indicador == "CMA") {
     
     input$atividade_cma  
-    } else if (input$indicador == "CMP"){ 
+  } else if (input$indicador == "CMP"){ 
     
     input$atividade_cmp
   }
@@ -419,7 +434,7 @@ observeEvent({v_city()},{
                                "Minutos até a oportunidade mais próxima")
   )
   
-  print(head(mapdeck_options$data))
+  # print(head(mapdeck_options$data))
   # print(nrow(mapdeck_options$data))
   # print(class(mapdeck_options$data))
   

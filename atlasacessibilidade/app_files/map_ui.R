@@ -47,6 +47,11 @@ output$page_content <- renderUI({
                                                     i18n()$t("Saúde Média"),
                                                     i18n()$t("Saúde Alta"))))
   
+  list_renda <- list('Renda' = structure(c("R001", "R002", "R003"), 
+                                         .Names = c(i18n()$t("Renda per capita"),
+                                                    i18n()$t("Quintil de renda"),
+                                                    i18n()$t("Decil de renda"))))
+  
   vector_indicadores_us <- structure(c("access", "us"), .Names = c("Acessibilidade", "Uso do solo"))
   vector_indicadores_us_go <- structure(c("demo", "activity"), .Names = c("Demograficos", "Atividades"))
   vector_indicadores <- structure(c("CMA", "CMP", "TMI"), .Names = c(i18n()$t("CumulativoA"), i18n()$t("CumulativoP"), i18n()$t("TempoM")))
@@ -275,15 +280,6 @@ output$page_content <- renderUI({
                         animate = animationOptions(interval = 2000),
                         post = " min")
           ),
-          # conditionalPanel(
-          #   condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1 && ind_cum.indexOf(input.indicador) > -1 && modos_ativos.indexOf(input.modo_todos) > -1",
-          #   sliderInput(inputId = "tempo_ativo_tp",
-          #               label = h1(i18n()$t("Escolha o tempo de viagem:")),
-          #               min = 15, max = 60,
-          #               step = 15, value = 15,
-          #               animate = animationOptions(interval = 2000),
-          #               post = " min")
-          # ),
           conditionalPanel(
             condition = "ind_cum.indexOf(input.indicador) > -1 && !output.tp",
             # condition = "ind_cum.indexOf(input.indicador) > -1 && (modos_ativos.indexOf(input.modo_ativo)  > -1 || modos_ativos.indexOf(input.modo_todos)  > -1)",
