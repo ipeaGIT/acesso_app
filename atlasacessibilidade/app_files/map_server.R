@@ -556,8 +556,10 @@ observeEvent({v_city()},{
     mapdeck_update(map_id = "map") %>%
       mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
                    duration = 3000, transition = "fly") %>%
-      clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
-      clear_legend(layer_id = mapdeck_options$layer_id1) %>%
+      clear_polygon(layer_id = "us") %>%
+      clear_legend(layer_id = "us") %>%
+      # clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
+      # clear_legend(layer_id = mapdeck_options$layer_id1) %>%
       # # Render city limits
       # add_polygon(
       #   data = limits_filtrado(),
@@ -572,7 +574,8 @@ observeEvent({v_city()},{
         data = mapdeck_options$data,
         fill_colour = "valor",
         fill_opacity = 170,
-        layer_id = mapdeck_options$layer_id2,
+        layer_id = "acess",
+        # layer_id = mapdeck_options$layer_id2,
         palette = mapdeck_options$palette1,
         update_view = FALSE,
         focus_layer = FALSE,
@@ -602,7 +605,8 @@ observeEvent({v_city()},{
 
 
 # Observe any change on the atrributes on the city and change the map accordingly
-observeEvent({c(input$indicador, 
+observeEvent({c(input$indicador_us,
+                input$indicador, 
                 input$ano,
                 input$modo_todos, input$modo_ativo, 
                 input$atividade_cma, input$atividade_cmp, input$atividade_min, 
@@ -622,13 +626,15 @@ observeEvent({c(input$indicador,
                     colorss <- cbind(colorss, 170)
                     
                     mapdeck_update(map_id = "map") %>%
-                      clear_polygon(layer_id = "acess_cum_go") %>%
-                      clear_legend(layer_id = "acess_cum_go") %>%
+                      clear_polygon(layer_id = "us") %>%
+                      clear_legend(layer_id = "us") %>%
+                      # clear_polygon(layer_id = "acess_cum_go") %>%
+                      # clear_legend(layer_id = "acess_cum_go") %>%
                       add_polygon(
                         data = atividade_filtrada_min_sf(),
                         fill_colour = "valor",
                         # fill_opacity = 200,
-                        layer_id = "acess_min_go",
+                        layer_id = "acess",
                         palette = colorss,
                         update_view = FALSE,
                         tooltip = "popup",
@@ -645,13 +651,13 @@ observeEvent({c(input$indicador,
                     if (input$indicador %in% c("CMA", "CMP")) {
                       
                       mapdeck_update(map_id = "map") %>%
-                        clear_polygon(layer_id = "acess_min_go") %>%
-                        clear_legend(layer_id = "acess_min_go") %>%
+                        clear_polygon(layer_id = "us") %>%
+                        clear_legend(layer_id = "us") %>%
                         add_polygon(
                           data = tempo_filtrado_sf(),
                           fill_colour = "valor",
                           fill_opacity = 170,
-                          layer_id = "acess_cum_go",
+                          layer_id = "acess",
                           palette = "inferno",
                           update_view = FALSE,
                           focus_layer = FALSE,
@@ -688,13 +694,13 @@ observeEvent({c(input$indicador_us,
                   colorss <- cbind(colorss, 170)
                   
                   mapdeck_update(map_id = "map") %>%
-                    clear_polygon(layer_id = "acess_cum_go") %>%
-                    clear_legend(layer_id = "acess_cum_go") %>%
+                    clear_polygon(layer_id = c("acess")) %>%
+                    clear_legend(layer_id = c("acess" )) %>%
                     add_polygon(
                       data = us_filtrado_ano_atividade_sf(),
                       fill_colour = "valor",
                       fill_opacity = 170,
-                      layer_id = "acess_atividades",
+                      layer_id = "us",
                       palette = "inferno",
                       update_view = FALSE,
                       focus_layer = FALSE,
