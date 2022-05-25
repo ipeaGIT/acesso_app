@@ -309,8 +309,7 @@ output$page_content <- renderUI({
                        label = "Ano", 
                        choices = c(2017, 2018, 2019),
                        selected = 2019,
-                       inline = TRUE,
-                       width = "100%"
+                       inline = TRUE
           ),
           conditionalPanel(
             condition = "input.demo_ou_us == 'demo'",
