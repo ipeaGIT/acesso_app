@@ -45,6 +45,11 @@ v_city <- reactive({
 
 # Filter the city
 
+# waiter_show(html = tagList(spin_loaders(id = 2, color = "black"), br(), HTML("&nbsp;"), br(),
+#                            span("Opening GTFS...", style = "color: black"),
+#                            br(),  br(), HTML("&nbsp;")),
+#             color = "rgba(233, 235, 240, .5)")
+
 cidade_filtrada <- reactive({
   
   # only run when city value is not NULL
@@ -527,6 +532,9 @@ observeEvent({v_city()},{
   
   if (input$indicador_us == "access") {
     
+    waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
+                 color = "rgba(233, 235, 240, .5)")
+    
     # create viridis scale in the reverse direction
     # create matrix
     colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
@@ -555,7 +563,7 @@ observeEvent({v_city()},{
     # Zoom in on the city when it's choosen
     mapdeck_update(map_id = "map") %>%
       mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
-                   duration = 3000, transition = "fly") %>%
+                   duration = 4000, transition = "fly") %>%
       clear_polygon(layer_id = "us") %>%
       clear_legend(layer_id = "us") %>%
       # clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
@@ -569,25 +577,27 @@ observeEvent({v_city()},{
       #   update_view = FALSE,
       #   focus_layer = FALSE,
       # ) %>%
-      # Render city indicator
-      add_polygon(
-        data = mapdeck_options$data,
-        fill_colour = "valor",
-        fill_opacity = 170,
-        layer_id = "acess",
-        # layer_id = mapdeck_options$layer_id2,
-        palette = mapdeck_options$palette1,
-        update_view = FALSE,
-        focus_layer = FALSE,
-        # auto_highlight = TRUE,
-        tooltip = "popup",
-        legend = TRUE,
-        legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
-        legend_format = list( fill_colour = as.integer),
-        stroke_width = NULL,
-        stroke_colour = NULL,
-        stroke_opacity = 0
-      )
+    # Render city indicator
+    add_polygon(
+      data = mapdeck_options$data,
+      fill_colour = "valor",
+      fill_opacity = 170,
+      layer_id = "acess",
+      # layer_id = mapdeck_options$layer_id2,
+      palette = mapdeck_options$palette1,
+      update_view = FALSE,
+      focus_layer = FALSE,
+      # auto_highlight = TRUE,
+      tooltip = "popup",
+      legend = TRUE,
+      legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
+      legend_format = list( fill_colour = as.integer),
+      stroke_width = NULL,
+      stroke_colour = NULL,
+      stroke_opacity = 0
+    )
+    
+    waiter_hide()
     
   } else if (input$indicador_us == "us") {
     
@@ -685,33 +695,40 @@ observeEvent({c(input$indicador_us,
                   # print(nrow(atividade_filtrada_min_sf))
                   
                   
-                  # create viridis scale in the reverse direction
-                  # create matrix
-                  colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-                  # invert matrix
-                  colorss <- apply(colorss, 2, rev)[, 1:3]
-                  # add alpha
-                  colorss <- cbind(colorss, 170)
                   
-                  mapdeck_update(map_id = "map") %>%
-                    clear_polygon(layer_id = c("acess")) %>%
-                    clear_legend(layer_id = c("acess" )) %>%
-                    add_polygon(
-                      data = us_filtrado_ano_atividade_sf(),
-                      fill_colour = "valor",
-                      fill_opacity = 170,
-                      layer_id = "us",
-                      palette = "inferno",
-                      update_view = FALSE,
-                      focus_layer = FALSE,
-                      # tooltip = "popup",
-                      legend = TRUE,
-                      legend_options = list(title = "ui!"),
-                      legend_format = list( fill_colour = as.integer),
-                      stroke_width = NULL,
-                      stroke_colour = NULL,
-                      stroke_opacity = 0
-                    )
+                  if (input$indicador_us == "us") {
+                    
+                    
+                    # create viridis scale in the reverse direction
+                    # create matrix
+                    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+                    # invert matrix
+                    colorss <- apply(colorss, 2, rev)[, 1:3]
+                    # add alpha
+                    colorss <- cbind(colorss, 170)
+                    
+                    mapdeck_update(map_id = "map") %>%
+                      clear_polygon(layer_id = c("acess")) %>%
+                      clear_legend(layer_id = c("acess" )) %>%
+                      add_polygon(
+                        data = us_filtrado_ano_atividade_sf(),
+                        fill_colour = "valor",
+                        fill_opacity = 170,
+                        layer_id = "us",
+                        palette = "inferno",
+                        update_view = FALSE,
+                        focus_layer = FALSE,
+                        # tooltip = "popup",
+                        legend = TRUE,
+                        legend_options = list(title = "ui!"),
+                        legend_format = list( fill_colour = as.integer),
+                        stroke_width = NULL,
+                        stroke_colour = NULL,
+                        stroke_opacity = 0
+                      )
+                    
+                    
+                  }
                   
                   
                 })
