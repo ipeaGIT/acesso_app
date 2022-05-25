@@ -533,7 +533,7 @@ observeEvent({v_city()},{
   if (input$indicador_us == "access") {
     
     waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
-                 color = "rgba(233, 235, 240, .5)")
+                 color = "rgba(233, 235, 240, .1)")
     
     # create viridis scale in the reverse direction
     # create matrix
@@ -553,12 +553,6 @@ observeEvent({v_city()},{
                                  "Oportunidades Acessíveis",
                                  "Minutos até a oportunidade mais próxima")
     )
-    
-    # print(head(mapdeck_options$data))
-    # print(nrow(mapdeck_options$data))
-    # print(class(mapdeck_options$data))
-    
-    # saveRDS(mapdeck_options$data, "data/new/teste.rds")
     
     # Zoom in on the city when it's choosen
     mapdeck_update(map_id = "map") %>%
@@ -638,8 +632,6 @@ observeEvent({c(input$indicador_us,
                     mapdeck_update(map_id = "map") %>%
                       clear_polygon(layer_id = "us") %>%
                       clear_legend(layer_id = "us") %>%
-                      # clear_polygon(layer_id = "acess_cum_go") %>%
-                      # clear_legend(layer_id = "acess_cum_go") %>%
                       add_polygon(
                         data = atividade_filtrada_min_sf(),
                         fill_colour = "valor",
