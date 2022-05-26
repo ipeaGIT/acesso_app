@@ -526,57 +526,70 @@ zoom1 <- reactive ({
 })
 
 
+mapdeck_id_clear <- reactiveVal("us_initial")
+
 # 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
 observeEvent({v_city()},{
   
+  mapdeck_id <- ifelse(input$indicador_us == "access", "access_initial", "us_initial")
+  # mapdeck_id_clear(ifelse(input$indicador_us == "access", "us_initial", "access_initial"))
   
-  if (input$indicador_us == "access") {
-    
-    waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
-                 color = "rgba(233, 235, 240, .1)")
-    
-    # create viridis scale in the reverse direction
-    # create matrix
-    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-    # invert matrix
-    colorss <- apply(colorss, 2, rev)[, 1:3]
-    # add alpha
-    colorss <- cbind(colorss, 170)
-    
-    # create list with values for mapdeck options
-    mapdeck_options <- list(
-      'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
-      'data'            = if    (input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else atividade_filtrada_min_sf(),
-      'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
-      'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else colorss,
-      'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
-                                 "Oportunidades Acessíveis",
-                                 "Minutos até a oportunidade mais próxima")
-    )
-    
-    # Zoom in on the city when it's choosen
-    mapdeck_update(map_id = "map") %>%
-      mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
-                   duration = 4000, transition = "fly") %>%
-      clear_polygon(layer_id = "us") %>%
-      clear_legend(layer_id = "us") %>%
-      # clear_polygon(layer_id = mapdeck_options$layer_id1) %>%
-      # clear_legend(layer_id = mapdeck_options$layer_id1) %>%
-      # # Render city limits
-      # add_polygon(
-      #   data = limits_filtrado(),
-      #   stroke_colour = "#616A6B",
-      #   stroke_width = 100,
-      #   fill_opacity = 0,
-      #   update_view = FALSE,
-      #   focus_layer = FALSE,
-      # ) %>%
+  print(sprintf("Mapdeck id: %s", mapdeck_id))
+  print(sprintf("Mapdeck id clear: %s", mapdeck_id_clear()))
+  
+  
+  waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
+              color = "rgba(233, 235, 240, .1)")
+  
+  # create viridis scale in the reverse direction
+  # create matrix
+  colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+  # invert matrix
+  colorss <- apply(colorss, 2, rev)[, 1:3]
+  # add alpha
+  colorss <- cbind(colorss, 170)
+  
+  # select variables
+  data <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
+    tempo_filtrado_sf()
+  } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+    atividade_filtrada_min_sf()
+  } else if (input$indicador_us == "us") {
+    us_filtrado_ano_atividade_sf()
+  }
+  
+  # create list with values for mapdeck options
+  mapdeck_options <- list(
+    # 'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
+    # 'data'            = if(input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else if (input$indicador %in% c("TMI")) ,
+    # 'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
+    'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else colorss,
+    'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
+                               "Oportunidades Acessíveis",
+                               "Minutos até a oportunidade mais próxima")
+  )
+  
+  # Zoom in on the city when it's choosen
+  mapdeck_update(map_id = "map") %>%
+    mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
+                 duration = 4000, transition = "fly") %>%
+    clear_polygon(layer_id = mapdeck_id_clear()) %>%
+    clear_legend(layer_id = mapdeck_id_clear()) %>%
+    # # Render city limits
+    # add_polygon(
+    #   data = limits_filtrado(),
+    #   stroke_colour = "#616A6B",
+    #   stroke_width = 100,
+    #   fill_opacity = 0,
+    #   update_view = FALSE,
+    #   focus_layer = FALSE,
+    # ) %>%
     # Render city indicator
     add_polygon(
-      data = mapdeck_options$data,
+      data = data,
       fill_colour = "valor",
       fill_opacity = 170,
-      layer_id = "acess",
+      layer_id = mapdeck_id,
       # layer_id = mapdeck_options$layer_id2,
       palette = mapdeck_options$palette1,
       update_view = FALSE,
@@ -590,20 +603,10 @@ observeEvent({v_city()},{
       stroke_colour = NULL,
       stroke_opacity = 0
     )
-    
-    waiter_hide()
-    
-  } else if (input$indicador_us == "us") {
-    
-    
-    
-    
-    
-    
-  }
   
+  mapdeck_id_clear(mapdeck_id)
   
-  
+  waiter_hide()
   
 })
 
@@ -619,60 +622,69 @@ observeEvent({c(input$indicador_us,
                   # print(nrow(atividade_filtrada_min_sf))
                   
                   
-                  if (input$indicador == "TMI") {
+                  if (input$indicador_us == "access") {
                     
-                    # create viridis scale in the reverse direction
-                    # create matrix
-                    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-                    # invert matrix
-                    colorss <- apply(colorss, 2, rev)[, 1:3]
-                    # add alpha
-                    colorss <- cbind(colorss, 170)
+                    mapdeck_id <- "access_update"
+                    print(sprintf("Mapdeck id clear2: %s", mapdeck_id_clear()))
                     
-                    mapdeck_update(map_id = "map") %>%
-                      clear_polygon(layer_id = "us") %>%
-                      clear_legend(layer_id = "us") %>%
-                      add_polygon(
-                        data = atividade_filtrada_min_sf(),
-                        fill_colour = "valor",
-                        # fill_opacity = 200,
-                        layer_id = "acess",
-                        palette = colorss,
-                        update_view = FALSE,
-                        tooltip = "popup",
-                        legend = TRUE,
-                        legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
-                        legend_format = list( fill_colour = as.integer),
-                        stroke_width = 0,
-                        stroke_colour = NULL,
-                        stroke_opacity = 0
-                      )
-                    
-                  } else 
-                    
-                    if (input$indicador %in% c("CMA", "CMP")) {
+                    if (input$indicador == "TMI") {
+                      
+                      # create viridis scale in the reverse direction
+                      # create matrix
+                      colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+                      # invert matrix
+                      colorss <- apply(colorss, 2, rev)[, 1:3]
+                      # add alpha
+                      colorss <- cbind(colorss, 170)
                       
                       mapdeck_update(map_id = "map") %>%
-                        clear_polygon(layer_id = "us") %>%
-                        clear_legend(layer_id = "us") %>%
+                        clear_polygon(layer_id = mapdeck_id_clear()) %>%
+                        clear_legend(layer_id = mapdeck_id_clear()) %>%
                         add_polygon(
-                          data = tempo_filtrado_sf(),
+                          data = atividade_filtrada_min_sf(),
                           fill_colour = "valor",
-                          fill_opacity = 170,
-                          layer_id = "acess",
-                          palette = "inferno",
+                          # fill_opacity = 200,
+                          layer_id = mapdeck_id,
+                          palette = colorss,
                           update_view = FALSE,
-                          focus_layer = FALSE,
-                          # auto_highlight = TRUE,
                           tooltip = "popup",
                           legend = TRUE,
-                          legend_options = list(title = i18n()$t("Oportunidades Acessíveis")),
+                          legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
                           legend_format = list( fill_colour = as.integer),
-                          stroke_width = NULL,
+                          stroke_width = 0,
                           stroke_colour = NULL,
                           stroke_opacity = 0
                         )
-                    }
+                      
+                    } else 
+                      
+                      if (input$indicador %in% c("CMA", "CMP")) {
+                        
+                        mapdeck_update(map_id = "map") %>%
+                          clear_polygon(layer_id = mapdeck_id_clear()) %>%
+                          clear_legend(layer_id = mapdeck_id_clear()) %>%
+                          add_polygon(
+                            data = tempo_filtrado_sf(),
+                            fill_colour = "valor",
+                            fill_opacity = 170,
+                            layer_id = mapdeck_id,
+                            palette = "inferno",
+                            update_view = FALSE,
+                            focus_layer = FALSE,
+                            # auto_highlight = TRUE,
+                            tooltip = "popup",
+                            legend = TRUE,
+                            legend_options = list(title = i18n()$t("Oportunidades Acessíveis")),
+                            legend_format = list( fill_colour = as.integer),
+                            stroke_width = NULL,
+                            stroke_colour = NULL,
+                            stroke_opacity = 0
+                          )
+                      }
+                    
+                    mapdeck_id_clear(mapdeck_id)
+                    
+                  }
                   
                   
                 })
@@ -690,6 +702,15 @@ observeEvent({c(input$indicador_us,
                   
                   if (input$indicador_us == "us") {
                     
+                    # print(sprintf("Mapdeck id clear1: %s", mapdeck_id_clear()))
+                    
+                    
+                    
+                    mapdeck_id <- "us_update"
+                    # mapdeck_id_clear <- ifelse(input$indicador_us == "access", "us_initial", "access_initial")
+                    
+                    # print(sprintf("Mapdeck id: %s", mapdeck_id))
+                    
                     
                     # create viridis scale in the reverse direction
                     # create matrix
@@ -700,13 +721,13 @@ observeEvent({c(input$indicador_us,
                     colorss <- cbind(colorss, 170)
                     
                     mapdeck_update(map_id = "map") %>%
-                      clear_polygon(layer_id = c("acess")) %>%
-                      clear_legend(layer_id = c("acess" )) %>%
+                      clear_polygon(layer_id = mapdeck_id_clear()) %>%
+                      clear_legend(layer_id = mapdeck_id_clear()) %>%
                       add_polygon(
                         data = us_filtrado_ano_atividade_sf(),
                         fill_colour = "valor",
                         fill_opacity = 170,
-                        layer_id = "us",
+                        layer_id = mapdeck_id,
                         palette = "inferno",
                         update_view = FALSE,
                         focus_layer = FALSE,
@@ -718,6 +739,8 @@ observeEvent({c(input$indicador_us,
                         stroke_colour = NULL,
                         stroke_opacity = 0
                       )
+                    
+                    mapdeck_id_clear(mapdeck_id)
                     
                     
                   }
