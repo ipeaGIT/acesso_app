@@ -98,7 +98,14 @@ landuse_2019 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"),
 
 # juntar
 landuse <- rbind(landuse_2017, landuse_2018,landuse_2019, fill = TRUE)
-landuse <- landuse %>% dplyr::filter(P001 > 0)
+landuse <- landuse %>% dplyr::filter(P001 > 0 | T001 > 0 | E001 > 0 | S001 > 0)
+
+# truncar variaveis de trabalho
+landuse <- landuse %>%
+  group_by(abbrev_muni) %>%
+  mutate(p95 = quantile(T001, 0.99)) %>%
+  # sunstitute
+  mutate(T001 = ifelse(T001 > p95, p95, T001))
 
 # filter columns
 landuse <- landuse %>% 
