@@ -457,11 +457,17 @@ tempo_filtrado_sf <- reactive({
   
   # print(hex_filtrado())
   
-  tempo_filtrado_sf1 <- merge(tempo_filtrado(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
+  
+  # substituir por esse merge!!!!!!!!
+  data.table::setkeyv(tempo_filtrado(), c('id_hex'))
+  tempo_filtrado_sf1 <- tempo_filtrado()[hex_filtrado(), on = 'id_hex', geom := i.geom]
+  
+  
+  # tempo_filtrado_sf1 <- merge(tempo_filtrado(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
   
   tempo_filtrado_sf1 <- st_sf(tempo_filtrado_sf1, crs = 4326)
   
-  tempo_filtrado_sf1 <- tempo_filtrado_sf1 %>% dplyr::filter(!st_is_empty(.))
+  # tempo_filtrado_sf1 <- tempo_filtrado_sf1 %>% dplyr::filter(!st_is_empty(.))
   
   # print(tempo_filtrado_sf1)
   
