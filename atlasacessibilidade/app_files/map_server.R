@@ -258,7 +258,7 @@ a <- reactive({
 })
 
 output$tp <- reactive({
-  a() == "public_transport"
+  a() %in% c("public_transport", "car")
 })
 outputOptions(output, 'tp', suspendWhenHidden = FALSE)
 
@@ -410,7 +410,7 @@ b <- reactive({
   #   
   # )
   
-  if (a() == "public_transport") input$tempo_tp else if(a() %in% c("walk", "bicycle")) input$tempo_ativo
+  if (a() %in% c("public_transport", "car")) input$tempo_tp else if(a() %in% c("walk", "bicycle")) input$tempo_ativo
   
   # if (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport") {input$tempo_tp}
   # 
