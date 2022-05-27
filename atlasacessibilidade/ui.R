@@ -40,7 +40,7 @@ shinyUI(
                             )
                    ),
                    # Graphs page
-                   tabPanel(id = "tab_graphs", title = uiOutput('title_graph'),
+                   tabPanel(value = "tab_graphs", title = uiOutput('title_graph'),
                             # Create the side panel
                             absolutePanel(id = "controls_graphs", class = "panel panel-default", 
                                           fixed = TRUE, draggable = FALSE,
