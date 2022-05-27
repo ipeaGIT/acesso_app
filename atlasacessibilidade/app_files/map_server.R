@@ -433,7 +433,8 @@ tempo_filtrado <- reactive({
   atividade_filtrada1 <- atividade_filtrada_cma()[, ..cols]
   colnames(atividade_filtrada1) <- c('id_hex', 'P001', 'valor')
   atividade_filtrada1[, id := 1:nrow(atividade_filtrada1)]
-  atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%")]
+  atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), 
+                                        scales::comma(as.integer(valor), big.mark = " "))]
   
   # print(head(atividade_filtrada1))
   
@@ -463,17 +464,8 @@ tempo_filtrado_sf <- reactive({
   tempo_filtrado_sf1 <- tempo_filtrado()[hex_filtrado(), on = 'id_hex', geom := i.geom]
   
   
-  # tempo_filtrado_sf1 <- merge(tempo_filtrado(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
-  
   tempo_filtrado_sf1 <- st_sf(tempo_filtrado_sf1, crs = 4326)
   
-  # tempo_filtrado_sf1 <- tempo_filtrado_sf1 %>% dplyr::filter(!st_is_empty(.))
-  
-  # print(tempo_filtrado_sf1)
-  
-  # tempo_filtrado() %>% setDT() %>%
-  #   merge(hex, by = "id_hex", all.x = TRUE, sort = FALSE) %>% 
-  #   st_sf(crs = 4326)
   
   
 })
@@ -485,7 +477,9 @@ tempo_filtrado_sf <- reactive({
 
 output$map <- renderMapdeck({
   
-  mapdeck(location = c(-43.95988, -19.902739), zoom = 3)
+  mapdeck(location = c(-43.95988, -19.902739), 
+          zoom = 3,
+          style = mapdeck_style("streets"))
   
   
 })
@@ -575,6 +569,10 @@ observeEvent({v_city()},{
                                "Minutos até a oportunidade mais próxima")
   )
   
+  legend_converter <- function(x) {
+    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
+  }
+  
   # Zoom in on the city when it's choosen
   mapdeck_update(map_id = "map") %>%
     mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
@@ -604,7 +602,7 @@ observeEvent({v_city()},{
       tooltip = "popup",
       legend = TRUE,
       legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
-      legend_format = list( fill_colour = as.integer),
+      legend_format = list( fill_colour = legend_converter),
       stroke_width = NULL,
       stroke_colour = NULL,
       stroke_opacity = 0
@@ -626,6 +624,10 @@ observeEvent({c(input$indicador_us,
                 input$tempo_tp, input$tempo_ativo)},{
                   
                   # print(nrow(atividade_filtrada_min_sf))
+                  
+                  legend_converter <- function(x) {
+                    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
+                  }
                   
                   
                   if (input$indicador_us == "access") {
@@ -656,7 +658,7 @@ observeEvent({c(input$indicador_us,
                           tooltip = "popup",
                           legend = TRUE,
                           legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
-                          legend_format = list( fill_colour = as.integer),
+                          legend_format = list( fill_colour = legend_converter),
                           stroke_width = 0,
                           stroke_colour = NULL,
                           stroke_opacity = 0
@@ -704,7 +706,9 @@ observeEvent({c(input$indicador_us,
                   
                   # print(nrow(atividade_filtrada_min_sf))
                   
-                  
+                  legend_converter <- function(x) {
+                    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 10) )
+                  }
                   
                   if (input$indicador_us == "us") {
                     
@@ -739,8 +743,8 @@ observeEvent({c(input$indicador_us,
                         focus_layer = FALSE,
                         # tooltip = "popup",
                         legend = TRUE,
-                        legend_options = list(title = "ui!"),
-                        legend_format = list( fill_colour = as.integer),
+                        legend_options = list(title = i18n()$t("Quantidade")),
+                        legend_format = list( fill_colour = legend_converter),
                         stroke_width = NULL,
                         stroke_colour = NULL,
                         stroke_opacity = 0
