@@ -68,7 +68,27 @@ function(input, output, session) {
       
       if (input$selected_language == "pt") {
         
-        includeMarkdown("www/landing_page/home_pt.md")
+        # includeMarkdown("www/landing_page/home_pt.md")
+        tagList(
+          tags$button(
+            id = "link_to_maps",
+            class = "btn btn-default action-button shiny-bound-input",
+            img(src="img/preview_map.png",
+                height = "150px"),
+            h3("Maps")
+          ),
+          # actionButton("link_to_maps", "Maps",
+          #              width = "300px"),
+          tags$button(
+            id = "link_to_graphs",
+            class = "btn btn-default action-button shiny-bound-input",
+            img(src="img/preview_graphs.png",
+                height = "150px"),
+            h3("Graphs")
+          )
+          # actionButton("link_to_graphs", "Graphs",
+          #              width = "300px")
+        )
         
       } else if (input$selected_language == "en") {
         
@@ -78,6 +98,17 @@ function(input, output, session) {
       
     })
     
+  })
+  
+  # 879 x 727
+  # 1831 x 811
+  
+  observeEvent(input$link_to_maps, {
+    updateNavbarPage(session, "tabs", "tab_mapa")
+  })
+  
+  observeEvent(input$link_to_graphs, {
+    updateNavbarPage(session, "tabs", "tab_graphs")
   })
   
   
