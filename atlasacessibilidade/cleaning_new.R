@@ -7,11 +7,11 @@ library(data.table)
 
 
 # download data - get walk only for testing
-acess_20171 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+acess_20171 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
                                    mode = c("walk"), 
                                    year = 2017) %>%
   filter(year == 2017)
-acess_20172 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+acess_20172 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
                                    mode = c("car"), 
                                    year = 2017) %>%
   filter(year == 2017)
@@ -20,11 +20,11 @@ acess_20173 <- aopdata::read_access(city = c("for", "spo"),
                                    year = 2017) %>%
   filter(year == 2017)
 
-acess_20181 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+acess_20181 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
                                    mode = c("walk"), 
                                    year = 2018) %>%
   filter(year == 2018)
-acess_20182 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+acess_20182 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
                                    mode = c("car"), 
                                    year = 2018) %>%
   filter(year == 2018)
@@ -33,15 +33,15 @@ acess_20183 <- aopdata::read_access(city = c("for", "spo", "rio"),
                                    year = 2018) %>%
   filter(year == 2018)
 
-acess_20191 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+acess_20191 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
                                    mode = c("walk"), 
                                    year = 2019) %>%
   filter(year == 2019)
-acess_20192 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+acess_20192 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
                                    mode = c("car"), 
                                    year = 2019) %>%
   filter(year == 2019)
-acess_20193 <- aopdata::read_access(city = c("for", "spo", "rio"), 
+acess_20193 <- aopdata::read_access(city = c("for", "spo", "rio", "goi"), 
                                    mode = c("public_transport"), 
                                    year = 2019) %>%
   filter(year == 2019)
