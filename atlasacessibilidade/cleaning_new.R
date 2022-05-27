@@ -11,29 +11,46 @@ acess_20171 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"),
                                    mode = c("walk"), 
                                    year = 2017) %>%
   filter(year == 2017)
-acess_20172 <- aopdata::read_access(city = c("for", "spo"), 
+acess_20172 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+                                   mode = c("car"), 
+                                   year = 2017) %>%
+  filter(year == 2017)
+acess_20173 <- aopdata::read_access(city = c("for", "spo"), 
                                    mode = c("public_transport"), 
                                    year = 2017) %>%
   filter(year == 2017)
+
 acess_20181 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
                                    mode = c("walk"), 
                                    year = 2018) %>%
   filter(year == 2018)
-acess_20182 <- aopdata::read_access(city = c("for", "spo", "rio"), 
+acess_20182 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+                                   mode = c("car"), 
+                                   year = 2018) %>%
+  filter(year == 2018)
+acess_20183 <- aopdata::read_access(city = c("for", "spo", "rio"), 
                                    mode = c("public_transport"), 
                                    year = 2018) %>%
   filter(year == 2018)
+
 acess_20191 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
                                    mode = c("walk"), 
                                    year = 2019) %>%
   filter(year == 2019)
-acess_20192 <- aopdata::read_access(city = c("for", "spo", "rio"), 
+acess_20192 <- aopdata::read_access(city = c("for", "spo", "rio", "mac"), 
+                                   mode = c("car"), 
+                                   year = 2019) %>%
+  filter(year == 2019)
+acess_20193 <- aopdata::read_access(city = c("for", "spo", "rio"), 
                                    mode = c("public_transport"), 
                                    year = 2019) %>%
   filter(year == 2019)
 
 # juntar
-acess <- rbind(acess_20171, acess_20172, acess_20181,acess_20182, acess_20191, acess_20192, fill = TRUE)
+acess <- rbind(acess_20171, acess_20172, acess_20173,
+               acess_20181,acess_20182, acess_20183, 
+               acess_20191, acess_20192, acess_20193, 
+               fill = TRUE)
 
 # por enquanto, so pico
 acess <- acess %>% filter(peak == 1)
