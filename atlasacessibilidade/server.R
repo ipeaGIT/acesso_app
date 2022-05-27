@@ -70,12 +70,13 @@ function(input, output, session) {
         
         # includeMarkdown("www/landing_page/home_pt.md")
         tagList(
+          h2("Explore"),
           tags$button(
             id = "link_to_maps",
             class = "btn btn-default action-button shiny-bound-input",
             img(src="img/preview_map.png",
                 height = "150px"),
-            h3("Maps")
+            h3("Maps"), p("Explore indicators in an interactive map"),
           ),
           # actionButton("link_to_maps", "Maps",
           #              width = "300px"),
@@ -84,7 +85,7 @@ function(input, output, session) {
             class = "btn btn-default action-button shiny-bound-input",
             img(src="img/preview_graphs.png",
                 height = "150px"),
-            h3("Graphs")
+            h3("Graphs"), p("Compare inequalities between cities"),
           )
           # actionButton("link_to_graphs", "Graphs",
           #              width = "300px")
