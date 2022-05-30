@@ -280,51 +280,6 @@ modo_filtrado <- reactive({
 
 # 3) REACTIVE TO FILTER THE INDICATOR --------------------------------------------------------------
 
-# # update the options from indicators
-# observe({
-#   
-#   # print(input$indicador)
-#   req(input$indicador)
-#   
-#   list_pop_total <- list('População' = structure(c("PT"),
-#                                                  .Names = c(i18n()$t("População Total"))))
-#   
-#   list_pop_sexo <- list('População por sexo' = structure(c("PH", "PM"),
-#                                                          .Names = c(i18n()$t("População Homens"),
-#                                                                     i18n()$t("População Mulheres"))))
-#   
-#   list_pop_cor <- list('População por cor' = structure(c("PB", "PN", "PA", "PI"),
-#                                                        .Names = c(i18n()$t("População Branca"),
-#                                                                   i18n()$t("População Negra"),
-#                                                                   i18n()$t("População Asiática"),
-#                                                                   i18n()$t("População Indígena"))))
-#   
-#   list_pop_idade <- list('População por idade' = structure(c("P0005I", "P0614I", "P1518I", "P1924I",
-#                                                              "P2539I", "P4069I", "P70I"),
-#                                                            .Names = c(i18n()$t("População 0 a 5 anos"),
-#                                                                       i18n()$t("População 6 a 14 anos"),
-#                                                                       i18n()$t("População 15 a 18 anos"),
-#                                                                       i18n()$t("População 19 a 24 anos"),
-#                                                                       i18n()$t("População 25 a 39 anos"),
-#                                                                       i18n()$t("População 40 a 69 anos"),
-#                                                                       i18n()$t("População 70+ anos"))))
-#   
-#   if (input$indicador == "CMP") {
-#     
-#     updatePickerInput(
-#       session,
-#       inputId = "atividade_cma",
-#       # label = "teste",
-#       selected = "PT",
-#       choices = c(list_pop_total, list_pop_sexo, list_pop_cor, list_pop_idade)
-#     )
-#     
-#   }
-#   
-#   
-#   
-#   
-# })
 
 indicador_filtrado <- reactive({
   
@@ -336,8 +291,6 @@ indicador_filtrado <- reactive({
   modo_filtrado()[, ..cols]
   
   # print(head(modo_filtrado()[, ..cols])) # ok
-  
-  # modo_filtrado() %>% dplyr::select(id_hex, P001, matches(input$indicador))
   
 })
 
@@ -414,13 +367,6 @@ b <- reactive({
   # )
   
   if (a() %in% c("public_transport", "car")) input$tempo_tp else if(a() %in% c("walk", "bicycle")) input$tempo_ativo
-  
-  # if (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport") {input$tempo_tp}
-  # 
-  # else if  (v_city() %in% c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% c("walk", "bicycle")) {input$tempo_ativo_tp}
-  # 
-  # else if (v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'cam', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {input$tempo_ativo}
-  # else {input$tempo_tp}
   
 })
 
