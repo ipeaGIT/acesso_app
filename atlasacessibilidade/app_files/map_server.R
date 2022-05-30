@@ -204,8 +204,19 @@ us_filtrado_ano_atividade <- reactive({
   colnames(a) <- c('id_hex', 'valor')
   # print(head(a))
   a[, id := 1:nrow(a)]
+  
+  
+  # make tooltip
+  unity <- fcase(
+    startsWith(indicador_us_ok(), "P"), " pessoas", 
+    startsWith(indicador_us_ok(), "T"), " empregos", 
+    startsWith(indicador_us_ok(), "E"), " equipamentos de educação", 
+    startsWith(indicador_us_ok(), "S"), " equipamentos de saúde", 
+    startsWith(indicador_us_ok(), "C"), " cras"
+    )
+  
+  a[, popup := paste0("<strong>Valor: </strong>", scales::comma(as.integer(valor), big.mark = " "), unity)]
   return(a)
-  # atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 1), "%")]
   
   
   # print(head(a))
@@ -712,7 +723,7 @@ observeEvent({c(input$indicador_us,
                         palette = "inferno",
                         update_view = FALSE,
                         focus_layer = FALSE,
-                        # tooltip = "popup",
+                        tooltip = "popup",
                         legend = TRUE,
                         legend_options = list(title = i18n()$t("Quantidade")),
                         legend_format = list( fill_colour = legend_converter),
