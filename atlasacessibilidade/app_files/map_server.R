@@ -217,11 +217,14 @@ us_filtrado_ano_atividade <- reactive({
 us_filtrado_ano_atividade_sf <- reactive({
   
   
-  # print(head(us_filtrado_ano_atividade()))
-  a <- merge(us_filtrado_ano_atividade(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
-  # print(head(a))
+  
+  data.table::setkeyv(us_filtrado_ano_atividade(), c('id_hex'))
+  a <- us_filtrado_ano_atividade()[hex_filtrado(), on = 'id_hex', geom := i.geom]
+  
+  # to sf
   a <- st_sf(a, crs = 4326)
   return(a)
+  
 })
 
 
@@ -446,8 +449,10 @@ atividade_filtrada_min_sf <- reactive({
   
   req(atividade_filtrada_min())
   
-  atividade_filtrada_min_sf1 <- merge(atividade_filtrada_min(), hex_filtrado(), by = "id_hex", all.x = TRUE, sort = FALSE)
+  data.table::setkeyv(atividade_filtrada_min(), c('id_hex'))
+  atividade_filtrada_min_sf1 <- atividade_filtrada_min()[hex_filtrado(), on = 'id_hex', geom := i.geom]
   
+  # to sf
   atividade_filtrada_min_sf1 <- st_sf(atividade_filtrada_min_sf1, crs = 4326)
   
 })
@@ -459,11 +464,11 @@ tempo_filtrado_sf <- reactive({
   # print(hex_filtrado())
   
   
-  # substituir por esse merge!!!!!!!!
+  # merge
   data.table::setkeyv(tempo_filtrado(), c('id_hex'))
   tempo_filtrado_sf1 <- tempo_filtrado()[hex_filtrado(), on = 'id_hex', geom := i.geom]
   
-  
+  # to sf
   tempo_filtrado_sf1 <- st_sf(tempo_filtrado_sf1, crs = 4326)
   
   
