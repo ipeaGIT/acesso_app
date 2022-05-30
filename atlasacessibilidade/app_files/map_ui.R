@@ -141,6 +141,7 @@ output$page_content <- renderUI({
                           choices = vector_indicadores_us,
                           individual = TRUE,
                           justified = TRUE,
+                          # status = "primary",
                           selected = "access"),
         conditionalPanel(
           condition = "input.indicador_us == 'access'",
@@ -304,6 +305,7 @@ output$page_content <- renderUI({
                             selected = "demo",
                             individual = TRUE,
                             justified = TRUE
+                            # status = "danger"
           ),
           awesomeRadio(inputId = "ano_us", 
                        label = "Ano", 
