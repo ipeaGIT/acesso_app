@@ -509,6 +509,14 @@ observeEvent({v_city()},{
     us_filtrado_ano_atividade_sf()
   }
   
+  legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
+    "Oportunidades Acessíveis"
+  } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+    "Minutos até a oportunidade mais próxima"
+  } else if (input$indicador_us == "us") {
+    "Quantidade"
+  }
+  
   # create list with values for mapdeck options
   mapdeck_options <- list(
     # 'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
@@ -520,9 +528,15 @@ observeEvent({v_city()},{
                                "Minutos até a oportunidade mais próxima")
   )
   
-  legend_converter <- function(x) {
+  legend_converter_cma <- function(x) {
     return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
   }
+  
+  legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+    
+    as.integer
+    
+  } else legend_converter_cma
   
   # Zoom in on the city when it's choosen
   mapdeck_update(map_id = "map") %>%
@@ -552,7 +566,7 @@ observeEvent({v_city()},{
       # auto_highlight = TRUE,
       tooltip = "popup",
       legend = TRUE,
-      legend_options = list(title = i18n()$t(mapdeck_options$legend_options1)),
+      legend_options = list(title = i18n()$t(legend)),
       legend_format = list( fill_colour = legend_converter),
       stroke_width = NULL,
       stroke_colour = NULL,
@@ -576,9 +590,15 @@ observeEvent({c(input$indicador_us,
                   
                   # print(nrow(atividade_filtrada_min_sf))
                   
-                  legend_converter <- function(x) {
+                  legend_converter_cma <- function(x) {
                     return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
                   }
+                  
+                  legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+                    
+                    as.integer
+                    
+                  } else legend_converter_cma
                   
                   
                   if (input$indicador_us == "access") {
