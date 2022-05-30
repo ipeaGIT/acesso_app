@@ -286,11 +286,11 @@ hr {
     border-radius: 3px;
 }
 
-
+/*
 .radio-bs-primary input[type="radio"]:checked + label::after {
     background-color: #333;
 }
-
+*/
 
 #modal_lang .modal-dialog{
   /*margin: 150px auto;*/
@@ -342,7 +342,7 @@ hr {
 
 /* Landing page! */
 #landing_page {
-  padding: 50px 100px 0 100px;
+  padding: 100px 100px 0 100px;
 }
 
 #landing_page > h1 {
