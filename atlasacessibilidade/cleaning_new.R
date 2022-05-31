@@ -7,44 +7,35 @@ library(data.table)
 
 
 # download data - get walk only for testing
-acess_20171 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
+acess_20171 <- aopdata::read_access(city = "all", 
                                    mode = c("walk"), 
-                                   year = 2017) %>%
-  filter(year == 2017)
-acess_20172 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
+                                   year = 2017)
+acess_20172 <- aopdata::read_access(city = "all", 
                                    mode = c("car"), 
-                                   year = 2017) %>%
-  filter(year == 2017)
-acess_20173 <- aopdata::read_access(city = c("for", "spo"), 
+                                   year = 2017)
+acess_20173 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur"), 
                                    mode = c("public_transport"), 
-                                   year = 2017) %>%
-  filter(year == 2017)
+                                   year = 2017)
 
-acess_20181 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
+acess_20181 <- aopdata::read_access(city = "all", 
                                    mode = c("walk"), 
-                                   year = 2018) %>%
-  filter(year == 2018)
-acess_20182 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
+                                   year = 2018)
+acess_20182 <- aopdata::read_access(city = "all", 
                                    mode = c("car"), 
-                                   year = 2018) %>%
-  filter(year == 2018)
-acess_20183 <- aopdata::read_access(city = c("for", "spo", "rio"), 
+                                   year = 2018)
+acess_20183 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio"), 
                                    mode = c("public_transport"), 
-                                   year = 2018) %>%
-  filter(year == 2018)
+                                   year = 2018)
 
-acess_20191 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
+acess_20191 <- aopdata::read_access(city = "all", 
                                    mode = c("walk"), 
-                                   year = 2019) %>%
-  filter(year == 2019)
-acess_20192 <- aopdata::read_access(city = c("for", "spo", "rio", "mac", "goi"), 
+                                   year = 2019)
+acess_20192 <- aopdata::read_access(city = "all", 
                                    mode = c("car"), 
-                                   year = 2019) %>%
-  filter(year == 2019)
-acess_20193 <- aopdata::read_access(city = c("for", "spo", "rio", "goi"), 
+                                   year = 2019)
+acess_20193 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio", "rec", "goi"), 
                                    mode = c("public_transport"), 
-                                   year = 2019) %>%
-  filter(year == 2019)
+                                   year = 2019)
 
 # juntar
 acess <- rbind(acess_20171, acess_20172, acess_20173,
@@ -83,15 +74,15 @@ purrr::walk(cities, function(x) readr::write_rds(setDT(acess)[abbrev_muni == x],
 
 
 # landuse -----------------------------------------------------------------
-landuse_2017 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"), 
+landuse_2017 <- aopdata::read_landuse(city = "all", 
                                     year = 2017,
                                     geometry = FALSE) %>%
   dplyr::filter(year == 2017)
-landuse_2018 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"), 
+landuse_2018 <- aopdata::read_landuse(city = "all", 
                                     year = 2018,
                                     geometry = FALSE) %>%
   dplyr::filter(year == 2018)
-landuse_2019 <- aopdata::read_landuse(city = c("for", "spo", "rio", "mac"), 
+landuse_2019 <- aopdata::read_landuse(city = "all", 
                                      geometry = FALSE,
                                     year = 2019) %>%
   dplyr::filter(year == 2019)
@@ -103,9 +94,16 @@ landuse <- landuse %>% dplyr::filter(P001 > 0 | T001 > 0 | E001 > 0 | S001 > 0)
 # truncar variaveis de trabalho
 landuse <- landuse %>%
   group_by(abbrev_muni) %>%
-  mutate(p95 = quantile(T001, 0.99)) %>%
+  mutate(p951 = quantile(T001, 0.99)) %>%
+  mutate(p952 = quantile(T002, 0.99)) %>%
+  mutate(p953 = quantile(T003, 0.99)) %>%
+  mutate(p954 = quantile(T004, 0.99)) %>%
   # sunstitute
-  mutate(T001 = ifelse(T001 > p95, p95, T001))
+  mutate(T001 = ifelse(T001 > p951, p951, T001)) %>%
+  mutate(T002 = ifelse(T002 > p952, p952, T002)) %>%
+  mutate(T003 = ifelse(T003 > p953, p953, T003)) %>%
+  mutate(T004 = ifelse(T004 > p954, p954, T004)) %>%
+  ungroup()
 
 # filter columns
 landuse <- landuse %>% 
