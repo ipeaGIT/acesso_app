@@ -724,9 +724,16 @@ observeEvent({c(input$indicador_us,
                   
                   # print(nrow(atividade_filtrada_min_sf))
                   
-                  legend_converter <- function(x) {
+                  legend_converter_us <- function(x) {
                     return( scales::comma(as.integer(x), big.mark = " ", accuracy = 10) )
                   }
+                  
+                  
+                  legend_converter <- if (input$indicador_us == "us" & grepl("^(P|T)", indicador_us_ok())) {
+                    
+                    legend_converter_us
+                    
+                  } else as.integer              
                   
                   if (input$indicador_us == "us") {
                     
