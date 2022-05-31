@@ -701,7 +701,7 @@ observeEvent({c(input$indicador_us,
                             tooltip = "popup",
                             legend = TRUE,
                             legend_options = list(title = i18n()$t("Oportunidades Acessíveis")),
-                            legend_format = list( fill_colour = as.integer),
+                            legend_format = list( fill_colour = legend_converter),
                             stroke_width = NULL,
                             stroke_colour = NULL,
                             stroke_opacity = 0
