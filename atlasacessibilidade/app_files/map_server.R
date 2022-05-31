@@ -664,8 +664,8 @@ observeEvent({c(input$indicador_us,
                       colorss <- cbind(colorss, 170)
                       
                       mapdeck_update(map_id = "map") %>%
-                        clear_polygon(layer_id = mapdeck_id_clear()) %>%
-                        clear_legend(layer_id = mapdeck_id_clear()) %>%
+                        clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
+                        clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                         add_polygon(
                           data = atividade_filtrada_min_sf(),
                           fill_colour = "valor",
@@ -687,8 +687,8 @@ observeEvent({c(input$indicador_us,
                       if (input$indicador %in% c("CMA", "CMP")) {
                         
                         mapdeck_update(map_id = "map") %>%
-                          clear_polygon(layer_id = mapdeck_id_clear()) %>%
-                          clear_legend(layer_id = mapdeck_id_clear()) %>%
+                          clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
+                          clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                           add_polygon(
                             data = tempo_filtrado_sf(),
                             fill_colour = "valor",
@@ -756,8 +756,8 @@ observeEvent({c(input$indicador_us,
                     colorss <- cbind(colorss, 170)
                     
                     mapdeck_update(map_id = "map") %>%
-                      clear_polygon(layer_id = mapdeck_id_clear()) %>%
-                      clear_legend(layer_id = mapdeck_id_clear()) %>%
+                      clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
+                      clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                       add_polygon(
                         data = us_filtrado_ano_atividade_sf(),
                         fill_colour = "valor",
