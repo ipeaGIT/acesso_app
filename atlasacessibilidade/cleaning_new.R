@@ -5,42 +5,52 @@ library(data.table)
 
 # access and land use data for each city ------------------------------------------------------
 
+my_read_access <- function(modo, ...) {
+  
+  aopdata::read_access(mode = modo, ...)
+  
+}
+
 
 # download data - get walk only for testing
-acess_20171 <- aopdata::read_access(city = "all", 
-                                   mode = c("walk"), 
-                                   year = 2017)
-acess_20172 <- aopdata::read_access(city = "all", 
-                                   mode = c("car"), 
-                                   year = 2017)
-acess_20173 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur"), 
-                                   mode = c("public_transport"), 
-                                   year = 2017)
+acess_20171 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+                      city = "all", 
+                      year = 2017) %>%
+  rbindlist(fill = TRUE) %>%
+  dplyr::filter(year == 2017)
 
-acess_20181 <- aopdata::read_access(city = "all", 
-                                   mode = c("walk"), 
-                                   year = 2018)
-acess_20182 <- aopdata::read_access(city = "all", 
-                                   mode = c("car"), 
-                                   year = 2018)
-acess_20183 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio"), 
-                                   mode = c("public_transport"), 
-                                   year = 2018)
+acess_20172 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur"), 
+                                    mode = c("public_transport"), 
+                                    year = 2017) %>%
+  dplyr::filter(year == 2017)
 
-acess_20191 <- aopdata::read_access(city = "all", 
-                                   mode = c("walk"), 
-                                   year = 2019)
-acess_20192 <- aopdata::read_access(city = "all", 
-                                   mode = c("car"), 
-                                   year = 2019)
-acess_20193 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio", "rec", "goi"), 
-                                   mode = c("public_transport"), 
-                                   year = 2019)
+acess_20181 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+                      city = "all", 
+                      year = 2018) %>%
+  rbindlist(fill = TRUE) %>%
+  dplyr::filter(year == 2018)
+
+acess_20182 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio"), 
+                                    mode = c("public_transport"), 
+                                    year = 2018) %>%
+  dplyr::filter(year == 2018)
+
+
+acess_20191 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+                      city = "all", 
+                      year = 2019) %>%
+  rbindlist(fill = TRUE) %>%
+  dplyr::filter(year == 2019)
+
+acess_20192 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio", "rec", "goi"), 
+                                    mode = c("public_transport"), 
+                                    year = 2019) %>%
+  dplyr::filter(year == 2019)
 
 # juntar
-acess <- rbind(acess_20171, acess_20172, acess_20173,
-               acess_20181,acess_20182, acess_20183, 
-               acess_20191, acess_20192, acess_20193, 
+acess <- rbind(acess_20171, acess_20172, 
+               acess_20181,acess_20182,  
+               acess_20191, acess_20192,  
                fill = TRUE)
 
 # por enquanto, so pico
@@ -75,16 +85,16 @@ purrr::walk(cities, function(x) readr::write_rds(setDT(acess)[abbrev_muni == x],
 
 # landuse -----------------------------------------------------------------
 landuse_2017 <- aopdata::read_landuse(city = "all", 
-                                    year = 2017,
-                                    geometry = FALSE) %>%
+                                      year = 2017,
+                                      geometry = FALSE) %>%
   dplyr::filter(year == 2017)
 landuse_2018 <- aopdata::read_landuse(city = "all", 
-                                    year = 2018,
-                                    geometry = FALSE) %>%
+                                      year = 2018,
+                                      geometry = FALSE) %>%
   dplyr::filter(year == 2018)
 landuse_2019 <- aopdata::read_landuse(city = "all", 
-                                     geometry = FALSE,
-                                    year = 2019) %>%
+                                      geometry = FALSE,
+                                      year = 2019) %>%
   dplyr::filter(year == 2019)
 
 # juntar
@@ -119,7 +129,7 @@ landuse <- landuse %>%
                 MT = M001, MI = M002, MF = M003, MM = M004,
                 ST = S001, SB = S002, SM = S003, SA = S004,
                 CT = C001)
-                
+
 
 # save for each city
 # list every city
