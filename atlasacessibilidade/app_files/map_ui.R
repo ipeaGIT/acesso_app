@@ -105,7 +105,7 @@ output$page_content <- renderUI({
                            "",
                            "",
                            "fa-bus",
-                           "",
+                           "fa-bus",
                            "",
                            "",
                            "fa-bus",
@@ -115,7 +115,7 @@ output$page_content <- renderUI({
                            "fa-bus",
                            "",
                            "",
-                           ""
+                           "fa-bus"
                   )
                 ),
                 options = list('size' = 15,
@@ -165,11 +165,14 @@ output$page_content <- renderUI({
               )
           ),
           div(style="display:inline-block", 
-              awesomeRadio(inputId = "ano", 
-                           label = "Ano", 
-                           choices = c(2017, 2018, 2019),
-                           selected = 2017,
-                           width = "70px"
+              radioButtons(inputId = "ano", 
+                                 label = "Ano", 
+                                 choiceNames = list(HTML("2017"),
+                                                    HTML("2018"),
+                                                    HTML("2019")),
+                                 choiceValues = list(2017, 2018, 2019),
+                                 selected = 2017,
+                                 width = "90px"
               )),
           
           # 3) MODE SELECTION -------------------------------------------------------

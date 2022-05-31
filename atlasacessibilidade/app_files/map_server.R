@@ -25,6 +25,42 @@ v_city <- reactive({
   
 })
 
+
+# observer to change the labels of each year
+observeEvent(v_city(), {
+  
+  
+  
+  if (v_city() %in% c("for", "spo", "cam", "bho", "poa", "cur")) {
+    
+    choices_new <- list(HTML("2017 &nbsp;<i class=\"fas fa-bus\"></i>"),
+                        HTML("2018 &nbsp;<i class=\"fas fa-bus\"></i>"),
+                        HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>"))
+    
+  } else if(v_city() %in% c("rio")) {
+    
+    choices_new <- list(HTML("2017"),
+                     HTML("2018 &nbsp;<i class=\"fas fa-bus\"></i>") ,
+                     HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>") )
+    
+  } else if(v_city() %in% c("rec", "goi")) {
+    
+    
+    choices_new <- list(HTML("2017"),
+                        HTML("2018") ,
+                        HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>"))
+    
+  } else choices_new <- list("2017", "2018", "2019")
+  
+  
+  
+  updateRadioButtons(session = session,
+                     inputId = "ano",
+                     choiceValues = c("2017", "2018", "2019"),
+                     choiceNames = choices_new)
+  
+})
+
 # observeEvent({input$cidade},{
 #   
 #   
@@ -213,7 +249,7 @@ us_filtrado_ano_atividade <- reactive({
     startsWith(indicador_us_ok(), "E"), " equipamentos de educação", 
     startsWith(indicador_us_ok(), "S"), " equipamentos de saúde", 
     startsWith(indicador_us_ok(), "C"), " cras"
-    )
+  )
   
   a[, popup := paste0("<strong>Valor: </strong>", scales::comma(as.integer(valor), big.mark = " "), unity)]
   return(a)
@@ -501,7 +537,7 @@ observeEvent({v_city()},{
   
   
   waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
-              color = "rgba(233, 235, 240, .1)")
+              color = "rgba(233, 235, 240, .4)")
   
   # create viridis scale in the reverse direction
   # create matrix
