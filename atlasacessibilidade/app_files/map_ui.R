@@ -3,7 +3,10 @@
 output$page_content <- renderUI({
   
   # Create lists that will give the select options to the respective language
-  list_trabalho <- list('Trabalho' = structure(c("TT"), .Names = c(i18n()$t("Trabalho Total"))))
+  list_trabalho <- list('Trabalho' = structure(c("TT", "TB", "TM", "TA"), .Names = c(i18n()$t("Trabalho Total"),
+                                                                                     i18n()$t("Trabalho Baixa Escolaridade"),
+                                                                                     i18n()$t("Trabalho Média Escolaridade"),
+                                                                                     i18n()$t("Trabalho Alta Escolaridade"))))
   list_saude <- list('Saúde' = structure(c("ST", "SB", "SM", "SA"), 
                                          .Names = c(i18n()$t("Saúde Total"),
                                                     i18n()$t("Saúde Baixa"),
@@ -327,7 +330,7 @@ output$page_content <- renderUI({
             condition = "input.demo_ou_us == 'activity'",
             pickerInput(inputId = "atividade_us",
                         label = "Indicador:",
-                        choices = c(list_trabalho, list_saude, list_edu),
+                        choices = c(list_trabalho, list_saude, list_edu, list_cras),
                         selected = "TT")
           )
           
