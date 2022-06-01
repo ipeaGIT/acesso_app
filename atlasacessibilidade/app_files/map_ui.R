@@ -130,8 +130,8 @@ output$page_content <- renderUI({
     # THIS CONDITIONAL PANEL WILL UNFOLD NICELY WITH THE REMAINING SELECTIONS WHEN A CITY IS SELECTED
     
     conditionalPanel(
-      condition = "output.city != ''",
-      # condition = "input.cidade != ''",
+      # condition = "typeof output.city !== 'undefined'",
+      condition = "input.cidade != ''",
       absolutePanel(
         id = "controls_animated", class = "w3-container w3-animate-opacity", 
         fixed = TRUE, draggable = FALSE,

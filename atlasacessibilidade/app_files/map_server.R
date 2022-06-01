@@ -16,7 +16,10 @@ v_city <- reactiveValues(cidade = NULL)
 
 observeEvent(c(input$cidade), {
   
+  print(input$cidade)
+  
   v_city$cidade <- if(isTruthy(input$cidade) & input$cidade != "") input$cidade else NULL
+  # print(v_city$cidade)
   
 })
 
@@ -64,7 +67,6 @@ outputOptions(output, 'city', suspendWhenHidden = FALSE)
 
 # observer to change the labels of each year
 observeEvent(v_city$cidade, {
-  
   
   
   if (v_city$cidade %in% c("for", "spo", "cam", "bho", "poa", "cur")) {
