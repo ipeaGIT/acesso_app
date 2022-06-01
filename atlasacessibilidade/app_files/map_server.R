@@ -669,7 +669,7 @@ observeEvent({v_city$cidade},{
     add_polygon(
       data = data,
       fill_colour = "valor",
-      fill_opacity = 170,
+      fill_opacity = 200,
       layer_id = mapdeck_id,
       # layer_id = mapdeck_options$layer_id2,
       palette = mapdeck_options$palette1,
@@ -726,7 +726,7 @@ observeEvent({c(input$indicador_us,
                       # invert matrix
                       colorss <- apply(colorss, 2, rev)[, 1:3]
                       # add alpha
-                      colorss <- cbind(colorss, 170)
+                      colorss <- cbind(colorss, 200)
                       
                       mapdeck_update(map_id = "map") %>%
                         clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
@@ -757,7 +757,7 @@ observeEvent({c(input$indicador_us,
                           add_polygon(
                             data = tempo_filtrado_sf(),
                             fill_colour = "valor",
-                            fill_opacity = 170,
+                            fill_opacity = 200,
                             layer_id = mapdeck_id,
                             palette = "inferno",
                             update_view = FALSE,
@@ -818,7 +818,7 @@ observeEvent({c(input$indicador_us,
                     # invert matrix
                     colorss <- apply(colorss, 2, rev)[, 1:3]
                     # add alpha
-                    colorss <- cbind(colorss, 170)
+                    colorss <- cbind(colorss, 200)
                     
                     mapdeck_update(map_id = "map") %>%
                       clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
@@ -826,7 +826,7 @@ observeEvent({c(input$indicador_us,
                       add_polygon(
                         data = us_filtrado_ano_atividade_sf(),
                         fill_colour = "valor",
-                        fill_opacity = 170,
+                        fill_opacity = 200,
                         layer_id = mapdeck_id,
                         palette = "inferno",
                         update_view = FALSE,
