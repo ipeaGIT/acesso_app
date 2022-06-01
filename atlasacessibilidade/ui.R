@@ -13,8 +13,8 @@ shinyUI(
       tags$head(tags$script("var modos_ativos = ['walk', 'bicycle'];")),
       tags$head(tags$script("var modos_todos = ['public_transport', 'walk', 'bicycle'];")),
       tags$head(tags$script("var graphs_cma = ['palma_renda', 'palma_cor'];")),
-      tags$head(tags$script("var graphs_tmi = ['dumbell_renda', 'dumbell_cor'];")),
-      shinyjs::useShinyjs()
+      tags$head(tags$script("var graphs_tmi = ['dumbell_renda', 'dumbell_cor'];"))
+      # shinyjs::useShinyjs()
       # Select custom slider
       # https://divadnojnarg.github.io/blog/customsliderinput/
       # chooseSliderSkin("Flat", color = "#112446")
