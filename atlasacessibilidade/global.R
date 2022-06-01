@@ -12,11 +12,10 @@ library(data.table)
 library(waiter) # remotes::install_github("JohnCoene/waiter")
 library(shiny.i18n) # devtools::install_github("Appsilon/shiny.i18n")
 
-library(ggplot2)
+
 # library(forcats)
 library(highcharter)
 # library(hrbrthemes) # remotes::install_github("hrbrmstr/hrbrthemes")
-library(ggalt) # install.packages("ggalt", dependecies = TRUE)
 # library(tidyr)
 
 # load translator data ---------------------------

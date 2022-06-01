@@ -1,6 +1,9 @@
 # prepare data to be downloaded
 prepare_data_download <- reactive({
   
+  library(ggplot2)
+  library(ggalt) # install.packages("ggalt", dependecies = TRUE)
+  
   # select data 
   
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
