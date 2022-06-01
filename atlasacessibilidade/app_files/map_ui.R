@@ -130,7 +130,8 @@ output$page_content <- renderUI({
     # THIS CONDITIONAL PANEL WILL UNFOLD NICELY WITH THE REMAINING SELECTIONS WHEN A CITY IS SELECTED
     
     conditionalPanel(
-      condition = "input.cidade != ''",
+      condition = "output.city != ''",
+      # condition = "input.cidade != ''",
       absolutePanel(
         id = "controls_animated", class = "w3-container w3-animate-opacity", 
         fixed = TRUE, draggable = FALSE,
@@ -182,7 +183,7 @@ output$page_content <- renderUI({
           
           # IF A CITY WITH GTFS IS SELECTED, ALL MODES WILL BE AVAILABLE
           conditionalPanel(
-            condition = "cities_todos.indexOf(''.concat(input.cidade, '_', input.ano)) > -1", 
+            condition = "cities_todos.indexOf(''.concat(output.city, '_', input.ano)) > -1", 
             radioGroupButtons(inputId = "modo_todos",
                               label = h1(i18n()$t("Escolha o modo de transporte:")), 
                               choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "public_transport", 
@@ -198,7 +199,7 @@ output$page_content <- renderUI({
           # THE FUN 'RADIO_BUTTON_CUSTOM' WILL CREATE 3 RADIO BUTTONS WITH 1 BEING UNAVAILABLE
           
           conditionalPanel(
-            condition = "cities_ativo.indexOf(''.concat(input.cidade, '_', input.ano)) > -1", 
+            condition = "cities_ativo.indexOf(''.concat(output.city, '_', input.ano)) > -1", 
             radioGroupButtons(inputId = "modo_ativo",
                               label = h1(i18n()$t("Escolha o modo de transporte:")), 
                               choices = c("<i id=\"modo_des\" class=\"fas fa-bus fa-2x\" style=\"color: #e6e8eb;\"></i>" = "public_transport",

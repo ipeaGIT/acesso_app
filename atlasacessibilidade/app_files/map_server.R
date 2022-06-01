@@ -12,38 +12,74 @@
 #   
 # })
 
-# v_city <- reactiveValues(cidade = NULL)
+v_city <- reactiveValues(cidade = NULL)
 
-
-
-
-v_city <- reactive({
+observeEvent(c(input$cidade), {
   
-  req(input$cidade)
-  # print(input$cidade)
-  if(input$cidade != "") input$cidade else NULL
+  v_city$cidade <- if(isTruthy(input$cidade) & input$cidade != "") input$cidade else NULL
+  
+})
+
+# v_city <- reactive({
+#   
+#   req(input$cidade)
+#   # print(input$cidade)
+#   if(input$cidade != "") input$cidade else NULL
+#   
+# })
+
+
+
+# observer to update the city if the circle from the city is clicked
+observeEvent(c(input$map_pointcloud_click), {
+  
+  req(input$map_pointcloud_click)
+  
+  js <- input$map_pointcloud_click
+  lst <- jsonlite::fromJSON( js )
+  row <- (lst$index) + 1
+  
+  # print(row)
+  centroids_filter <- centroids[row,]
+  centroids_filter <- centroids_filter$abrev_muni
+  # print(centroids_filter)
+  v_city$cidade <- centroids_filter
+  
+  
+  # update the city input picker
+  updatePickerInput(session = session, inputId = "cidade",
+                    selected = v_city$cidade)
+  
   
 })
 
 
+
+output$city <- reactive({
+  v_city$cidade
+  # !is.null(v_city$cidade)
+})
+outputOptions(output, 'city', suspendWhenHidden = FALSE)
+
+
 # observer to change the labels of each year
-observeEvent(v_city(), {
+observeEvent(v_city$cidade, {
   
   
   
-  if (v_city() %in% c("for", "spo", "cam", "bho", "poa", "cur")) {
+  if (v_city$cidade %in% c("for", "spo", "cam", "bho", "poa", "cur")) {
     
     choices_new <- list(HTML("2017 &nbsp;<i class=\"fas fa-bus\"></i>"),
                         HTML("2018 &nbsp;<i class=\"fas fa-bus\"></i>"),
                         HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>"))
     
-  } else if(v_city() %in% c("rio")) {
+  } else if(v_city$cidade %in% c("rio")) {
     
     choices_new <- list(HTML("2017"),
                         HTML("2018 &nbsp;<i class=\"fas fa-bus\"></i>") ,
                         HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>") )
     
-  } else if(v_city() %in% c("rec", "goi")) {
+  } else if(v_city$cidade %in% c("rec", "goi")) {
     
     
     choices_new <- list(HTML("2017"),
@@ -89,15 +125,15 @@ observeEvent(v_city(), {
 cidade_filtrada <- reactive({
   
   # only run when city value is not NULL
-  # req(v_city())
-  print(v_city())
+  # req(v_city$cidade)
+  # print(v_city$cidade)
   # print(input$cidade)
   
   # open city and hex here!!!!!!!!!!!!
-  readRDS(sprintf("data/new/access/access_%s.rds", v_city()))
+  readRDS(sprintf("data/new/access/access_%s.rds", v_city$cidade))
   
   # acess[sigla_muni == v_city$city]
-  # print(head(readRDS(sprintf("data/new/access_%s.rds", v_city()))))
+  # print(head(readRDS(sprintf("data/new/access_%s.rds", v_city$cidade))))
   
   
 })
@@ -105,10 +141,10 @@ cidade_filtrada <- reactive({
 hex_filtrado <- reactive({
   
   # only run when city value is not NULL
-  req(v_city())
+  req(v_city$cidade)
   
   # open city and hex here!!!!!!!!!!!!
-  readRDS(sprintf("data/new/hex/hex_%s.rds", v_city()))
+  readRDS(sprintf("data/new/hex/hex_%s.rds", v_city$cidade))
   
 })
 
@@ -137,7 +173,7 @@ us_filtrado <- reactive({
   if (input$indicador_us == "us") {
     
     # open city and hex here!!!!!!!!!!!!
-    readRDS(sprintf("data/new/landuse/landuse_%s.rds", v_city()))
+    readRDS(sprintf("data/new/landuse/landuse_%s.rds", v_city$cidade))
     
   } 
   
@@ -281,23 +317,23 @@ us_filtrado_ano_atividade_sf <- reactive({
 
 a <- reactive({
   
-  req(v_city())
+  req(v_city$cidade)
   
-  if (v_city() %in% c('for', 'spo', 'cur', 'poa', 'bho', 'cam') & input$ano %in% c(2017, 2018, 2019)) 
+  if (v_city$cidade %in% c('for', 'spo', 'cur', 'poa', 'bho', 'cam') & input$ano %in% c(2017, 2018, 2019)) 
     
   {input$modo_todos}
   
-  else if(v_city() %in% c('rio') & input$ano %in% c(2018, 2019)) {
+  else if(v_city$cidade %in% c('rio') & input$ano %in% c(2018, 2019)) {
     
     input$modo_todos }
   
-  else if(v_city() %in% c('rec', 'goi') & input$ano %in% c(2019)) {
+  else if(v_city$cidade %in% c('rec', 'goi') & input$ano %in% c(2019)) {
     
     
     input$modo_todos
     
     
-    # else if(v_city() %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
+    # else if(v_city$cidade %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
     
     
   } else input$modo_ativo 
@@ -404,9 +440,9 @@ atividade_filtrada_min <- reactive({
 # Select time threshold
 b <- reactive({
   
-  req(v_city())
+  req(v_city$cidade)
   
-  # switch (v_city(),
+  # switch (v_city$cidade,
   #   c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport"  = input$tempo_tp,
   #   c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport"  = input$tempo_tp,
   #   c('for', 'spo', 'rio', 'cur', 'poa', 'bho', 'rec') & input$modo_todos %in% "public_transport"  = input$tempo_tp,
@@ -477,16 +513,18 @@ output$map <- renderMapdeck({
   
   mapdeck(location = c(-43.95988, -19.902739), 
           zoom = 3,
-          style = "mapbox://styles/kauebraga/ck34n83gd0dli1cnvtnrlgber") %>%
+          style = "mapbox://styles/kauebraga/cl3vtf5ay005v14pkzouvp0yk"
+  ) %>%
     add_pointcloud(data = centroids,
                    lon = "lon", lat = "lat",
                    update_view = FALSE,
                    layer_id = "brasil",
-                   fill_colour = "blue",
+                   # fill_colour = "blue",
                    fill_opacity = 170,
-                   auto_highlight = TRUE,
-                   id = "brasil",
-                   tooltip = "name_muni")
+                   # auto_highlight = TRUE
+                   # id = "brasil",
+                   tooltip = "name_muni"
+    )
   
   
 })
@@ -494,17 +532,17 @@ output$map <- renderMapdeck({
 
 
 
-observeEvent(c(input$map_pointcloud_click), {
-  
-  # req(input$map_arc_click)
-  
-  js <- input$map_pointcloud_click
-  lst <- jsonlite::fromJSON( js )
-  row <- (lst$index) + 1
-  
-  print(row)
-  
-})
+# observeEvent(c(input$map_pointcloud_click), {
+#   
+#   # req(input$map_arc_click)
+#   
+#   js <- input$map_pointcloud_click
+#   lst <- jsonlite::fromJSON( js )
+#   row <- (lst$index) + 1
+#   
+#   print(row)
+#   
+# })
 
 
 # Stop the loading page here !
@@ -514,7 +552,7 @@ waiter_hide()
 limits_filtrado <- reactive({
   
   # Filter cities limits
-  limits_filtrado <- limits[abrev_muni == v_city()] %>% st_sf(crs = 4326)
+  limits_filtrado <- limits[abrev_muni == v_city$cidade] %>% st_sf(crs = 4326)
   
   # print(limits_filtrado)
   
@@ -523,7 +561,7 @@ limits_filtrado <- reactive({
 
 centroid_go <- reactive({
   
-  centroid_go <- centroids[abrev_muni == v_city()]
+  centroid_go <- centroids[abrev_muni == v_city$cidade]
   
   # print(centroid_go)
 })
@@ -533,11 +571,11 @@ centroid_go <- reactive({
 zoom1 <- reactive ({
   
   # Choose zoom based on city: some cities are bigger than others
-  if(v_city() %in% c("spo", "man", "cgr", "bsb")) {
+  if(v_city$cidade %in% c("spo", "man", "cgr", "bsb")) {
     
     zoom1 <- 9
     
-  } else if(v_city() %in% c("mac", "for", "nat", "rec", "sal", "slz", "bho")) {
+  } else if(v_city$cidade %in% c("mac", "for", "nat", "rec", "sal", "slz", "bho")) {
     
     zoom1 <- 11
     
@@ -551,7 +589,7 @@ zoom1 <- reactive ({
 mapdeck_id_clear <- reactiveVal("us_initial")
 
 # 8) OBSERVER TO RENDER THE CITY INDICATOR -------------------------------------------------------
-observeEvent({v_city()},{
+observeEvent({v_city$cidade},{
   
   mapdeck_id <- ifelse(input$indicador_us == "access", "access_initial", "us_initial")
   # mapdeck_id_clear(ifelse(input$indicador_us == "access", "us_initial", "access_initial"))
