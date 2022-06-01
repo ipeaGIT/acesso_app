@@ -40,8 +40,8 @@ observeEvent(v_city(), {
   } else if(v_city() %in% c("rio")) {
     
     choices_new <- list(HTML("2017"),
-                     HTML("2018 &nbsp;<i class=\"fas fa-bus\"></i>") ,
-                     HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>") )
+                        HTML("2018 &nbsp;<i class=\"fas fa-bus\"></i>") ,
+                        HTML("2019 &nbsp;<i class=\"fas fa-bus\"></i>") )
     
   } else if(v_city() %in% c("rec", "goi")) {
     
@@ -477,8 +477,32 @@ output$map <- renderMapdeck({
   
   mapdeck(location = c(-43.95988, -19.902739), 
           zoom = 3,
-          style = mapdeck_style("streets"))
+          style = "mapbox://styles/kauebraga/ck34n83gd0dli1cnvtnrlgber") %>%
+    add_pointcloud(data = centroids,
+                   lon = "lon", lat = "lat",
+                   update_view = FALSE,
+                   layer_id = "brasil",
+                   fill_colour = "blue",
+                   fill_opacity = 170,
+                   auto_highlight = TRUE,
+                   id = "brasil",
+                   tooltip = "name_muni")
   
+  
+})
+
+
+
+
+observeEvent(c(input$map_pointcloud_click), {
+  
+  # req(input$map_arc_click)
+  
+  js <- input$map_pointcloud_click
+  lst <- jsonlite::fromJSON( js )
+  row <- (lst$index) + 1
+  
+  print(row)
   
 })
 
@@ -590,6 +614,7 @@ observeEvent({v_city()},{
     mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
                  duration = 4000, transition = "fly") %>%
     clear_polygon(layer_id = mapdeck_id_clear()) %>%
+    clear_pointcloud(layer_id = "brasil") %>%
     clear_legend(layer_id = mapdeck_id_clear()) %>%
     # # Render city limits
     # add_polygon(
