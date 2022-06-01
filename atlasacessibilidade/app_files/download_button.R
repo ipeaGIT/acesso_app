@@ -1,8 +1,7 @@
 # prepare data to be downloaded
 prepare_data_download <- reactive({
   
-  library(ggplot2)
-  library(ggalt) # install.packages("ggalt", dependecies = TRUE)
+  
   
   # select data 
   
@@ -58,7 +57,7 @@ prepare_data_download <- reactive({
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
     output_csv_palma <- output_csv_palma[, .(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
-                                                    tempo_viagem, pobre, rico, palma_ratio)]
+                                             tempo_viagem, pobre, rico, palma_ratio)]
     
     
     print(output_csv_palma)
@@ -155,6 +154,7 @@ output$downloadData <- downloadHandler(
 
 # plot
 output$downloadPlot <- downloadHandler(
+  
   filename = function() {
     
     
@@ -174,6 +174,8 @@ output$downloadPlot <- downloadHandler(
   },
   content = function(file) {
     
+    library(ggplot2)
+    library(ggalt) # install.packages("ggalt", dependecies = TRUE)
     
     if (input$graph_type %in% c("palma_renda", "palma_cor")) {
       
@@ -268,7 +270,7 @@ output$downloadPlot <- downloadHandler(
       # 
       # new_save <- atividade_filtrada_graph() %>%
       #   mutate(nome_muni = factor(nome_muni))
-        
+      
       atividade_filtrada_graph()[, nome_muni := factor(nome_muni)]
       new_save <- copy(atividade_filtrada_graph())
       
