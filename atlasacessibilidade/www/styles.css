@@ -34,6 +34,14 @@ h1 {
     padding-left: 20px !important;
 }
 
+#indicador_us > div > div:nth-child(1) > button {
+  height: 60px;
+}
+
+#indicador_us > div > div:nth-child(2) > button {
+  height: 60px;
+}
+
 #controls_graphs1 {
   background-color: white;
   border: transparent;
@@ -274,7 +282,7 @@ hr {
 /*Change spacing between input in contro ba (right) */
 .form-group{
   
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   
 }
 
