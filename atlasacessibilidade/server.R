@@ -76,6 +76,31 @@ function(input, output, session) {
             class = "btn btn-default action-button shiny-bound-input",
             img(src="img/preview_map.png",
                 height = "150px"),
+            h3("Mapas"), p("Explore indicadores em mapas interativos"),
+          ),
+          # actionButton("link_to_maps", "Maps",
+          #              width = "300px"),
+          tags$button(
+            id = "link_to_graphs",
+            class = "btn btn-default action-button shiny-bound-input",
+            img(src="img/preview_graphs.png",
+                height = "150px"),
+            h3("Gráficos"), p("Compare indicadores de desigualdade entre cidades"),
+          )
+          # actionButton("link_to_graphs", "Graphs",
+          #              width = "300px")
+        )
+        
+      } else if (input$selected_language == "en") {
+        
+        # includeMarkdown("www/landing_page/home_en.md")
+        tagList(
+          h2("Explore"),
+          tags$button(
+            id = "link_to_maps",
+            class = "btn btn-default action-button shiny-bound-input",
+            img(src="img/preview_map.png",
+                height = "150px"),
             h3("Maps"), p("Explore indicators in an interactive map"),
           ),
           # actionButton("link_to_maps", "Maps",
@@ -90,10 +115,6 @@ function(input, output, session) {
           # actionButton("link_to_graphs", "Graphs",
           #              width = "300px")
         )
-        
-      } else if (input$selected_language == "en") {
-        
-        includeMarkdown("www/landing_page/home_en.md")
       }
       
       

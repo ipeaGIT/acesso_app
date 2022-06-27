@@ -278,24 +278,34 @@ us_filtrado_ano_atividade <- reactive({
   colnames(a) <- c('id_hex', 'valor')
   # print(head(a))
   a[, id := 1:nrow(a)]
+  # identifica indicador
+  a[, indicador := indicador_us_ok()]
   
   
   # make tooltip
   unity <- fcase(
-    startsWith(indicador_us_ok(), "P"), " pessoas", 
-    startsWith(indicador_us_ok(), "T"), " empregos", 
-    startsWith(indicador_us_ok(), "E"), " equipamentos de educação", 
-    startsWith(indicador_us_ok(), "S"), " equipamentos de saúde", 
-    startsWith(indicador_us_ok(), "C"), " cras"
+    startsWith(indicador_us_ok(), "P"),    i18n()$t(" pessoas"), 
+    startsWith(indicador_us_ok(), "R001"), i18n()$t(" R$"), 
+    startsWith(indicador_us_ok(), "R002"), i18n()$t(" Quintil"), 
+    startsWith(indicador_us_ok(), "R003"), i18n()$t(" Decil"), 
+    startsWith(indicador_us_ok(), "T"),    i18n()$t(" empregos"), 
+    startsWith(indicador_us_ok(), "E"),    i18n()$t(" equipamentos de educação"), 
+    startsWith(indicador_us_ok(), "S"),    i18n()$t(" equipamentos de saúde"), 
+    startsWith(indicador_us_ok(), "C"),    i18n()$t(" cras")
   )
   
-  a[, popup := paste0("<strong>Valor: </strong>", scales::comma(as.integer(valor), big.mark = " "), unity)]
-  return(a)
+  a[, popup := 
+      fifelse(startsWith(indicador, "R00"),
+             sprintf("<strong>%s:</strong> %s %s", i18n()$t("Valor"), unity, scales::comma(as.integer(valor), big.mark = " ")),
+             sprintf("<strong>%s:</strong> %s %s", i18n()$t("Valor"), scales::comma(as.integer(valor), big.mark = " "), unity)
+             )]
   
   
-  # print(head(a))
+  print(head(a))
+  # print(valor)
   # return(a)
   
+  return(a)
   
 })
 
@@ -621,11 +631,11 @@ observeEvent({v_city$cidade},{
   }
   
   legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
-    "Oportunidades Acessíveis"
+    i18n()$t("Oportunidades Acessíveis")
   } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-    "Minutos até a oportunidade mais próxima"
+    i18n()$t("Minutos até a oportunidade mais próxima")
   } else if (input$indicador_us == "us") {
-    "Quantidade"
+    i18n()$t("Quantidade")
   }
   
   # create list with values for mapdeck options
@@ -635,8 +645,8 @@ observeEvent({v_city$cidade},{
     # 'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
     'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else colorss,
     'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
-                               "Oportunidades Acessíveis",
-                               "Minutos até a oportunidade mais próxima")
+                               i18n()$t("Oportunidades Acessíveis"),
+                               i18n()$t("Minutos até a oportunidade mais próxima"))
   )
   
   legend_converter_cma <- function(x) {
