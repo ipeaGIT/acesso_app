@@ -110,7 +110,7 @@ function(input, output, session) {
             class = "btn btn-default action-button shiny-bound-input",
             img(src="img/preview_graphs.png",
                 height = "150px"),
-            h3("Graphs"), p("Compare inequalities between cities"),
+            h3("Charts"), p("Compare inequalities between cities"),
           )
           # actionButton("link_to_graphs", "Graphs",
           #              width = "300px")
@@ -151,7 +151,7 @@ function(input, output, session) {
   # Translate map title stab
   output$title_map = renderText({
     
-    ifelse(input$selected_language == "pt", "Mapa", "Map")
+    ifelse(input$selected_language == "pt", "Mapas", "Maps")
     
   })  
   
