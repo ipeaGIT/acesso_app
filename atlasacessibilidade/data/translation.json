@@ -6,7 +6,7 @@
     {"pt": "Cidade", "en": "City"},
     {"pt": "Oportunidades Acessíveis", "en": "Accessible Opportunities"},
     {"pt": "Minutos até a oportunidade mais próxima", "en": "Minutes to the closest opportunity"},
-    {"pt": "Quantidade", "en": "Amount"},
+    {"pt": "Quantidade", "en": "Count"},
     {"pt": "Indicadores de acessibilidade", "en": "Accessibility Indicators"},
     {"pt": "Atividades", "en": "Activities"},
     {"pt": "<ul><li> Atividades com o sufixo <em>Total</em> representam todas as atividades</li><li> Sufixos da atividade de <b>saúde</b> (<em>Baixa, Média</em> e <em>Alta</em>) representam o nível de atenção dos serviços prestados</li></ul>", 
@@ -18,6 +18,12 @@
     {"pt": "Trabalho", "en": "Jobs"},
     {"pt": "Saúde", "en": "Health"},
     {"pt": "Educação", "en": "Education"},
+    
+    {"pt": "Renda", "en": "Income"},
+    
+    {"pt": "Renda per capita (R$)", "en": "Per capita income (R$)"},
+    
+    
     
     {"pt": "Trabalho Total", "en": "Jobs Total"},
     {"pt": "Trabalho Baixa Escolaridade", "en": "Jobs Low Educational Level"},
@@ -71,10 +77,10 @@
     
     
     
-    {"pt": "Categoria do indicador",  "en": "Indicator Category"}, 
+    {"pt": "Categoria do indicador",  "en": "Indicator category"}, 
     {"pt": "Acessibilidade",  "en": "Accessibility"}, 
-    {"pt": "Demografico<br>Uso do Solo",  "en": "Demographic<br>Land Use"}, 
-    {"pt": "Demograficos",  "en": "Demographic"}, 
+    {"pt": "Demográfico &#8226; <br>Uso do Solo",  "en": "Demographic &#8226; <br>Land Use"}, 
+    {"pt": "Demográficos",  "en": "Demographic"}, 
     {"pt": "Uso do Solo",  "en": "Land Use"}, 
     {"pt": "Ano",  "en": "Year"},
     {"pt": "Atividade",  "en": "Activity type"},

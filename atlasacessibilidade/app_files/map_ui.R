@@ -55,8 +55,8 @@ output$page_content <- renderUI({
                                                     i18n()$t("Quintil de renda"),
                                                     i18n()$t("Decil de renda"))))
   
-  vector_indicadores_us <- structure(c("access", "us"), .Names = c(i18n()$t("Acessibilidade"), i18n()$t("Demografico<br>Uso do Solo")))
-  vector_indicadores_us_go <- structure(c("demo", "activity"), .Names = c(i18n()$t("Demograficos"), i18n()$t("Uso do Solo")))
+  vector_indicadores_us <- structure(c("access", "us"), .Names = c(i18n()$t("Acessibilidade"), i18n()$t("Demográfico &#8226; <br>Uso do Solo")))
+  vector_indicadores_us_go <- structure(c("demo", "activity"), .Names = c(i18n()$t("Demográficos"), i18n()$t("Uso do Solo")))
   vector_indicadores <- structure(c("CMA", "CMP", "TMI"), .Names = c(i18n()$t("Cumulativo Ativo"), i18n()$t("Cumulativo Passivo"), i18n()$t("Tempo Mínimo")))
   
   # Translate the name of lists accordingly
@@ -64,6 +64,13 @@ output$page_content <- renderUI({
   names(list_saude) <-c(i18n()$t("Saúde"))
   names(list_edu) <-c(i18n()$t("Educação"))
   names(list_cras) <-c("CRAS")
+  
+  names(list_pop_total) <- c(i18n()$t("População"))
+  names(list_pop_sexo) <-  c(i18n()$t("População por sexo"))
+  names(list_pop_cor) <-   c(i18n()$t("População por cor"))
+  names(list_pop_idade) <- c(i18n()$t("População por idade"))
+  names(list_renda) <-     c(i18n()$t("Renda"))
+  
   
   
   
@@ -314,23 +321,29 @@ output$page_content <- renderUI({
                             justified = TRUE
                             # status = "danger"
           ),
-          awesomeRadio(inputId = "ano_us", 
-                       label = i18n()$t("Ano"), 
-                       choices = c(2017, 2018, 2019),
-                       selected = 2019,
-                       inline = TRUE
-          ),
           conditionalPanel(
             condition = "input.demo_ou_us == 'demo'",
+            awesomeRadio(inputId = "ano_demo", 
+                         label = i18n()$t("Ano"), 
+                         choices = c("2010" = "2019"),
+                         selected = "2019",
+                         inline = FALSE
+            ),
             pickerInput(inputId = "atividade_demo",
                         label = i18n()$t("Indicador demográfico"),
                         choices = c(list_pop_total, list_pop_sexo, list_pop_cor, list_pop_idade, list_renda),
                         selected = "PT"
                         # options = list(maxItems = 5)
-                        )
+            )
           ),
           conditionalPanel(
             condition = "input.demo_ou_us == 'activity'",
+            awesomeRadio(inputId = "ano_us", 
+                         label = i18n()$t("Ano"), 
+                         choices = c(2017, 2018, 2019),
+                         selected = 2019,
+                         inline = TRUE
+            ),
             pickerInput(inputId = "atividade_us",
                         label = i18n()$t("Indicador de uso do solo"),
                         choices = c(list_trabalho, list_saude, list_edu, list_cras),

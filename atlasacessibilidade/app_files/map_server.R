@@ -219,10 +219,29 @@ us_filtrado_type <- reactive({
   
 })
 
+
+# get the year of the demo or us
+indicador_year_us_ok <- reactive({
+  
+  # print(input$indicador)
+  
+  if (input$demo_ou_us == "demo") {
+    
+    input$ano_demo
+    
+  } else if (input$demo_ou_us == "activity"){
+    
+    input$ano_us
+  }
+  
+  
+})
+
+
 us_filtrado_ano <- reactive({
   
   # nrow(us_filtrado_type()[year == input$ano_us])
-  us_filtrado_type()[year == input$ano_us]
+  us_filtrado_type()[year == indicador_year_us_ok()]
   
   
 })
@@ -621,6 +640,9 @@ observeEvent({v_city$cidade},{
   # add alpha
   colorss <- cbind(colorss, 170)
   
+  # color scale for income variable
+  
+  
   # select variables
   data <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
     tempo_filtrado_sf()
@@ -643,7 +665,7 @@ observeEvent({v_city$cidade},{
     # 'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
     # 'data'            = if(input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else if (input$indicador %in% c("TMI")) ,
     # 'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
-    'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else colorss,
+    'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else if (input$indicador %in% c("TMI")) colorss,
     'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
                                i18n()$t("Oportunidades Acessíveis"),
                                i18n()$t("Minutos até a oportunidade mais próxima"))
@@ -717,9 +739,7 @@ observeEvent({c(input$indicador_us,
                   }
                   
                   legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-                    
                     as.integer
-                    
                   } else legend_converter_cma
                   
                   
@@ -794,6 +814,7 @@ observeEvent({c(input$indicador_us,
 # only for land use
 observeEvent({c(input$indicador_us, 
                 input$ano_us,
+                input$ano_demo,
                 input$demo_ou_us,
                 input$atividade_demo, input$atividade_us)},{
                   
@@ -803,12 +824,25 @@ observeEvent({c(input$indicador_us,
                     return( scales::comma(as.integer(x), big.mark = " ", accuracy = 10) )
                   }
                   
-                  
                   legend_converter <- if (input$indicador_us == "us" & grepl("^(P|T)", indicador_us_ok())) {
-                    
                     legend_converter_us
-                    
                   } else as.integer              
+                  
+                  legend_fill <- if (input$atividade_demo %in% c("R002", "R003")) {
+                    "rdylbu"
+                  } else "inferno"
+                  
+                  legend_title <- if (input$atividade_demo %in% c("R001")) {
+                    "Renda per capita (R$)"
+                  } else if (input$atividade_demo %in% c("R002")) {
+                    "Quintil de renda"
+                  } else if (input$atividade_demo %in% c("R003")) {
+                    "Decil de renda"
+                    } else "Quantidade"
+                  
+                    
+                  
+                  
                   
                   if (input$indicador_us == "us") {
                     
@@ -821,15 +855,6 @@ observeEvent({c(input$indicador_us,
                     
                     # print(sprintf("Mapdeck id: %s", mapdeck_id))
                     
-                    
-                    # create viridis scale in the reverse direction
-                    # create matrix
-                    colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-                    # invert matrix
-                    colorss <- apply(colorss, 2, rev)[, 1:3]
-                    # add alpha
-                    colorss <- cbind(colorss, 200)
-                    
                     mapdeck_update(map_id = "map") %>%
                       clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                       clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
@@ -838,12 +863,12 @@ observeEvent({c(input$indicador_us,
                         fill_colour = "valor",
                         fill_opacity = 200,
                         layer_id = mapdeck_id,
-                        palette = "inferno",
+                        palette = legend_fill,
                         update_view = FALSE,
                         focus_layer = FALSE,
                         tooltip = "popup",
                         legend = TRUE,
-                        legend_options = list(title = i18n()$t("Quantidade")),
+                        legend_options = list(title = i18n()$t(legend_title)),
                         legend_format = list( fill_colour = legend_converter),
                         stroke_width = NULL,
                         stroke_colour = NULL,
