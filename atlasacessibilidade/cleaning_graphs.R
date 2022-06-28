@@ -1,26 +1,83 @@
-# palma ratio ---------------------------------------------------------------------------------
+
+library(aopdata)
+library(sf)
+library(dplyr)
+library(data.table)
+
+my_read_access <- function(modo, ...) {
+  
+  aopdata::read_access(mode = modo, ...)
+  
+}
+
+
+# download data - get walk only for testing
+acess_20171 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+                      city = "all", 
+                      year = 2017) %>%
+  rbindlist(fill = TRUE) %>%
+  dplyr::filter(year == 2017)
+
+acess_20172 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur"), 
+                                    mode = c("public_transport"), 
+                                    year = 2017) %>%
+  dplyr::filter(year == 2017)
+
+acess_20181 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+                      city = "all", 
+                      year = 2018) %>%
+  rbindlist(fill = TRUE) %>%
+  dplyr::filter(year == 2018)
+
+acess_20182 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio"), 
+                                    mode = c("public_transport"), 
+                                    year = 2018) %>%
+  dplyr::filter(year == 2018)
+
+
+acess_20191 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+                      city = "all", 
+                      year = 2019) %>%
+  rbindlist(fill = TRUE) %>%
+  dplyr::filter(year == 2019)
+
+acess_20192 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio", "rec", "goi"), 
+                                    mode = c("public_transport"), 
+                                    year = 2019) %>%
+  dplyr::filter(year == 2019)
+
+# juntar
+acess <- rbind(acess_20171, acess_20172, 
+               acess_20181,acess_20182,  
+               acess_20191, acess_20192,  
+               fill = TRUE)
+
+# por enquanto, so pico
+acess <- acess %>% filter(peak == 1)
+# filtrar hexagonos vazios
+acess <- acess %>% filter(!is.na(mode))
+
+# filter columns
+acess <- acess %>% 
+  dplyr::select(id_hex, name_muni, abbrev_muni, year, mode, 
+                starts_with("P001"),
+                starts_with("CMA"),
+                starts_with("CMP"),
+                starts_with("TMI"))
+
+
+
+
+  # palma ratio ---------------------------------------------------------------------------------
 
 acess_palma <- acess %>% 
-  # filtrar hexagonos vazios
-  filter(!is.na(modo)) %>%
-  # por enquanto, so pico
-  filter(pico == 1) %>%
-  # filter columns
-  dplyr::select(id_hex, nome_muni, sigla_muni, P001, P002, P003, R003, T001, E001:E004, S001:S004, modo, matches("15|30|45|60|90|120")) %>%
-  # por enquanto, nao selecionar TQ e TD
-  dplyr::select(-matches("TQ|TD")) %>%
-  # fix wide format
-  # multiply percent
-  # mutate_at(vars(matches("CMA")), function(x) x*100) %>%
   # ajeitar infinitos
   mutate_at(vars(matches("TMI")), function(x) ifelse(is.infinite(x), 120, x)) %>%
-  # truncar valores acima de 30 minutos
-  mutate_at(vars(matches("TMI")), function(x) ifelse(x > 30, 30, x)) %>%
-  st_set_geometry(NULL) %>% setDT()
+   setDT()
 
 acess_palma_long <- acess_palma %>%
   # wide to long
-  tidyr::gather(tipo, valor, CMATT15:CMAEM120) %>%
+  tidyr::gather(tipo, valor, CMATT15:CMACT120) %>%
   # extract time threshld (separate at the position 5 of the string)
   tidyr::separate(tipo, c("indicador", "tempo_viagem"), sep = 5) %>%
   # extract activity
@@ -70,12 +127,12 @@ acess_palma_renda <- acess_palma_long %>%
   # definir ricos e pobres
   mutate(classe = ifelse(R003 %in% c(1, 2, 3, 4), "pobre", "rico")) %>%
   # selecionar variaveis
-  select(nome_muni, sigla_muni, P001, classe, modo, indicador, atividade, tempo_viagem, valor) %>%
+  select(name_muni, abbrev_muni, year, P001, classe, mode, indicador, atividade, tempo_viagem, valor) %>%
   # trazer os totais
   # left_join(acess_totais_atividades, by = c("sigla_muni", "atividade")) %>%
   # calcula acessibilidade total
   # mutate(valor = as.integer(valor * total)) %>%
-  group_by(nome_muni, sigla_muni, classe, modo, indicador, atividade, tempo_viagem) %>%
+  group_by(nome_muni, abbrev_muni, year, classe, modo, indicador, atividade, tempo_viagem) %>%
   summarise(acess_media = weighted.mean(valor, P001)) %>%
   ungroup() %>%
   # group_by(sigla_muni) %>%

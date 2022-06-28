@@ -13,6 +13,9 @@ output$graphs <- renderUI({
                                                            i18n()$t("Educação Fundamental"),
                                                            i18n()$t("Educação Média"))))
   
+  list_cras_graph <- list('CRAS' = structure(c("CT"), 
+                                       .Names = c(i18n()$t("Cras Total"))))
+  
   list_types_graphs_palma <- list('Razão de Desigualdade' = 
                                     structure(c("palma_renda", "palma_cor"), 
                                               .Names = c(i18n()$t("Desigualdade por renda (Razão de Palma)"),
@@ -52,11 +55,25 @@ output$graphs <- renderUI({
                 options = list(container = "body"))
     ),
     
+    
+    # year selection ----------------------------------------------------------
+    
+    radioButtons(inputId = "ano_graph", 
+                 label = i18n()$t("Ano"), 
+                 choiceNames = list("2017",
+                                    "2018",
+                                    "2019"),
+                 choiceValues = list(2017, 2018, 2019),
+                 selected = 2017,
+                 inline = TRUE
+    ),    
+    
     # 2) MODE SELECTION -----------------------------------------------------
     
     radioGroupButtons(inputId = "modo_todos_graph",
                       label = h1(i18n()$t("Escolha o modo de transporte:")), 
                       choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "tp", 
+                                  "<i class=\"fas fa-car fa-2x\"></i>" = "car",
                                   "<i class=\"fas fa-walking fa-2x\"></i>" = "caminhada",
                                   "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicicleta"),
                       selected = "tp",
@@ -72,7 +89,7 @@ output$graphs <- renderUI({
                      pickerInput(inputId = "atividade_graph_cum",
                                  label = label_with_info(label = i18n()$t("Escolha a atividade"), 
                                                          tooltip_id = "q3_graph"),
-                                 choices = c(list_trabalho_graph, list_saude_graph, list_edu_graph),
+                                 choices = c(list_trabalho_graph, list_saude_graph, list_edu_graph, list_cras_graph),
                                  selected = "TT")),
     
     # IF GRAPH TYPE IS OF DUMBELL, ONLY HEALTH AND EDUCATIONAL ACTIVITIES WILL BE AVAILABLE
@@ -81,7 +98,7 @@ output$graphs <- renderUI({
                      pickerInput(inputId = "atividade_graph_tmi",
                                  label = label_with_info(label = i18n()$t("Escolha a atividade"), 
                                                          tooltip_id = "q4_graph"),
-                                 choices = c(list_saude_graph, list_edu_graph),
+                                 choices = c(list_saude_graph, list_edu_graph, list_cras_graph),
                                  selected = "ST")),
     div(
       bsPopover(id = "q3_graph", 
