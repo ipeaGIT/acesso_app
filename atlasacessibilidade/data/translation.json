@@ -106,7 +106,7 @@
     {"pt": "Razão de Palma - Cor", "en": "Palma Ratio - Color"},
     {"pt": "Razão de Desigualdade", "en": "Inequality Ratio"},
     {"pt": "Desigualdade por renda (Razão de Palma)", "en": "Inequality by Income  (Palma Ratio)"},
-    {"pt": "Escolha o gráfico:", "en": "Select chart type:"},
+    {"pt": "Indicador", "en": "Indicator"},
     {"pt": "Baixe os dados (.csv)", "en": "Download the data (.csv)"},
     {"pt": "Baixe o gŕafico (.png)", "en": "Download the chart (.png)"},
     {"pt": "Baixe o dicionário dos dados (.xlsx)", "en": "Download the data dictionary (.xlsx)"},

@@ -41,7 +41,7 @@ output$graphs <- renderUI({
     # 1) PLOT SELECTION -----------------------------------------------------
     
     pickerInput(inputId = "graph_type",
-                label = label_with_info(label = i18n()$t("Escolha o gráfico:"),
+                label = label_with_info(label = i18n()$t("Indicador"),
                                         tooltip_id = "q15_graph"),
                 choices = c(list_types_graphs_palma, list_types_graphs_dumbell),
                 selected = "palma_renda",
@@ -71,7 +71,7 @@ output$graphs <- renderUI({
     # 2) MODE SELECTION -----------------------------------------------------
     
     radioGroupButtons(inputId = "modo_todos_graph",
-                      label = h1(i18n()$t("Escolha o modo de transporte:")), 
+                      label = i18n()$t("Modo de transporte"), 
                       choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "public_transport", 
                                   "<i class=\"fas fa-car fa-2x\"></i>" = "car",
                                   "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
@@ -87,7 +87,7 @@ output$graphs <- renderUI({
     
     conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1",
                      pickerInput(inputId = "atividade_graph_cum",
-                                 label = label_with_info(label = i18n()$t("Escolha a atividade"), 
+                                 label = label_with_info(label = i18n()$t("Atividade"), 
                                                          tooltip_id = "q3_graph"),
                                  choices = c(list_trabalho_graph, list_saude_graph, list_edu_graph, list_cras_graph),
                                  selected = "TT")),
@@ -96,7 +96,7 @@ output$graphs <- renderUI({
     
     conditionalPanel(condition = "graphs_tmi.indexOf(input.graph_type) > -1",
                      pickerInput(inputId = "atividade_graph_tmi",
-                                 label = label_with_info(label = i18n()$t("Escolha a atividade"), 
+                                 label = label_with_info(label = i18n()$t("Atividade"), 
                                                          tooltip_id = "q4_graph"),
                                  choices = c(list_saude_graph, list_edu_graph, list_cras_graph),
                                  selected = "ST")),
@@ -125,7 +125,7 @@ output$graphs <- renderUI({
     
     conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1 && input.modo_todos_graph == 'public_transport'",
                      sliderInput(inputId = "tempo_tp_graph",
-                                 label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                 label = i18n()$t("Tempo de viagem"),
                                  min = 30, max = 120,
                                  step = 30, value = 30,
                                  animate = animationOptions(interval = 2000),
@@ -133,7 +133,7 @@ output$graphs <- renderUI({
                                  width = '100%')),
     conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1 && modos_ativos.indexOf(input.modo_todos_graph) > -1",
                      sliderInput(inputId = "tempo_ativo_graph",
-                                 label = h1(i18n()$t("Escolha o tempo de viagem:")),
+                                 label = i18n()$t("Tempo de viagem"),
                                  min = 15, max = 60,
                                  step = 15, value = 15,
                                  animate = animationOptions(interval = 2000),
