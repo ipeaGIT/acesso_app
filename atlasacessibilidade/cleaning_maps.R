@@ -60,7 +60,7 @@ acess <- acess %>% filter(!is.na(mode))
 
 # filter columns
 acess <- acess %>% 
-  dplyr::select(id_hex, abbrev_muni, year, mode, 
+  dplyr::select(id_hex, name_muni, abbrev_muni, year, mode, 
                 starts_with("P001"),
                 starts_with("CMA"),
                 starts_with("CMP"),
