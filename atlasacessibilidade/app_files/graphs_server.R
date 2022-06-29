@@ -1,24 +1,55 @@
+# Reactive to filter year
+
+ano_filtrado_graph <- reactive({
+  
+  
+  print(input$ano_graph)  
+  
+  if (input$graph_type == "palma_renda") {
+    
+    aa <- palma_renda[year == input$ano_graph]
+    
+  } else if (input$graph_type == "palma_cor") {
+    
+    aa <- palma_cor[year == input$ano_graph]
+    
+  } else if (input$graph_type == "dumbell_renda")  {
+    
+    aa <- dumbell_renda[year == input$ano_graph]
+    
+  } else if (input$graph_type == "dumbell_cor")  {
+    
+    aa <- dumbell_cor[year == input$ano_graph]
+    
+  }
+  
+})
+
+
 # Reactive para a modo
 modo_filtrado_graph <- reactive({
   
   
-  if (input$graph_type == "palma_renda") {
-    
-    aa <- palma_renda[modo == input$modo_todos_graph]
-    
-  } else if (input$graph_type == "palma_cor") {
-    
-    aa <- palma_cor[modo == input$modo_todos_graph]
-    
-  } else if (input$graph_type == "dumbell_renda")  {
-    
-    aa <- dumbell_renda[modo == input$modo_todos_graph]
-    
-  } else if (input$graph_type == "dumbell_cor")  {
-    
-    aa <- dumbell_cor[modo == input$modo_todos_graph]
-    
-  }
+  # if (input$graph_type == "palma_renda") {
+  #   
+  #   aa <- palma_renda[modo == input$modo_todos_graph]
+  #   
+  # } else if (input$graph_type == "palma_cor") {
+  #   
+  #   aa <- palma_cor[modo == input$modo_todos_graph]
+  #   
+  # } else if (input$graph_type == "dumbell_renda")  {
+  #   
+  #   aa <- dumbell_renda[modo == input$modo_todos_graph]
+  #   
+  # } else if (input$graph_type == "dumbell_cor")  {
+  #   
+  #   aa <- dumbell_cor[modo == input$modo_todos_graph]
+  #   
+  # }
+  
+  
+  ano_filtrado_graph()[mode == input$modo_todos_graph]
   
 })  
 
@@ -44,7 +75,7 @@ atividade_filtrada_graph <- reactive({
 # Reative to time threshold
 input_tempo_graph <- reactive({
   
-  ifelse(input$modo_todos_graph %in% c("caminhada", "bicicleta"),
+  ifelse(input$modo_todos_graph %in% c("walk", "bicycle"),
          input$tempo_ativo_graph, 
          input$tempo_tp_graph)
   
@@ -68,9 +99,10 @@ make_title_plots <- reactive({
                              "dumbell_cor" = i18n()$t("cor")) 
   
   title_plot_modo <- switch(input$modo_todos_graph, 
-                            "tp" = i18n()$t("por transporte público"), 
-                            "caminhada" = i18n()$t("por caminhada"),
-                            "bicicleta" = i18n()$t("por bicicleta")) 
+                            "public_transport" = i18n()$t("por transporte público"), 
+                            "car" = i18n()$t("por carro"), 
+                            "walk" = i18n()$t("por caminhada"),
+                            "bicycle" = i18n()$t("por bicicleta")) 
   
   title_plot_atividade <- switch(input_atividade_graph(), 
                                  "TT" = switch(input$graph_type,
@@ -117,15 +149,22 @@ make_title_plots <- reactive({
                                                "palma_renda" = i18n()$t("para saúde alta"),
                                                "palma_cor" = i18n()$t("para saúde alta"),
                                                "dumbell_renda" = i18n()$t("ao equipamento de saúde alta mais próximo"),
-                                               "dumbell_cor" = i18n()$t("ao equipamento de saúde alta mais próximo")))
+                                               "dumbell_cor" = i18n()$t("ao equipamento de saúde alta mais próximo")),
+                                 "CT" = switch(input$graph_type,
+                                               "palma_renda" = i18n()$t("para CRAS"),
+                                               "palma_cor" = i18n()$t("para CRAS"),
+                                               "dumbell_renda" = i18n()$t("ao CRAS mais próximo"),
+                                               "dumbell_cor" = i18n()$t("ao CRAS mais próximo"))
+                                 
+  )
   
   title_plot_df <- data.frame(graph = title_plot_graph,
                               modo = title_plot_modo,
                               atividade = title_plot_atividade)
   
-  print(title_plot_df$graph)
-  print(title_plot_df$modo)
-  print(title_plot_df$atividade)
+  # print(title_plot_df$graph)
+  # print(title_plot_df$modo)
+  # print(title_plot_df$atividade)
   
   return(title_plot_df)
   
@@ -142,8 +181,8 @@ output$output_graph <- renderHighchart({
   # GRAPH FOR PALMA RATIO 
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
-    new <- tempo_filtrado_graph()[, nome_muni := factor(nome_muni)]
-      
+    new <- tempo_filtrado_graph()[, name_muni := factor(name_muni)]
+    
     
     new <- setorder(new, -palma_ratio)
     
@@ -163,7 +202,10 @@ output$output_graph <- renderHighchart({
                                           ifelse(
                                             input_atividade_graph() == "SM", i18n()$t("equipamentos de saúde de média complexidade"),
                                             ifelse(
-                                              input_atividade_graph() == "SA", i18n()$t("equipamentos de saúde de alta complexidade"), input_atividade_graph())))))))))
+                                              input_atividade_graph() == "SA", i18n()$t("equipamentos de saúde de alta complexidade"),
+                                              ifelse(
+                                                input_atividade_graph() == "CT", i18n()$t("CRAS"),
+                                                input_atividade_graph()))))))))))
     
     
     title_plot <- sprintf("%s %s %s %s %s %s %s %s %s", 
@@ -176,7 +218,7 @@ output$output_graph <- renderHighchart({
                           i18n()$t("entre grupos de"),
                           make_title_plots()$graph,
                           ifelse(input$selected_language == "en", "groups", "")
-                          )
+    )
     
     legend_plot <- switch(input$graph_type, 
                           "palma_renda" = 
@@ -194,7 +236,7 @@ output$output_graph <- renderHighchart({
     print(legend_plot)
     
     
-    hchart(new, "bar", hcaes(x = nome_muni, y = palma_ratio),
+    hchart(new, "bar", hcaes(x = name_muni, y = palma_ratio),
            name = "Palma Ratio") %>%
       hc_title(text = title_plot,
                align = "left", x = 10) %>%
@@ -235,7 +277,7 @@ output$output_graph <- renderHighchart({
                           i18n()$t("entre grupos de"),
                           make_title_plots()$graph,
                           ifelse(input$selected_language == "en", "groups", "")
-                          )
+    )
     
     legend_plot <- switch(input$graph_type, 
                           "dumbell_renda" = i18n()$t("Média do tempo mínimo de viagem por renda"), 
@@ -247,7 +289,7 @@ output$output_graph <- renderHighchart({
     teste_dumbell <- setorder(atividade_filtrada_graph(), -low)
     
     highchart() %>%
-      hc_xAxis(categories = teste_dumbell$nome_muni, labels = list(style = list(fontSize = 15))) %>%
+      hc_xAxis(categories = teste_dumbell$name_muni, labels = list(style = list(fontSize = 15))) %>%
       hc_yAxis(min = 0, labels = list(style = list(fontSize = 15)), title = list(text = i18n()$t("Minutos"))) %>%
       hc_chart(inverted = TRUE) %>%
       hc_title(text = title_plot,

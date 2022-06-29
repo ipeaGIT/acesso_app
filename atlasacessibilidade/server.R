@@ -19,12 +19,12 @@ limits <- readRDS(("data/cities_limits.rds")) %>% setDT()
 
 # GRAPHS DATA
 # Palma data
-palma_renda <- readRDS("data/acess_palma_renda.rds") %>% setDT()
-palma_cor <- readRDS("data/acess_palma_cor.rds") %>% setDT()
+palma_renda <- readRDS("data/new/charts/acess_palma_renda.rds") %>% setDT()
+palma_cor <- readRDS("data/new/charts/acess_palma_cor.rds") %>% setDT()
 
 # Dumbell data
-dumbell_renda <- readRDS("data/acess_dumbell_renda.rds") %>% setDT()
-dumbell_cor <- readRDS("data/acess_dumbell_cor.rds") %>% setDT()
+dumbell_renda <- readRDS("data/new/charts/acess_dumbell_renda.rds") %>% setDT()
+dumbell_cor <- readRDS("data/new/charts/acess_dumbell_cor.rds") %>% setDT()
 
 # Define a server for the Shiny app
 function(input, output, session) {
