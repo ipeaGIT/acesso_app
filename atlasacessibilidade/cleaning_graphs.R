@@ -198,7 +198,7 @@ acess_dumbell <- access %>%
 
 acess_dumbell_long <- acess_dumbell %>%
   # wide to long
-  tidyr::gather(tipo, valor, TMIST:TMIEM) %>%
+  tidyr::gather(tipo, valor, TMIST:TMICT) %>%
   # extract activity
   tidyr::separate(tipo, c("indicador", "atividade"), sep = 3) %>%
   # tirar Nas

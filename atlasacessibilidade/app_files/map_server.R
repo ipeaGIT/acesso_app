@@ -828,9 +828,9 @@ observeEvent({c(input$indicador_us,
                     legend_converter_us
                   } else as.integer              
                   
-                  legend_fill <- if (input$atividade_demo %in% c("R002", "R003")) {
+                  legend_fill <- if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R002", "R003")) {
                     "rdylbu"
-                  } else "inferno"
+                  } else if (input$demo_ou_us == "activity") "viridis"
                   
                   legend_title <- if (input$atividade_demo %in% c("R001")) {
                     "Renda per capita (R$)"
@@ -838,7 +838,7 @@ observeEvent({c(input$indicador_us,
                     "Quintil de renda"
                   } else if (input$atividade_demo %in% c("R003")) {
                     "Decil de renda"
-                    } else "Quantidade"
+                    } else if (input$demo_ou_us == "activity") "Quantidade" else "Quantidade"
                   
                     
                   
