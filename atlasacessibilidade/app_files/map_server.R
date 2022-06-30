@@ -832,11 +832,11 @@ observeEvent({c(input$indicador_us,
                     "rdylbu"
                   } else if (input$demo_ou_us == "activity") "viridis"
                   
-                  legend_title <- if (input$atividade_demo %in% c("R001")) {
+                  legend_title <- if (input$demo_ou_us == "demo"  & input$atividade_demo %in% c("R001")) {
                     "Renda per capita (R$)"
-                  } else if (input$atividade_demo %in% c("R002")) {
+                  } else if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R002")) {
                     "Quintil de renda"
-                  } else if (input$atividade_demo %in% c("R003")) {
+                  } else if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R003")) {
                     "Decil de renda"
                     } else if (input$demo_ou_us == "activity") "Quantidade" else "Quantidade"
                   
