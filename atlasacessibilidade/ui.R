@@ -39,23 +39,7 @@ shinyUI(
                                           uiOutput('page_content')
                             ),
                             # Panel to put download button
-                            absolutePanel(id = "download_panel_maps", class = "panel panel-default", 
-                                          fixed = TRUE, draggable = FALSE,
-                                          top = 70, right = 300, width = 200, height = 100,
-                                          dropdownButton(
-                                            uiOutput('ui_download_button_maps'),
-                                            hr(),
-                                            uiOutput('ui_download_dic_maps'),
-                                            circle = FALSE, 
-                                            # status = "danger",
-                                            label = "Download",
-                                            right = TRUE,
-                                            up = FALSE,
-                                            icon = icon("download"), width = "500px",
-                                            # tooltip = tooltipOptions(title = "Click to see inputs !"),
-                                            inputId = "download_dropdown_maps"
-                                            
-                                          ))
+                            uiOutput('ui_download_button_maps'),
                    ),
                    # Graphs page
                    tabPanel(value = "tab_graphs", title = uiOutput('title_graph'),
@@ -78,7 +62,8 @@ shinyUI(
                                             label = "Download",
                                             right = TRUE,
                                             up = FALSE,
-                                            icon = icon("download"), width = "500px",
+                                            icon = icon("download"), 
+                                            width = "300px",
                                             # tooltip = tooltipOptions(title = "Click to see inputs !"),
                                             inputId = "download_dropdown"
                                             

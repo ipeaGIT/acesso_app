@@ -3,22 +3,40 @@
 output$ui_download_button_maps <- renderUI({
   
   tagList(
-    downloadButton("downloadData1", i18n()$t("Baixe os indicadores para a cidade (.gpkg)")),
-    downloadButton("downloadData2", i18n()$t("Baixe os indicadores para todas as cidades (.gpkg)")),
+    
+    conditionalPanel(
+      # condition = "typeof output.city !== 'undefined'",
+      condition = "input.cidade != ''",
+      absolutePanel(id = "download_panel_maps", class = "panel panel-default", 
+                    fixed = TRUE, draggable = FALSE,
+                    top = 70, right = 300, width = 200, height = 100,
+                    dropdownButton(
+                      tagList(
+                        downloadButton("downloadData1", i18n()$t("Baixe os indicadores para a cidade (.gpkg)")),
+                        downloadButton("downloadData2", i18n()$t("Baixe os indicadores para todas as cidades (.gpkg)"))
+                      ),
+                      hr(),
+                      actionButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"), 
+                                   onclick = "location.href='http://repositorio.ipea.gov.br/bitstream/11058/9586/5/dicionario2019_v1.0_20200116.xlsx';"),
+                      circle = FALSE, 
+                      # status = "danger",
+                      label = "Download",
+                      right = TRUE,
+                      up = FALSE,
+                      icon = icon("download"), 
+                      width = "350px",
+                      # tooltip = tooltipOptions(title = "Click to see inputs !"),
+                      inputId = "download_dropdown_maps"
+                      
+                    )
+      )
+    )
+    
   )
   
 })  
 
-# UI FOR THE DOWNLOAD BUTTONS - dictionary -----------------------------------------------------------------
 
-output$ui_download_dic_maps <- renderUI({
-  
-  actionButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"), 
-               onclick = "location.href='http://repositorio.ipea.gov.br/bitstream/11058/9586/5/dicionario2019_v1.0_20200116.xlsx';")
-  
-  # downloadButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"))
-  
-})  
 
 
 # data
