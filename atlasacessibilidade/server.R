@@ -172,6 +172,7 @@ function(input, output, session) {
   
   # 8) DOWNLOAD BUTTON -----------------------------------------------------------------------------
   source("app_files/download_button.R", local = TRUE)
+  source("app_files/download_button_maps.R", local = TRUE)
   
   # 9) SERVER: GRAPHS ------------------------------------------------------------------------------
   source("app_files/graphs_server.R", local = TRUE)

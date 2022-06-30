@@ -65,7 +65,7 @@ h1 {
   border-color: #12394d;
 }
 
-#download_panel {
+#download_panel, #download_panel_maps {
   background-color: transparent;
   border: transparent;
   z-index: 99;
@@ -73,7 +73,7 @@ h1 {
   -webkit-box-shadow: none;
 }
 
-#dropdown-menu-download_dropdown {
+#dropdown-menu-download_dropdown, #dropdown-menu-download_dropdown_maps {
  
  width: 250px !important;
   
@@ -180,7 +180,7 @@ h1 {
 } 
 
 /* Modificar fonte do botao de download */
-#downloadData, #downloadPlot, #downloadDic {
+#downloadData, #downloadPlot, #downloadDic, #downloadData1, #downloadData2 {
   font-size: 15px;
   border-color: transparent;
   padding: 6px 0;
