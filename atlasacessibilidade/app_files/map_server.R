@@ -735,7 +735,7 @@ observeEvent({c(input$indicador_us,
                   # print(nrow(atividade_filtrada_min_sf))
                   
                   legend_converter_cma <- function(x) {
-                    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
+                    scales::comma(as.integer(x), big.mark = " ", accuracy = 1)
                   }
                   
                   legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
@@ -821,7 +821,7 @@ observeEvent({c(input$indicador_us,
                   # print(nrow(atividade_filtrada_min_sf))
                   
                   legend_converter_us <- function(x) {
-                    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 10) )
+                    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 1) )
                   }
                   
                   legend_converter <- if (input$indicador_us == "us" & grepl("^(P|T)", indicador_us_ok())) {
