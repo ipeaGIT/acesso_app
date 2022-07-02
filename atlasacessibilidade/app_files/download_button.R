@@ -56,7 +56,7 @@ prepare_data_download <- reactive({
   # define column names based on language
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
-    output_csv_palma <- output_csv_palma[, .(nome_muni, sigla_muni, modo, indicador, atividade = nome, 
+    output_csv_palma <- output_csv_palma[, .(name_muni, abbrev_muni, year, mode, indicador, atividade = nome, 
                                              tempo_viagem, pobre, rico, palma_ratio)]
     
     
@@ -64,6 +64,7 @@ prepare_data_download <- reactive({
     
     colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
                                     i18n()$t("sigla_muni"),
+                                    i18n()$t("ano"),
                                     i18n()$t("modo"),
                                     i18n()$t("indicador"),
                                     i18n()$t("atividade"),
@@ -78,10 +79,11 @@ prepare_data_download <- reactive({
     
     # define column names based on language
     
-    output_csv_palma <- output_csv_palma[, .(nome_muni, sigla_muni, modo, indicador, atividade = nome, total, low, high)]
+    output_csv_palma <- output_csv_palma[, .(name_muni, abbrev_muni, year, mode, indicador, atividade = nome, total, low, high)]
     
-    colnames(output_csv_palma) <- c(i18n()$t("nome_muni"),
+    colnames(output_csv_palma) <- c(i18n()$t("name_muni"),
                                     i18n()$t("sigla_muni"),
+                                    i18n()$t("ano"),
                                     i18n()$t("modo"),
                                     i18n()$t("indicador"),
                                     i18n()$t("atividade"),
@@ -201,7 +203,7 @@ output$downloadPlot <- downloadHandler(
       title_plot <- sprintf("%s %s %s %s \n%s %s %s %s %s", 
                             i18n()$t("Desigualdade de acesso a"),
                             i18n()$t(legend_subtitle),
-                            make_title_plots()$modo, 
+                            make_title_plots()$mode, 
                             i18n()$t("em"), 
                             input_tempo_graph(), 
                             i18n()$t("minutos"),
@@ -223,13 +225,13 @@ output$downloadPlot <- downloadHandler(
       #   mutate(nome_muni = factor(nome_muni)) %>%
       #   mutate(nome_muni = forcats::fct_reorder(nome_muni, palma_ratio))
       
-      tempo_filtrado_graph()[, nome_muni := factor(nome_muni)]
-      tempo_filtrado_graph()[, nome_muni := forcats::fct_reorder(nome_muni, palma_ratio)]
+      tempo_filtrado_graph()[, name_muni := factor(name_muni)]
+      tempo_filtrado_graph()[, name_muni := forcats::fct_reorder(name_muni, palma_ratio)]
       new_save <- copy(tempo_filtrado_graph())
       
       plot_save <- ggplot(data = new_save)+
-        geom_col(aes(y = palma_ratio, x = nome_muni), fill = "#1D5A79") +
-        geom_text(aes(y = palma_ratio, x = nome_muni, label = round(palma_ratio,1)), 
+        geom_col(aes(y = palma_ratio, x = name_muni), fill = "#1D5A79") +
+        geom_text(aes(y = palma_ratio, x = name_muni, label = round(palma_ratio,1)), 
                   size = 3, position = position_stack(vjust = 0.88), color='gray99') +
         geom_hline(yintercept = 1, color = "grey90", linetype = "dashed") +
         # scale_y_continuous(breaks = c(0, 1, 3, 6, 9))+
@@ -256,7 +258,7 @@ output$downloadPlot <- downloadHandler(
       
       title_plot <- sprintf("%s %s \n%s %s %s %s", 
                             i18n()$t("Desigualdade de tempo de viagem"),
-                            make_title_plots()$modo,
+                            make_title_plots()$mode,
                             make_title_plots()$atividade,
                             i18n()$t("entre grupos de"),
                             make_title_plots()$graph,
@@ -271,16 +273,16 @@ output$downloadPlot <- downloadHandler(
       # new_save <- atividade_filtrada_graph() %>%
       #   mutate(nome_muni = factor(nome_muni))
       
-      atividade_filtrada_graph()[, nome_muni := factor(nome_muni)]
+      atividade_filtrada_graph()[, name_muni := factor(name_muni)]
       new_save <- copy(atividade_filtrada_graph())
       
       # para plotar as legendas
       new_save_legend <- new_save %>% tidyr::gather(tipo, valor, total:high)
       
       plot_save <- ggplot(data = new_save) + 
-        geom_dumbbell(aes(x = high, xend = low, y = forcats::fct_reorder(nome_muni, low)), 
+        geom_dumbbell(aes(x = high, xend = low, y = forcats::fct_reorder(name_muni, low)), 
                       size=2, color="gray80", alpha=.8, colour_x = "steelblue4", colour_xend = "springgreen4") +
-        geom_point(data = new_save_legend, aes(x = valor, y = nome_muni, color = tipo), size = 2)+
+        geom_point(data = new_save_legend, aes(x = valor, y = name_muni, color = tipo), size = 2)+
         scale_color_manual(values=c('black', 'steelblue4', 'springgreen4'), 
                            name="", 
                            labels=c('Total', 
