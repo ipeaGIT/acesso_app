@@ -192,7 +192,10 @@ output$page_content <- renderUI({
           conditionalPanel(
             condition = "cities_todos.indexOf(''.concat(output.city, '_', input.ano)) > -1", 
             radioGroupButtons(inputId = "modo_todos",
-                              label = i18n()$t("Modo de transporte"), 
+                              label = label_with_info(
+                                label = i18n()$t("Modo de transporte"),
+                                tooltip_id = "q_modo1"
+                              ),
                               choices = c("<i class=\"fas fa-bus fa-2x\"></i>" = "public_transport", 
                                           "<i class=\"fas fa-car fa-2x\"></i>" = "car",
                                           "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
@@ -200,7 +203,16 @@ output$page_content <- renderUI({
                               selected = "public_transport",
                               individual = TRUE,
                               justified = TRUE
-            )),
+            ),
+            div(
+              bsPopover(id = "q_modo1",
+                        title = sprintf("<strong>%s</strong>", i18n()$t("Modo de transporte")),
+                        content = HTML(i18n()$t(includeHTML('www/popovers/popover_modo.html'))),
+                        placement = "bottom",
+                        trigger = "hover",
+                        options = list(container = "body"))
+            )
+          ),
           
           # IF A CITY WITHOUT GTFS IS SELECTED, ONLY WALKING AND BIKE WILL BE AVAILABLE
           # THE FUN 'RADIO_BUTTON_CUSTOM' WILL CREATE 3 RADIO BUTTONS WITH 1 BEING UNAVAILABLE
@@ -208,7 +220,10 @@ output$page_content <- renderUI({
           conditionalPanel(
             condition = "cities_ativo.indexOf(''.concat(output.city, '_', input.ano)) > -1", 
             radioGroupButtons(inputId = "modo_ativo",
-                              label = i18n()$t("Modo de transporte"), 
+                              label = label_with_info(
+                                label = i18n()$t("Modo de transporte"),
+                                tooltip_id = "q_modo2"
+                              ),
                               choices = c("<i id=\"modo_des\" class=\"fas fa-bus fa-2x\" style=\"color: #e6e8eb;\"></i>" = "public_transport",
                                           "<i class=\"fas fa-car fa-2x\"></i>" = "car",
                                           "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
@@ -216,6 +231,14 @@ output$page_content <- renderUI({
                               selected = "walk",
                               individual = TRUE,
                               justified = TRUE
+            ),
+            div(
+              bsPopover(id = "q_modo2",
+                        title = sprintf("<strong>%s</strong>", i18n()$t("Modo de transporte")),
+                        content = HTML(i18n()$t(includeHTML('www/popovers/popover_modo.html'))),
+                        placement = "bottom",
+                        trigger = "hover",
+                        options = list(container = "body"))
             )
             # radio_button_custom(label = h1(i18n()$t("Escolha o modo de transporte:")), inputId = "modo_ativo")
           ),
