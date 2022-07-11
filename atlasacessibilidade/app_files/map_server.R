@@ -315,9 +315,9 @@ us_filtrado_ano_atividade <- reactive({
   
   a[, popup := 
       fifelse(startsWith(indicador, "R00"),
-             sprintf("<strong>%s:</strong> %s %s", i18n()$t("Valor"), unity, scales::comma(as.integer(valor), big.mark = " ")),
-             sprintf("<strong>%s:</strong> %s %s", i18n()$t("Valor"), scales::comma(as.integer(valor), big.mark = " "), unity)
-             )]
+              sprintf("<strong>%s:</strong> %s %s", i18n()$t("Valor"), unity, scales::comma(as.integer(valor), big.mark = " ")),
+              sprintf("<strong>%s:</strong> %s %s", i18n()$t("Valor"), scales::comma(as.integer(valor), big.mark = " "), unity)
+      )]
   
   
   print(head(a))
