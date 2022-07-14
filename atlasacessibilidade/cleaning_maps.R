@@ -147,3 +147,17 @@ hex <- hex %>% dplyr::select(abbrev_muni, id_hex)
 cities <- unique(hex$abbrev_muni)
 purrr::walk(cities, function(x) readr::write_rds(setDT(hex)[abbrev_muni == x], 
                                                  sprintf("atlasacessibilidade/data/new/hex/hex_%s.rds", x)))
+
+
+
+# create min and max constant for multiple years --------------------------
+
+access_files <- dir("atlasacessibilidade/data/new/access", full.names = TRUE)
+access <- lapply(access_files, readr::read_rds) %>% rbindlist()
+
+access_extremes <- access %>%
+  group_by(abbrev_muni, mode) %>%
+  summarise(across(CMATT15:TMICT, min, .names = "{.col}.min"),
+            across(CMATT15:TMICT, max, .names = "{.col}.max"))
+
+readr::write_rds(access_extremes, "atlasacessibilidade/data/new/access_limits.rds")

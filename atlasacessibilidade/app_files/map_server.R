@@ -444,11 +444,14 @@ atividade_filtrada_cma <- reactive({
   
 })
 
+ind <- reactiveValues(ind = NULL)
+
 
 # Reactive para a atividade para indicador tempo minimo
 atividade_filtrada_min <- reactive({
   
   if (input$indicador == "TMI") {
+    
     
     req(input$atividade_min)
     print(sprintf("min %s", input$atividade_min))
@@ -456,6 +459,10 @@ atividade_filtrada_min <- reactive({
     cols <- c('id_hex', 'P001', grep(input$atividade_min, colnames(indicador_filtrado()), ignore.case = TRUE, value = TRUE))
     
     indicador_filtrado1 <- indicador_filtrado()[, ..cols]
+    
+    # guardar nome do indicador
+    ind$ind <- cols[3] 
+      
     colnames(indicador_filtrado1) <- c('id_hex', 'P001', 'valor')
     indicador_filtrado1[, id := 1:nrow(indicador_filtrado1)]
     indicador_filtrado1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos"))]
@@ -494,6 +501,11 @@ tempo_filtrado <- reactive({
   
   
   atividade_filtrada1 <- atividade_filtrada_cma()[, ..cols]
+  
+  # guardar nome do indicador
+  ind$ind <- cols[3] 
+  # print(ind$ind)
+  
   colnames(atividade_filtrada1) <- c('id_hex', 'P001', 'valor')
   atividade_filtrada1[, id := 1:nrow(atividade_filtrada1)]
   atividade_filtrada1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), 
@@ -531,6 +543,24 @@ tempo_filtrado_sf <- reactive({
   # to sf
   tempo_filtrado_sf1 <- st_sf(tempo_filtrado_sf1, crs = 4326)
   
+  
+  
+})
+
+# filter the scale limits of each indicator
+
+scale_limits <- reactive({
+  
+  req(tempo_filtrado())
+  
+  # print(head(access_limits))
+  # filter indicator
+  access_extremes1 <- access_limits[abbrev_muni == v_city$cidade & mode == a()]
+  cols <- c("abbrev_muni", "mode", grep(ind$ind, colnames(access_extremes1), ignore.case = TRUE, value = TRUE))
+  access_extremes1 <- access_extremes1[,..cols]
+  colnames(access_extremes1) <- c("abbrev_muni", "mode", "min", "max")
+  # print(head(access_extremes1))
+  return(access_extremes1)
   
   
 })
@@ -623,7 +653,6 @@ mapdeck_id_clear <- reactiveVal("us_initial")
 observeEvent({v_city$cidade},{
   
   mapdeck_id <- ifelse(input$indicador_us == "access", "access_initial", "us_initial")
-  # mapdeck_id_clear(ifelse(input$indicador_us == "access", "us_initial", "access_initial"))
   
   print(sprintf("Mapdeck id: %s", mapdeck_id))
   print(sprintf("Mapdeck id clear: %s", mapdeck_id_clear()))
@@ -640,8 +669,6 @@ observeEvent({v_city$cidade},{
   # add alpha
   colorss <- cbind(colorss, 170)
   
-  # color scale for income variable
-  
   
   # select variables
   data <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
@@ -651,6 +678,36 @@ observeEvent({v_city$cidade},{
   } else if (input$indicador_us == "us") {
     us_filtrado_ano_atividade_sf()
   }
+  
+  
+  # fill_color <- colourvalues::colour_values(
+  #   x = c(data$valor, scale_limits()$max),
+  #   palette = "inferno"
+  # )
+  # 
+  # # print(length(fill_color))
+  # # print(head(fill_color))
+  # 
+  # # ADD THE COULOURS TO THE DATA
+  # data$fill <- fill_color[-length(fill_color)]
+  # # fill for the legend
+  # # compose the vector of values
+  # print(head(data$fill))
+  # 
+  # # create legend
+  # l <- colourvalues::colour_values(
+  #   x = c(data$valor, scale_limits()$max)
+  #   , n_summaries = 6,
+  #   palette = "inferno"
+  # )
+  # legend <- mapdeck::legend_element(
+  #   variables = l$summary_values
+  #   , colours = l$summary_colours
+  #   , colour_type = "fill"
+  #   , variable_type = "gradient"
+  # )
+  # js_legend <- mapdeck::mapdeck_legend(legend)
+  
   
   legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
     i18n()$t("Oportunidades Acessíveis")
@@ -709,6 +766,7 @@ observeEvent({v_city$cidade},{
       focus_layer = FALSE,
       # auto_highlight = TRUE,
       tooltip = "popup",
+      # legend = js_legend,
       legend = TRUE,
       legend_options = list(title = i18n()$t(legend)),
       legend_format = list( fill_colour = legend_converter),
@@ -741,6 +799,8 @@ observeEvent({c(input$indicador_us,
                   legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
                     as.integer
                   } else legend_converter_cma
+                  
+                  
                   
                   
                   if (input$indicador_us == "access") {
@@ -838,9 +898,9 @@ observeEvent({c(input$indicador_us,
                     "Quintil de renda"
                   } else if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R003")) {
                     "Decil de renda"
-                    } else if (input$demo_ou_us == "activity") "Quantidade" else "Quantidade"
+                  } else if (input$demo_ou_us == "activity") "Quantidade" else "Quantidade"
                   
-                    
+                  
                   
                   
                   

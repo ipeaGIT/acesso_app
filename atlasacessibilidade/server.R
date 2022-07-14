@@ -15,6 +15,9 @@ centroids <- readRDS("data/cities_centroids.rds") %>% setDT()
 # Cities limits data
 limits <- readRDS(("data/cities_limits.rds")) %>% setDT()
 
+# access limits
+access_limits <- readRDS("data/new/access_limits.rds") %>% setDT()
+
 #####################################
 
 # GRAPHS DATA
