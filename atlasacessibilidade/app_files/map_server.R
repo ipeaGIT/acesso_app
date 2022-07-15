@@ -679,34 +679,48 @@ observeEvent({v_city$cidade},{
     us_filtrado_ano_atividade_sf()
   }
   
+  # print(scale_limits()$max)
   
-  # fill_color <- colourvalues::colour_values(
-  #   x = c(data$valor, scale_limits()$max),
-  #   palette = "inferno"
-  # )
-  # 
-  # # print(length(fill_color))
-  # # print(head(fill_color))
-  # 
-  # # ADD THE COULOURS TO THE DATA
-  # data$fill <- fill_color[-length(fill_color)]
-  # # fill for the legend
-  # # compose the vector of values
+  
+  legend_converter_cma <- function(x) {
+    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
+  }
+  
+  legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+    
+    as.integer
+    
+  } else legend_converter_cma
+  
+  fill_color <- colourvalues::colour_values(
+    # x = c(data$valor, 300000),
+    x = c(data$valor, scale_limits()$max),
+    palette = "inferno"
+  )
+
+  # print(length(fill_color))
+  # print(head(fill_color))
+
+  # ADD THE COULOURS TO THE DATA
+  data$fill <- fill_color[-length(fill_color)]
+  # fill for the legend
+  # compose the vector of values
   # print(head(data$fill))
-  # 
-  # # create legend
-  # l <- colourvalues::colour_values(
-  #   x = c(data$valor, scale_limits()$max)
-  #   , n_summaries = 6,
-  #   palette = "inferno"
-  # )
-  # legend <- mapdeck::legend_element(
-  #   variables = l$summary_values
-  #   , colours = l$summary_colours
-  #   , colour_type = "fill"
-  #   , variable_type = "gradient"
-  # )
-  # js_legend <- mapdeck::mapdeck_legend(legend)
+
+  # create legend
+  l <- colourvalues::colour_values(
+    # x = c(data$valor, 300000)
+    x = c(data$valor, scale_limits()$max)
+    , n_summaries = 6,
+    palette = "inferno"
+  )
+  legend <- mapdeck::legend_element(
+    variables = legend_converter_cma(l$summary_values),
+    , colours = l$summary_colours
+    , colour_type = "fill"
+    , variable_type = "gradient"
+  )
+  js_legend <- mapdeck::mapdeck_legend(legend)
   
   
   legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
@@ -727,16 +741,7 @@ observeEvent({v_city$cidade},{
                                i18n()$t("Oportunidades Acessíveis"),
                                i18n()$t("Minutos até a oportunidade mais próxima"))
   )
-  
-  legend_converter_cma <- function(x) {
-    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
-  }
-  
-  legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-    
-    as.integer
-    
-  } else legend_converter_cma
+
   
   # Zoom in on the city when it's choosen
   mapdeck_update(map_id = "map") %>%
@@ -757,19 +762,19 @@ observeEvent({v_city$cidade},{
     # Render city indicator
     add_polygon(
       data = data,
-      fill_colour = "valor",
-      fill_opacity = 200,
+      fill_colour = "fill",
+      # fill_opacity = 200,
       layer_id = mapdeck_id,
       # layer_id = mapdeck_options$layer_id2,
-      palette = mapdeck_options$palette1,
+      # palette = mapdeck_options$palette1,
       update_view = FALSE,
       focus_layer = FALSE,
       # auto_highlight = TRUE,
       tooltip = "popup",
-      # legend = js_legend,
-      legend = TRUE,
+      legend = js_legend,
+      # legend = TRUE,
       legend_options = list(title = i18n()$t(legend)),
-      legend_format = list( fill_colour = legend_converter),
+      # legend_format = list( fill_colour = legend_converter),
       stroke_width = NULL,
       stroke_colour = NULL,
       stroke_opacity = 0
@@ -804,11 +809,14 @@ observeEvent({c(input$indicador_us,
                   
                   
                   if (input$indicador_us == "access") {
+
                     
                     mapdeck_id <- "access_update"
                     print(sprintf("Mapdeck id clear2: %s", mapdeck_id_clear()))
                     
                     if (input$indicador == "TMI") {
+                      
+                      
                       
                       # create viridis scale in the reverse direction
                       # create matrix
@@ -841,22 +849,53 @@ observeEvent({c(input$indicador_us,
                       
                       if (input$indicador %in% c("CMA", "CMP")) {
                         
+                        
+                        fill_color <- colourvalues::colour_values(
+                          # x = c(data$valor, 300000),
+                          x = c(tempo_filtrado_sf()$valor, scale_limits()$max),
+                          palette = "inferno"
+                        )
+                        print(fill_color[-length(fill_color)])
+                        # print(head(tempo_filtrado_sf()))
+                        # print(c(tempo_filtrado_sf()$valor, scale_limits()$max))
+                        
+                        # ADD THE COULOURS TO THE DATA
+                        data <- tempo_filtrado_sf() %>% 
+                          dplyr::mutate(fill = fill_color[-length(fill_color)])
+                        # fill for the legend
+                        # compose the vector of values
+                        
+                        # create legend
+                        l <- colourvalues::colour_values(
+                          # x = c(data$valor, 300000)
+                          x = c(tempo_filtrado_sf()$valor, scale_limits()$max)
+                          , n_summaries = 6,
+                          palette = "inferno"
+                        )
+                        legend <- mapdeck::legend_element(
+                          variables = legend_converter_cma(l$summary_values),
+                          , colours = l$summary_colours
+                          , colour_type = "fill"
+                          , variable_type = "gradient"
+                        )
+                        js_legend <- mapdeck::mapdeck_legend(legend)
+                        
                         mapdeck_update(map_id = "map") %>%
                           clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                           clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                           add_polygon(
-                            data = tempo_filtrado_sf(),
-                            fill_colour = "valor",
-                            fill_opacity = 200,
+                            data = data,
+                            fill_colour = "fill",
+                            # fill_opacity = 200,
                             layer_id = mapdeck_id,
-                            palette = "inferno",
+                            # palette = "inferno",
                             update_view = FALSE,
                             focus_layer = FALSE,
                             # auto_highlight = TRUE,
                             tooltip = "popup",
-                            legend = TRUE,
+                            legend = js_legend,
                             legend_options = list(title = i18n()$t("Oportunidades Acessíveis")),
-                            legend_format = list( fill_colour = legend_converter),
+                            # legend_format = list( fill_colour = legend_converter),
                             stroke_width = NULL,
                             stroke_colour = NULL,
                             stroke_opacity = 0
