@@ -692,6 +692,15 @@ observeEvent({v_city$cidade},{
     
   } else legend_converter_cma
   
+  
+  legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
+    i18n()$t("Oportunidades Acessíveis")
+  } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+    i18n()$t("Minutos até a oportunidade mais próxima")
+  } else if (input$indicador_us == "us") {
+    i18n()$t("Quantidade")
+  }
+  
   fill_color <- colourvalues::colour_values(
     # x = c(data$valor, 300000),
     x = c(data$valor, scale_limits()$max),
@@ -720,17 +729,11 @@ observeEvent({v_city$cidade},{
     , colours = l$summary_colours
     , colour_type = "fill"
     , variable_type = "gradient"
+    , title = legend
   )
   js_legend <- mapdeck::mapdeck_legend(legend)
   
-  
-  legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
-    i18n()$t("Oportunidades Acessíveis")
-  } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-    i18n()$t("Minutos até a oportunidade mais próxima")
-  } else if (input$indicador_us == "us") {
-    i18n()$t("Quantidade")
-  }
+
   
   # create list with values for mapdeck options
   mapdeck_options <- list(
@@ -774,7 +777,7 @@ observeEvent({v_city$cidade},{
       tooltip = "popup",
       legend = js_legend,
       # legend = TRUE,
-      legend_options = list(title = i18n()$t(legend)),
+      # legend_options = list(title = i18n()$t(legend)),
       # legend_format = list( fill_colour = legend_converter),
       stroke_width = NULL,
       stroke_colour = NULL,
@@ -879,6 +882,7 @@ observeEvent({c(input$indicador_us,
                           , colours = l$summary_colours
                           , colour_type = "fill"
                           , variable_type = "gradient"
+                          , title = i18n()$t("Oportunidades Acessíveis")
                         )
                         js_legend <- mapdeck::mapdeck_legend(legend)
                         
@@ -896,7 +900,7 @@ observeEvent({c(input$indicador_us,
                             # auto_highlight = TRUE,
                             tooltip = "popup",
                             legend = js_legend,
-                            legend_options = list(title = i18n()$t("Oportunidades Acessíveis")),
+                            # legend_options = list(title = i18n()$t("Oportunidades Acessíveis")),
                             # legend_format = list( fill_colour = legend_converter),
                             stroke_width = NULL,
                             stroke_colour = NULL,
