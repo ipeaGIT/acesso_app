@@ -695,6 +695,7 @@ observeEvent({v_city$cidade},{
   fill_color <- colourvalues::colour_values(
     # x = c(data$valor, 300000),
     x = c(data$valor, scale_limits()$max),
+    alpha = 200,
     palette = "inferno"
   )
 
@@ -715,7 +716,7 @@ observeEvent({v_city$cidade},{
     palette = "inferno"
   )
   legend <- mapdeck::legend_element(
-    variables = legend_converter_cma(l$summary_values),
+    variables = legend_converter_cma(l$summary_values)
     , colours = l$summary_colours
     , colour_type = "fill"
     , variable_type = "gradient"
@@ -832,7 +833,7 @@ observeEvent({c(input$indicador_us,
                         add_polygon(
                           data = atividade_filtrada_min_sf(),
                           fill_colour = "valor",
-                          # fill_opacity = 200,
+                          fill_opacity = 200,
                           layer_id = mapdeck_id,
                           palette = colorss,
                           update_view = FALSE,
@@ -853,9 +854,10 @@ observeEvent({c(input$indicador_us,
                         fill_color <- colourvalues::colour_values(
                           # x = c(data$valor, 300000),
                           x = c(tempo_filtrado_sf()$valor, scale_limits()$max),
+                          alpha = 200,
                           palette = "inferno"
                         )
-                        print(fill_color[-length(fill_color)])
+                        # print(fill_color[-length(fill_color)])
                         # print(head(tempo_filtrado_sf()))
                         # print(c(tempo_filtrado_sf()$valor, scale_limits()$max))
                         
@@ -873,7 +875,7 @@ observeEvent({c(input$indicador_us,
                           palette = "inferno"
                         )
                         legend <- mapdeck::legend_element(
-                          variables = legend_converter_cma(l$summary_values),
+                          variables = legend_converter_cma(l$summary_values)
                           , colours = l$summary_colours
                           , colour_type = "fill"
                           , variable_type = "gradient"
@@ -886,7 +888,7 @@ observeEvent({c(input$indicador_us,
                           add_polygon(
                             data = data,
                             fill_colour = "fill",
-                            # fill_opacity = 200,
+                            fill_opacity = 200,
                             layer_id = mapdeck_id,
                             # palette = "inferno",
                             update_view = FALSE,
