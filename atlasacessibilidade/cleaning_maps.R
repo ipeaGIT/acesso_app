@@ -5,61 +5,91 @@ library(data.table)
 
 # access and land use data for each city ------------------------------------------------------
 
-my_read_access <- function(modo, ...) {
-  
-  aopdata::read_access(mode = modo, ...)
-  
-}
+# my_read_access <- function(modo, ...) {
+#   
+#   aopdata::read_access(mode = modo, ...)
+#   
+# }
+# 
+# 
+# # download data - get walk only for testing
+# acess_20171 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+#                       city = "all", 
+#                       year = 2017) %>%
+#   rbindlist(fill = TRUE) %>%
+#   dplyr::filter(year == 2017)
+# 
+# acess_20172 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur"), 
+#                                     mode = c("public_transport"), 
+#                                     year = 2017) %>%
+#   dplyr::filter(year == 2017)
+# 
+# acess_20181 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+#                       city = "all", 
+#                       year = 2018) %>%
+#   rbindlist(fill = TRUE) %>%
+#   dplyr::filter(year == 2018)
+# 
+# acess_20182 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio"), 
+#                                     mode = c("public_transport"), 
+#                                     year = 2018) %>%
+#   dplyr::filter(year == 2018)
+# 
+# 
+# acess_20191 <- lapply(c("walk", "bicycle", "car"), my_read_access,
+#                       city = "all", 
+#                       year = 2019) %>%
+#   rbindlist(fill = TRUE) %>%
+#   dplyr::filter(year == 2019)
+# 
+# acess_20192 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio", "rec", "goi"), 
+#                                     mode = c("public_transport"), 
+#                                     year = 2019) %>%
+#   dplyr::filter(year == 2019)
+# 
+# # juntar
+# acess <- rbind(acess_20171, acess_20172, 
+#                acess_20181,acess_20182,  
+#                acess_20191, acess_20192,  
+#                fill = TRUE)
 
+acess_2017 <- rbind(readRDS("../../data/acesso_oport/output_base_final/2017/dados2017_AcessOport_access_active_v1.0.rds") %>% st_set_geometry(NULL),
+                    readRDS("../../data/acesso_oport/output_base_final/2017/dados2017_AcessOport_access_tpcar_v1.0.rds") %>% st_set_geometry(NULL),
+                    fill = TRUE)
+acess_2018 <- rbind(readRDS("../../data/acesso_oport/output_base_final/2018/dados2018_AcessOport_access_active_v1.0.rds") %>% st_set_geometry(NULL),
+                    readRDS("../../data/acesso_oport/output_base_final/2018/dados2018_AcessOport_access_tpcar_v1.0.rds") %>% st_set_geometry(NULL),
+                    fill = TRUE)
+acess_2019 <- rbind(readRDS("../../data/acesso_oport/output_base_final/2019/dados2019_AcessOport_access_active_v1.0.rds") %>% st_set_geometry(NULL),
+                    readRDS("../../data/acesso_oport/output_base_final/2019/dados2019_AcessOport_access_tpcar_v1.0.rds") %>% st_set_geometry(NULL),
+                    fill = TRUE)
 
-# download data - get walk only for testing
-acess_20171 <- lapply(c("walk", "bicycle", "car"), my_read_access,
-                      city = "all", 
-                      year = 2017) %>%
-  rbindlist(fill = TRUE) %>%
-  dplyr::filter(year == 2017)
+acess <- rbind(acess_2017, 
+               acess_2018,
+               acess_2019
+               )
 
-acess_20172 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur"), 
-                                    mode = c("public_transport"), 
-                                    year = 2017) %>%
-  dplyr::filter(year == 2017)
+# rename
+acess <- acess %>%
+  rename(peak = pico, mode = modo, year = ano, abbrev_muni = sigla_muni, name_muni = nome_muni) %>%
+  mutate(mode = case_when(mode == "tp" ~ "public_transport",
+                          mode == "carro" ~ "car",
+                          mode == "bicicleta" ~ "bicycle",
+                          mode == "caminhada" ~ "walk"))
 
-acess_20181 <- lapply(c("walk", "bicycle", "car"), my_read_access,
-                      city = "all", 
-                      year = 2018) %>%
-  rbindlist(fill = TRUE) %>%
-  dplyr::filter(year == 2018)
-
-acess_20182 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio"), 
-                                    mode = c("public_transport"), 
-                                    year = 2018) %>%
-  dplyr::filter(year == 2018)
-
-
-acess_20191 <- lapply(c("walk", "bicycle", "car"), my_read_access,
-                      city = "all", 
-                      year = 2019) %>%
-  rbindlist(fill = TRUE) %>%
-  dplyr::filter(year == 2019)
-
-acess_20192 <- aopdata::read_access(city = c("for", "spo", "bho", "poa", "cam", "cur", "rio", "rec", "goi"), 
-                                    mode = c("public_transport"), 
-                                    year = 2019) %>%
-  dplyr::filter(year == 2019)
-
-# juntar
-acess <- rbind(acess_20171, acess_20172, 
-               acess_20181,acess_20182,  
-               acess_20191, acess_20192,  
-               fill = TRUE)
 
 # por enquanto, so pico
 acess <- acess %>% filter(peak == 1)
 # filtrar hexagonos vazios
 acess <- acess %>% filter(!is.na(mode))
 
+# bring pop
+landuse <- readRDS(sprintf("../../data/acesso_oport/output_base_final/%s/dados%s_AcessOport_landuse_v1.0.rds", "2017", "2017")) %>%
+    setDT() %>%
+  distinct(id_hex, P001)
+
 # filter columns
 acess <- acess %>% 
+  left_join(landuse, by = "id_hex") %>%
   dplyr::select(id_hex, name_muni, abbrev_muni, year, mode, 
                 starts_with("P001"),
                 starts_with("CMA"),
@@ -84,22 +114,34 @@ purrr::walk(cities, function(x) readr::write_rds(setDT(acess)[abbrev_muni == x],
 
 
 # landuse -----------------------------------------------------------------
-landuse_2017 <- aopdata::read_landuse(city = "all", 
-                                      year = 2017,
-                                      geometry = FALSE) %>%
-  dplyr::filter(year == 2017)
-landuse_2018 <- aopdata::read_landuse(city = "all", 
-                                      year = 2018,
-                                      geometry = FALSE) %>%
-  dplyr::filter(year == 2018)
-landuse_2019 <- aopdata::read_landuse(city = "all", 
-                                      geometry = FALSE,
-                                      year = 2019) %>%
-  dplyr::filter(year == 2019)
-
-# juntar
-landuse <- rbind(landuse_2017, landuse_2018,landuse_2019, fill = TRUE)
+# landuse_2017 <- aopdata::read_landuse(city = "all", 
+#                                       year = 2017,
+#                                       geometry = FALSE) %>%
+#   dplyr::filter(year == 2017)
+# landuse_2018 <- aopdata::read_landuse(city = "all", 
+#                                       year = 2018,
+#                                       geometry = FALSE) %>%
+#   dplyr::filter(year == 2018)
+# landuse_2019 <- aopdata::read_landuse(city = "all", 
+#                                       geometry = FALSE,
+#                                       year = 2019) %>%
+#   dplyr::filter(year == 2019)
+# 
+# # juntar
+# landuse <- rbind(landuse_2017, landuse_2018,landuse_2019, fill = TRUE)
+landuse <- rbind(
+  # oepn all access
+  readRDS(sprintf("../../data/acesso_oport/output_base_final/%s/dados%s_AcessOport_landuse_v1.0.rds", "2017", "2017")) %>%
+    setDT(),
+  readRDS(sprintf("../../data/acesso_oport/output_base_final/%s/dados%s_AcessOport_landuse_v1.0.rds", "2018", "2018")) %>%
+    setDT(),
+  readRDS(sprintf("../../data/acesso_oport/output_base_final/%s/dados%s_AcessOport_landuse_v1.0.rds", "2019", "2019")) %>%
+    setDT())
 landuse <- landuse %>% dplyr::filter(P001 > 0 | T001 > 0 | E001 > 0 | S001 > 0)
+
+# rename - only for internal data
+landuse <- landuse %>%
+  rename(year = ano, abbrev_muni = sigla_muni, name_muni = nome_muni)
 
 # truncar variaveis de trabalho
 landuse <- landuse %>%

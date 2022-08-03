@@ -33,11 +33,13 @@ access <- merge(access, access_pop, by = "id_hex",
 # wide to long
 access_palma_car_tp <- access %>%
   filter(mode %in% c("public_transport", "car")) %>%
+  # filter(mode %in% c("tp", "carro")) %>%
   select(id_hex, name_muni, abbrev_muni, year, mode, P001, P002, P003, R002, R003,
          ends_with(c("30", "60", "90", "120"))) %>% setDT()
 
 access_palma_active <- access %>%
   filter(mode %in% c("walk", "bicycle")) %>%
+  # filter(mode %in% c("caminhada", "bicicleta")) %>%
   select(id_hex, name_muni, abbrev_muni, year, mode, P001, P002, P003, R002, R003,
          ends_with(c("15", "30", "45", "60"))) %>% setDT()
 

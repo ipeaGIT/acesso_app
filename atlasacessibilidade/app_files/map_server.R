@@ -127,7 +127,7 @@ observeEvent(v_city$cidade, {
 cidade_filtrada <- reactive({
   
   # only run when city value is not NULL
-  # req(v_city$cidade)
+  req(v_city$cidade)
   # print(v_city$cidade)
   # print(input$cidade)
   
@@ -416,12 +416,18 @@ indicador_ok <- reactive({
   
   # print(input$indicador)
   
-  if (input$indicador == "CMA") {
+  if (input$indicador %in% c("CMA")) {
     
     input$atividade_cma  
+    
   } else if (input$indicador == "CMP"){ 
     
     input$atividade_cmp
+    
+    
+  } else if (input$indicador == "TMI") {
+    
+    input$atividade_min
   }
   
   
@@ -430,8 +436,8 @@ indicador_ok <- reactive({
 # Reactive para a atividade para indicador cumulativo
 atividade_filtrada_cma <- reactive({
   
-  # print(atividade())
-  print(sprintf("Indicador ok: %s", indicador_ok()))
+  req(input$indicador %in% c("CMA", "CMP"))
+
   # print(input$atividade_cma)
   # print(input$atividade_cmp)
   # print(colnames(indicador_filtrado()))
@@ -452,9 +458,10 @@ atividade_filtrada_min <- reactive({
   
   if (input$indicador == "TMI") {
     
+    # print("Indicador ok")
+    # print(indicador_ok())
     
-    req(input$atividade_min)
-    print(sprintf("min %s", input$atividade_min))
+    # req(input$atividade_min)
     
     cols <- c('id_hex', 'P001', grep(input$atividade_min, colnames(indicador_filtrado()), ignore.case = TRUE, value = TRUE))
     
@@ -466,6 +473,9 @@ atividade_filtrada_min <- reactive({
     colnames(indicador_filtrado1) <- c('id_hex', 'P001', 'valor')
     indicador_filtrado1[, id := 1:nrow(indicador_filtrado1)]
     indicador_filtrado1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos"))]
+
+    
+    return(indicador_filtrado1)
     
   }
   
@@ -497,6 +507,8 @@ tempo_filtrado <- reactive({
   # print(sprintf("b: %s", b()))
   # print(colnames(atividade_filtrada_cma()))
   
+  req(atividade_filtrada_cma())
+  
   cols <- c('id_hex', 'P001', grep(b(), colnames(atividade_filtrada_cma()), ignore.case = TRUE, value = TRUE))
   
   
@@ -527,6 +539,12 @@ atividade_filtrada_min_sf <- reactive({
   # to sf
   atividade_filtrada_min_sf1 <- st_sf(atividade_filtrada_min_sf1, crs = 4326)
   
+  
+  # print("BORAAAA")
+  # print(head(atividade_filtrada_min_sf1))
+  
+  return(atividade_filtrada_min_sf1)
+  
 })
 
 
@@ -550,8 +568,6 @@ tempo_filtrado_sf <- reactive({
 # filter the scale limits of each indicator
 
 scale_limits <- reactive({
-  
-  req(tempo_filtrado())
   
   # print(head(access_limits))
   # filter indicator
@@ -654,8 +670,8 @@ observeEvent({v_city$cidade},{
   
   mapdeck_id <- ifelse(input$indicador_us == "access", "access_initial", "us_initial")
   
-  print(sprintf("Mapdeck id: %s", mapdeck_id))
-  print(sprintf("Mapdeck id clear: %s", mapdeck_id_clear()))
+  # print(sprintf("Mapdeck id: %s", mapdeck_id))
+  # print(sprintf("Mapdeck id clear: %s", mapdeck_id_clear()))
   
   
   waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
@@ -669,6 +685,9 @@ observeEvent({v_city$cidade},{
   # add alpha
   colorss <- cbind(colorss, 170)
   
+  # print("FOI")
+  # print(input$indicador)
+  
   
   # select variables
   data <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
@@ -678,6 +697,10 @@ observeEvent({v_city$cidade},{
   } else if (input$indicador_us == "us") {
     us_filtrado_ano_atividade_sf()
   }
+  
+  
+  # ordenador data
+  data <- data %>% dplyr::arrange(valor)
   
   # print(scale_limits()$max)
   
@@ -700,19 +723,35 @@ observeEvent({v_city$cidade},{
   } else if (input$indicador_us == "us") {
     i18n()$t("Quantidade")
   }
+
+  
+  # print("DATA")
+  # print(head(c(data$valor)))
+  # print(head(c(scale_limits()$max)))
+  
+  palette <- fcase(input$indicador == "CMA", "inferno",
+                   input$indicador == "CMP", "viridis",
+                   input$indicador == "TMI", "viridis")
   
   fill_color <- colourvalues::colour_values(
     # x = c(data$valor, 300000),
     x = c(data$valor, scale_limits()$max),
     alpha = 200,
-    palette = "inferno"
+    palette = palette
   )
-
+  
+  # delete the first
+  fill_color <- fill_color[-1]
+  # delete the last
+  # fill_color <- fill_color[-length(fill_color)]
+  
   # print(length(fill_color))
   # print(head(fill_color))
+  if (input$indicador == "TMI") fill_color <- rev(fill_color) else fill_color <- fill_color
 
   # ADD THE COULOURS TO THE DATA
-  data$fill <- fill_color[-length(fill_color)]
+  data$fill <- fill_color
+  
   # fill for the legend
   # compose the vector of values
   # print(head(data$fill))
@@ -722,11 +761,12 @@ observeEvent({v_city$cidade},{
     # x = c(data$valor, 300000)
     x = c(data$valor, scale_limits()$max)
     , n_summaries = 6,
-    palette = "inferno"
+    palette = palette
   )
+  
   legend <- mapdeck::legend_element(
-    variables = legend_converter_cma(l$summary_values)
-    , colours = l$summary_colours
+    variables = legend_converter(l$summary_values)
+    , colours = rev(l$summary_colours)
     , colour_type = "fill"
     , variable_type = "gradient"
     , title = legend
@@ -745,6 +785,7 @@ observeEvent({v_city$cidade},{
                                i18n()$t("Oportunidades Acessíveis"),
                                i18n()$t("Minutos até a oportunidade mais próxima"))
   )
+
 
   
   # Zoom in on the city when it's choosen
@@ -821,29 +862,72 @@ observeEvent({c(input$indicador_us,
                     if (input$indicador == "TMI") {
                       
                       
+                      data <- atividade_filtrada_min_sf() %>%
+                        dplyr::arrange(valor)
                       
-                      # create viridis scale in the reverse direction
-                      # create matrix
-                      colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-                      # invert matrix
-                      colorss <- apply(colorss, 2, rev)[, 1:3]
-                      # add alpha
-                      colorss <- cbind(colorss, 200)
+                      fill_color <- colourvalues::colour_values(
+                        # x = c(data$valor, 300000),
+                        x = c(0, data$valor, scale_limits()$max),
+                        alpha = 200,
+                        palette = "viridis"
+                      )
+                      
+                      # adjust vector with colors
+                      # delete the first
+                      fill_color <- fill_color[-1]
+                      # delete the last
+                      fill_color <- fill_color[-length(fill_color)]
+
+                      # ADD THE COULOURS TO THE DATA
+                      data <- data %>% 
+                        dplyr::mutate(fill = fill_color)
+                      data$fill <- rev(data$fill)
+                      
+                      print("UEEEEE")
+                      print(data$fill)
+                      # fill for the legend
+                      # compose the vector of values
+                      # print(head(data$fill))
+
+                      # create legend
+                      l <- colourvalues::colour_values(
+                        # x = c(data$valor, 300000)
+                        x = c(0, data$valor, scale_limits()$max)
+                        , n_summaries = 6,
+                        palette = "viridis"
+                      )
+
+
+                      legend <- mapdeck::legend_element(
+                        variables = legend_converter(l$summary_values)
+                        , colours = rev(l$summary_colours)
+                        , colour_type = "fill"
+                        , variable_type = "gradient"
+                        , title = i18n()$t("Minutos até a oportunidade mais próxima")
+                      )
+                      js_legend <- mapdeck::mapdeck_legend(legend)
+                      # # create viridis scale in the reverse direction
+                      # # create matrix
+                      # colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
+                      # # invert matrix
+                      # colorss <- apply(colorss, 2, rev)[, 1:3]
+                      # # add alpha
+                      # colorss <- cbind(colorss, 200)
                       
                       mapdeck_update(map_id = "map") %>%
                         clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                         clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
                         add_polygon(
-                          data = atividade_filtrada_min_sf(),
-                          fill_colour = "valor",
-                          fill_opacity = 200,
+                          data = data,
+                          fill_colour = "fill",
+                          # fill_opacity = 200,
                           layer_id = mapdeck_id,
-                          palette = colorss,
+                          # palette = colorss,
                           update_view = FALSE,
                           tooltip = "popup",
-                          legend = TRUE,
-                          legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
-                          legend_format = list( fill_colour = legend_converter),
+                          legend = js_legend,
+                          # legend_options = list(title = i18n()$t("Minutos até a oportunidade mais próxima")),
+                          # legend_format = list( fill_colour = legend_converter),
                           stroke_width = 0,
                           stroke_colour = NULL,
                           stroke_opacity = 0
@@ -853,10 +937,14 @@ observeEvent({c(input$indicador_us,
                       
                       if (input$indicador %in% c("CMA", "CMP")) {
                         
+                        data <- tempo_filtrado_sf() %>%
+                          arrange(valor)
+                        
+                        print("AAAAAAAAh")
                         
                         fill_color <- colourvalues::colour_values(
                           # x = c(data$valor, 300000),
-                          x = c(tempo_filtrado_sf()$valor, scale_limits()$max),
+                          x = c(data$valor, scale_limits()$max),
                           alpha = 200,
                           palette = "inferno"
                         )
@@ -865,7 +953,7 @@ observeEvent({c(input$indicador_us,
                         # print(c(tempo_filtrado_sf()$valor, scale_limits()$max))
                         
                         # ADD THE COULOURS TO THE DATA
-                        data <- tempo_filtrado_sf() %>% 
+                        data <- data %>% 
                           dplyr::mutate(fill = fill_color[-length(fill_color)])
                         # fill for the legend
                         # compose the vector of values
@@ -873,7 +961,7 @@ observeEvent({c(input$indicador_us,
                         # create legend
                         l <- colourvalues::colour_values(
                           # x = c(data$valor, 300000)
-                          x = c(tempo_filtrado_sf()$valor, scale_limits()$max)
+                          x = c(data$valor, scale_limits()$max)
                           , n_summaries = 6,
                           palette = "inferno"
                         )
