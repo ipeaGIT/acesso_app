@@ -207,7 +207,7 @@ output$page_content <- renderUI({
             div(
               bsPopover(id = "q_modo1",
                         title = sprintf("<strong>%s</strong>", i18n()$t("Modo de transporte")),
-                        content = HTML(i18n()$t(includeHTML('www/popovers/popover_modo.html'))),
+                        content = HTML(if (input$selected_language == "pt") includeHTML('www/popovers/popover_modo.html') else includeHTML('www/popovers/popover_modo_en.html')),
                         placement = "bottom",
                         trigger = "hover",
                         options = list(container = "body"))
