@@ -437,7 +437,7 @@ indicador_ok <- reactive({
 atividade_filtrada_cma <- reactive({
   
   req(input$indicador %in% c("CMA", "CMP"))
-
+  
   # print(input$atividade_cma)
   # print(input$atividade_cmp)
   # print(colnames(indicador_filtrado()))
@@ -469,11 +469,11 @@ atividade_filtrada_min <- reactive({
     
     # guardar nome do indicador
     ind$ind <- cols[3] 
-      
+    
     colnames(indicador_filtrado1) <- c('id_hex', 'P001', 'valor')
     indicador_filtrado1[, id := 1:nrow(indicador_filtrado1)]
     indicador_filtrado1[, popup := paste0(i18n()$t("<strong>População:</strong> "), P001, i18n()$t("<br><strong>Valor da acessibilidade:</strong> "), round(valor, 0), " ", i18n()$t("minutos"))]
-
+    
     
     return(indicador_filtrado1)
     
@@ -677,159 +677,211 @@ observeEvent({v_city$cidade},{
   waiter_show(html = tagList(spin_loaders(id = 2, color = "black")),
               color = "rgba(233, 235, 240, .4)")
   
-  # create viridis scale in the reverse direction
-  # create matrix
-  colorss <- colourvalues::color_values_rgb(x = 1:256, "viridis")
-  # invert matrix
-  colorss <- apply(colorss, 2, rev)[, 1:3]
-  # add alpha
-  colorss <- cbind(colorss, 170)
-  
-  # print("FOI")
-  # print(input$indicador)
-  
-  
-  # select variables
-  data <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
-    tempo_filtrado_sf()
-  } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-    atividade_filtrada_min_sf()
-  } else if (input$indicador_us == "us") {
-    us_filtrado_ano_atividade_sf()
-  }
-  
-  
-  # ordenador data
-  data <- data %>% dplyr::arrange(valor)
-  
-  # print(scale_limits()$max)
-  
-  
-  legend_converter_cma <- function(x) {
-    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 100) )
-  }
-  
-  legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+  if (input$indicador_us == "access") {
     
-    as.integer
     
-  } else legend_converter_cma
-  
-  
-  legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
-    i18n()$t("Oportunidades Acessíveis")
-  } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-    i18n()$t("Minutos até a oportunidade mais próxima")
-  } else if (input$indicador_us == "us") {
-    i18n()$t("Quantidade")
-  }
-
-  
-  # print("DATA")
-  # print(head(c(data$valor)))
-  # print(head(c(scale_limits()$max)))
-  
-  palette <- fcase(input$indicador == "CMA", "inferno",
-                   input$indicador == "CMP", "viridis",
-                   input$indicador == "TMI", "viridis")
-  
-  fill_color <- colourvalues::colour_values(
-    # x = c(data$valor, 300000),
-    x = c(data$valor, scale_limits()$max),
-    alpha = 200,
-    palette = palette
-  )
-  
-  # delete the first
-  fill_color <- fill_color[-1]
-  # delete the last
-  # fill_color <- fill_color[-length(fill_color)]
-  
-  # print(length(fill_color))
-  # print(head(fill_color))
-  if (input$indicador == "TMI") fill_color <- rev(fill_color) else fill_color <- fill_color
-
-  # ADD THE COULOURS TO THE DATA
-  data$fill <- fill_color
-  
-  # fill for the legend
-  # compose the vector of values
-  # print(head(data$fill))
-
-  # create legend
-  l <- colourvalues::colour_values(
-    # x = c(data$valor, 300000)
-    x = c(data$valor, scale_limits()$max)
-    , n_summaries = 6,
-    palette = palette
-  )
-  
-  legend <- mapdeck::legend_element(
-    variables = legend_converter(l$summary_values)
-    , colours = rev(l$summary_colours)
-    , colour_type = "fill"
-    , variable_type = "gradient"
-    , title = legend
-  )
-  js_legend <- mapdeck::mapdeck_legend(legend)
-  
-
-  
-  # create list with values for mapdeck options
-  mapdeck_options <- list(
-    # 'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
-    # 'data'            = if(input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else if (input$indicador %in% c("TMI")) ,
-    # 'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
-    'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else if (input$indicador %in% c("TMI")) colorss,
-    'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
-                               i18n()$t("Oportunidades Acessíveis"),
-                               i18n()$t("Minutos até a oportunidade mais próxima"))
-  )
-
-
-  
-  # Zoom in on the city when it's choosen
-  mapdeck_update(map_id = "map") %>%
-    mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
-                 duration = 4000, transition = "fly") %>%
-    clear_polygon(layer_id = mapdeck_id_clear()) %>%
-    clear_pointcloud(layer_id = "brasil") %>%
-    clear_legend(layer_id = mapdeck_id_clear()) %>%
-    # # Render city limits
-    # add_polygon(
-    #   data = limits_filtrado(),
-    #   stroke_colour = "#616A6B",
-    #   stroke_width = 100,
-    #   fill_opacity = 0,
-    #   update_view = FALSE,
-    #   focus_layer = FALSE,
-    # ) %>%
-    # Render city indicator
-    add_polygon(
-      data = data,
-      fill_colour = "fill",
-      # fill_opacity = 200,
-      layer_id = mapdeck_id,
-      # layer_id = mapdeck_options$layer_id2,
-      # palette = mapdeck_options$palette1,
-      update_view = FALSE,
-      focus_layer = FALSE,
-      # auto_highlight = TRUE,
-      tooltip = "popup",
-      legend = js_legend,
-      # legend = TRUE,
-      # legend_options = list(title = i18n()$t(legend)),
-      # legend_format = list( fill_colour = legend_converter),
-      stroke_width = NULL,
-      stroke_colour = NULL,
-      stroke_opacity = 0
+    
+    # select variables
+    data <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
+      tempo_filtrado_sf()
+    } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+      atividade_filtrada_min_sf()
+    } else if (input$indicador_us == "us") {
+      us_filtrado_ano_atividade_sf()
+    }
+    
+    
+    # ordenador data
+    data <- data %>% dplyr::arrange(valor)
+    
+    # print(scale_limits()$max)
+    
+    legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+      
+      function(x) as.integer(x)
+      
+    } else function(x) scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
+    
+    
+    legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
+      i18n()$t("Oportunidades Acessíveis")
+    } else if(input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+      i18n()$t("Minutos até a oportunidade mais próxima")
+    } else if (input$indicador_us == "us") {
+      i18n()$t("Quantidade")
+    }
+    
+    
+    # print("DATA")
+    # print(head(c(data$valor)))
+    # print(head(c(scale_limits()$max)))
+    
+    palette <- fcase(input$indicador == "CMA", "inferno",
+                     input$indicador == "CMP", "viridis",
+                     input$indicador == "TMI", "viridis")
+    
+    fill_color <- colourvalues::colour_values(
+      # x = c(data$valor, 300000),
+      x = c(data$valor, scale_limits()$max),
+      alpha = 200,
+      palette = palette
     )
+    
+    # delete the first
+    fill_color <- fill_color[-1]
+    # delete the last
+    # fill_color <- fill_color[-length(fill_color)]
+    
+    # print(length(fill_color))
+    # print(head(fill_color))
+    if (input$indicador == "TMI") fill_color <- rev(fill_color) else fill_color <- fill_color
+    
+    # ADD THE COULOURS TO THE DATA
+    data$fill <- fill_color
+    
+    # fill for the legend
+    # compose the vector of values
+    # print(head(data$fill))
+    
+    # create legend
+    l <- colourvalues::colour_values(
+      # x = c(data$valor, 300000)
+      x = c(data$valor, scale_limits()$max)
+      , n_summaries = 6,
+      palette = palette
+    )
+    
+    legend <- mapdeck::legend_element(
+      variables = legend_converter(l$summary_values)
+      , colours = rev(l$summary_colours)
+      , colour_type = "fill"
+      , variable_type = "gradient"
+      , title = legend
+    )
+    js_legend <- mapdeck::mapdeck_legend(legend)
+    
+    
+    
+    # create list with values for mapdeck options
+    mapdeck_options <- list(
+      # 'layer_id1'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_min_go", "acess_cum_go"),
+      # 'data'            = if(input$indicador %in% c("CMA", "CMP")) tempo_filtrado_sf() else if (input$indicador %in% c("TMI")) ,
+      # 'layer_id2'       = ifelse(input$indicador %in% c("CMA", "CMP"), "acess_cum_go", "acess_min_go"),
+      # 'palette1'        = if (input$indicador %in% c("CMA", "CMP")) "inferno" else if (input$indicador %in% c("TMI")) colorss,
+      'legend_options1' = ifelse(input$indicador %in% c("CMA", "CMP"),
+                                 i18n()$t("Oportunidades Acessíveis"),
+                                 i18n()$t("Minutos até a oportunidade mais próxima"))
+    )
+    
+    
+    
+    # Zoom in on the city when it's choosen
+    mapdeck_update(map_id = "map") %>%
+      mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
+                   duration = 4000, transition = "fly") %>%
+      clear_polygon(layer_id = mapdeck_id_clear()) %>%
+      clear_pointcloud(layer_id = "brasil") %>%
+      clear_legend(layer_id = mapdeck_id_clear()) %>%
+      # # Render city limits
+      # add_polygon(
+      #   data = limits_filtrado(),
+      #   stroke_colour = "#616A6B",
+      #   stroke_width = 100,
+      #   fill_opacity = 0,
+      #   update_view = FALSE,
+      #   focus_layer = FALSE,
+      # ) %>%
+      # Render city indicator
+      add_polygon(
+        data = data,
+        fill_colour = "fill",
+        # fill_opacity = 200,
+        layer_id = mapdeck_id,
+        # layer_id = mapdeck_options$layer_id2,
+        # palette = mapdeck_options$palette1,
+        update_view = FALSE,
+        focus_layer = FALSE,
+        # auto_highlight = TRUE,
+        tooltip = "popup",
+        legend = js_legend,
+        # legend = TRUE,
+        # legend_options = list(title = i18n()$t(legend)),
+        # legend_format = list( fill_colour = legend_converter),
+        stroke_width = NULL,
+        stroke_colour = NULL,
+        stroke_opacity = 0
+      )
+    
+    
+  } else if (input$indicador_us == "us") {
+    
+    # print(sprintf("Mapdeck id clear1: %s", mapdeck_id_clear()))
+    
+    print("UUUUUUUUUIUIU")
+    
+    # mapdeck_id <- "us_update"
+    # mapdeck_id_clear <- ifelse(input$indicador_us == "access", "us_initial", "access_initial")
+    
+    # print(sprintf("Mapdeck id: %s", mapdeck_id))
+    
+    
+    legend_converter_us <- function(x) {
+      return( scales::comma(as.integer(x), big.mark = " ", accuracy = 1) )
+    }
+    
+    legend_converter <- if (input$indicador_us == "us" & grepl("^(P|T)", indicador_us_ok())) {
+      legend_converter_us
+    } else as.integer              
+    
+    legend_fill <- if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R002", "R003")) {
+      "rdylbu"
+    } else if (input$demo_ou_us == "activity") "viridis"
+    
+    legend_title <- if (input$demo_ou_us == "demo"  & input$atividade_demo %in% c("R001")) {
+      "Renda per capita (R$)"
+    } else if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R002")) {
+      "Quintil de renda"
+    } else if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R003")) {
+      "Decil de renda"
+    } else if (input$demo_ou_us == "activity") "Quantidade" else "Quantidade"
+    
+    mapdeck_update(map_id = "map") %>%
+      mapdeck_view(location = c(centroid_go()$lon, centroid_go()$lat), zoom = zoom1(),
+                   duration = 4000, transition = "fly") %>%
+      clear_polygon(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
+      clear_legend(layer_id = ifelse(mapdeck_id_clear() == mapdeck_id, "oi", mapdeck_id_clear())) %>%
+      add_polygon(
+        data = us_filtrado_ano_atividade_sf(),
+        fill_colour = "valor",
+        fill_opacity = 200,
+        layer_id = mapdeck_id,
+        palette = legend_fill,
+        update_view = FALSE,
+        focus_layer = FALSE,
+        tooltip = "popup",
+        legend = TRUE,
+        legend_options = list(title = i18n()$t(legend_title)),
+        legend_format = list( fill_colour = legend_converter),
+        stroke_width = NULL,
+        stroke_colour = NULL,
+        stroke_opacity = 0
+      )
+    
+    # mapdeck_id_clear(mapdeck_id)
+    
+    
+  }
   
   mapdeck_id_clear(mapdeck_id)
-  
   waiter_hide()
   
 })
+
+
+
+
+
+
 
 
 # Observe any change on the atrributes on the city and change the map accordingly
@@ -842,8 +894,10 @@ observeEvent({c(input$indicador_us,
                   
                   # print(nrow(atividade_filtrada_min_sf))
                   
+                  req(input$indicador_us == "access")
+                  
                   legend_converter_cma <- function(x) {
-                    scales::comma(as.integer(x), big.mark = " ", accuracy = 1)
+                    scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
                   }
                   
                   legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
@@ -851,12 +905,12 @@ observeEvent({c(input$indicador_us,
                   } else legend_converter_cma
                   
                   
+                  mapdeck_id <- "access_update"
                   
                   
                   if (input$indicador_us == "access") {
-
                     
-                    mapdeck_id <- "access_update"
+                    
                     print(sprintf("Mapdeck id clear2: %s", mapdeck_id_clear()))
                     
                     if (input$indicador == "TMI") {
@@ -877,7 +931,7 @@ observeEvent({c(input$indicador_us,
                       fill_color <- fill_color[-1]
                       # delete the last
                       fill_color <- fill_color[-length(fill_color)]
-
+                      
                       # ADD THE COULOURS TO THE DATA
                       data <- data %>% 
                         dplyr::mutate(fill = fill_color)
@@ -888,7 +942,7 @@ observeEvent({c(input$indicador_us,
                       # fill for the legend
                       # compose the vector of values
                       # print(head(data$fill))
-
+                      
                       # create legend
                       l <- colourvalues::colour_values(
                         # x = c(data$valor, 300000)
@@ -896,8 +950,8 @@ observeEvent({c(input$indicador_us,
                         , n_summaries = 6,
                         palette = "viridis"
                       )
-
-
+                      
+                      
                       legend <- mapdeck::legend_element(
                         variables = legend_converter(l$summary_values)
                         , colours = rev(l$summary_colours)
@@ -940,7 +994,7 @@ observeEvent({c(input$indicador_us,
                         data <- tempo_filtrado_sf() %>%
                           arrange(valor)
                         
-                        print("AAAAAAAAh")
+                        # print("AAAAAAAAh")
                         
                         fill_color <- colourvalues::colour_values(
                           # x = c(data$valor, 300000),
@@ -996,9 +1050,13 @@ observeEvent({c(input$indicador_us,
                           )
                       }
                     
-                    mapdeck_id_clear(mapdeck_id)
                     
-                  }
+                    
+                    
+                  } 
+                  
+                  
+                  mapdeck_id_clear(mapdeck_id)
                   
                   
                 })
@@ -1039,7 +1097,7 @@ observeEvent({c(input$indicador_us,
                   
                   if (input$indicador_us == "us") {
                     
-                    # print(sprintf("Mapdeck id clear1: %s", mapdeck_id_clear()))
+                    print(sprintf("Mapdeck id clear1: %s", mapdeck_id_clear()))
                     
                     
                     
