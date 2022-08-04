@@ -696,11 +696,27 @@ observeEvent({v_city$cidade},{
     
     # print(scale_limits()$max)
     
-    legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-      
-      function(x) as.integer(x)
-      
-    } else function(x) scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
+    # legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("CMA") &
+    #                         input$atividade_cma %in% c("TT", "TB", "TM", "TA")) {
+    #   
+    #   function(x) scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
+    # 
+    #   } else if (input$indicador_us == "access" & input$indicador %in% c("CMP")) {
+    #   
+    #   function(x) scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
+    #   
+    #     } else if (input$indicador_us == "us" & input$indicador %in% c("TMI")) {
+    #       
+    #   function(x) scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
+    #       
+    #       
+    #     } else if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+    #   
+    #   function(x) as.integer(x) 
+    # 
+    #       } else function(x) as.integer(x) 
+    
+    legend_converter <- function (x) as.integer(x)
     
     
     legend <- if(input$indicador_us == "access" & input$indicador %in% c("CMA", "CMP")) {
@@ -896,13 +912,15 @@ observeEvent({c(input$indicador_us,
                   
                   req(input$indicador_us == "access")
                   
-                  legend_converter_cma <- function(x) {
-                    scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
-                  }
+                  # legend_converter_cma <- function(x) {
+                  #   scales::comma(as.integer(x), big.mark = " ", accuracy = 100)
+                  # }
+                  # 
+                  # legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
+                  #   as.integer
+                  # } else legend_converter_cma
                   
-                  legend_converter <- if (input$indicador_us == "access" & input$indicador %in% c("TMI")) {
-                    as.integer
-                  } else legend_converter_cma
+                  legend_converter <- function (x) as.integer(x)
                   
                   
                   mapdeck_id <- "access_update"
@@ -992,7 +1010,7 @@ observeEvent({c(input$indicador_us,
                       if (input$indicador %in% c("CMA", "CMP")) {
                         
                         data <- tempo_filtrado_sf() %>%
-                          arrange(valor)
+                          dplyr::arrange(valor)
                         
                         # print("AAAAAAAAh")
                         
@@ -1020,7 +1038,7 @@ observeEvent({c(input$indicador_us,
                           palette = "inferno"
                         )
                         legend <- mapdeck::legend_element(
-                          variables = legend_converter_cma(l$summary_values)
+                          variables = legend_converter(l$summary_values)
                           , colours = l$summary_colours
                           , colour_type = "fill"
                           , variable_type = "gradient"
@@ -1071,13 +1089,15 @@ observeEvent({c(input$indicador_us,
                   
                   # print(nrow(atividade_filtrada_min_sf))
                   
-                  legend_converter_us <- function(x) {
-                    return( scales::comma(as.integer(x), big.mark = " ", accuracy = 1) )
-                  }
+                  # legend_converter_us <- function(x) {
+                  #   return( scales::comma(as.integer(x), big.mark = " ", accuracy = 1) )
+                  # }
+                  # 
+                  # legend_converter <- if (input$indicador_us == "us" & grepl("^(P|T)", indicador_us_ok())) {
+                  #   legend_converter_us
+                  # } else as.integer        
                   
-                  legend_converter <- if (input$indicador_us == "us" & grepl("^(P|T)", indicador_us_ok())) {
-                    legend_converter_us
-                  } else as.integer              
+                  legend_converter <- function (x) as.integer(x)
                   
                   legend_fill <- if (input$demo_ou_us == "demo" & input$atividade_demo %in% c("R002", "R003")) {
                     "rdylbu"
