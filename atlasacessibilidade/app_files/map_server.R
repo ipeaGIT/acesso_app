@@ -905,6 +905,7 @@ observeEvent({v_city$cidade},{
         focus_layer = FALSE,
         tooltip = "popup",
         legend = TRUE,
+        na_colour = "#80808000",
         legend_options = list(title = i18n()$t(legend_title)),
         legend_format = list( fill_colour = legend_converter),
         stroke_width = NULL,
@@ -1178,6 +1179,7 @@ observeEvent({c(input$indicador_us,
                         legend_format = list( fill_colour = legend_converter),
                         stroke_width = NULL,
                         stroke_colour = NULL,
+                        na_colour = "#80808000",
                         stroke_opacity = 0
                       )
                     
