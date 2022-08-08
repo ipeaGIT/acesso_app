@@ -34,7 +34,7 @@ shinyUI(
                             # Create the side panel  
                             absolutePanel(id = "controls", class = "panel panel-default", 
                                           fixed = TRUE, draggable = FALSE,
-                                          top = 60, right = 10, width = 350, height = 650,
+                                          top = 55, right = 10, width = 350, height = 595,
                                           # Output the 'UI' that was generated in the server
                                           uiOutput('page_content')
                             ),
