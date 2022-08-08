@@ -17,6 +17,8 @@ prepare_data_download <- reactive({
     
   }
   
+  # print(tempo_filtrado_graph())
+  
   # define attributes name based on language
   attributes_lookup <- data.table(atividade = c("TT", "ST", "SB", "SM", "SA", "ET", "EI", "EF", "EM"), 
                                   nome = c(i18n()$t("trabalho_total"), 
@@ -56,8 +58,19 @@ prepare_data_download <- reactive({
   # define column names based on language
   if (input$graph_type %in% c("palma_renda", "palma_cor")) {
     
+    
+    if (input$graph_type == c("palma_renda")) {
+      
     output_csv_palma <- output_csv_palma[, .(name_muni, abbrev_muni, year, mode, indicador, atividade = nome, 
                                              tempo_viagem, pobre, rico, palma_ratio)]
+      
+    } else if (input$graph_type == c("palma_cor")) {
+      
+      
+    output_csv_palma <- output_csv_palma[, .(name_muni, abbrev_muni, year, mode, indicador, atividade = nome, 
+                                             tempo_viagem, brancos, negros, palma_ratio)]
+      
+    }
     
     
     print(output_csv_palma)

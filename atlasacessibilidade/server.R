@@ -205,6 +205,16 @@ function(input, output, session) {
     
   })
   
+  # observeEvent(c(v_city$cidade, input$ano, input$modo), {
+  #   
+  #   print("COISA")
+  #   print(input$modo_todos)
+  #   print(input$modo_ativo)
+  #   print(modo_cidade$teste)
+  #   
+  #   
+  # })
+  
   
   
 }

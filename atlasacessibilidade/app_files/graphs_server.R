@@ -232,8 +232,8 @@ output$output_graph <- renderHighchart({
                                     i18n()$t(legend_subtitle),
                                     i18n()$t("acessíveis pelos brancos pelos negros"))) 
     
-    print(title_plot)
-    print(legend_plot)
+    # print(title_plot)
+    # print(legend_plot)
     
     
     hchart(new, "bar", hcaes(x = name_muni, y = palma_ratio),
@@ -262,7 +262,7 @@ output$output_graph <- renderHighchart({
       hc_plotOptions(bar = list(dataLabels = list(enabled = TRUE,
                                                   align = "right",
                                                   x = -5,
-                                                  style = list(fontSize = 15,
+                                                  style = list(fontSize = 11,
                                                                color = "white",
                                                                textOutline = "0.3px white",
                                                                fontWeight = "regular"))))
