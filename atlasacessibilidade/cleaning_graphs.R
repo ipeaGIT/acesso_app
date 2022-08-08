@@ -82,7 +82,7 @@ access_palma_car_tp_renda <- access_palma_car_tp %>%
   ungroup() %>%
   tidyr::pivot_longer(cols = CMATT30:CMACT120, names_to = "tipo", values_to = "valor") %>%
   tidyr::pivot_wider(names_from = classe, values_from = valor) %>%
-  mutate(palma_ratio = round(rico/pobre, 3)) %>%
+  mutate(palma_ratio = round(rico/pobre, 2)) %>%
   # extract time threshld (separate at the position 5 of the string)
   tidyr::separate(tipo, c("indicador", "tempo_viagem"), sep = 5) %>%
   # extract activity
@@ -98,7 +98,7 @@ access_palma_active_renda <- access_palma_active %>%
   ungroup() %>%
   tidyr::pivot_longer(cols = CMATT15:CMACT60, names_to = "tipo", values_to = "valor") %>%
   tidyr::pivot_wider(names_from = classe, values_from = valor) %>%
-  mutate(palma_ratio = round(rico/pobre, 3)) %>%
+  mutate(palma_ratio = round(rico/pobre, 2)) %>%
   # extract time threshld (separate at the position 5 of the string)
   tidyr::separate(tipo, c("indicador", "tempo_viagem"), sep = 5) %>%
   # extract activity
@@ -153,7 +153,7 @@ access_palma_car_tp_cor <- rbind(
 ) %>%
   tidyr::pivot_longer(cols = CMATT30:CMACT120, names_to = "tipo", values_to = "valor") %>%
   tidyr::pivot_wider(names_from = cor, values_from = valor) %>%
-  mutate(palma_ratio = round(brancos/negros, 3)) %>%
+  mutate(palma_ratio = round(brancos/negros, 2)) %>%
   # extract time threshld (separate at the position 5 of the string)
   tidyr::separate(tipo, c("indicador", "tempo_viagem"), sep = 5) %>%
   # extract activity
@@ -171,7 +171,7 @@ access_palma_active_cor <- rbind(
 ) %>%
   tidyr::pivot_longer(cols = CMATT15:CMACT60, names_to = "tipo", values_to = "valor") %>%
   tidyr::pivot_wider(names_from = cor, values_from = valor) %>%
-  mutate(palma_ratio = round(brancos/negros, 1)) %>%
+  mutate(palma_ratio = round(brancos/negros, 2)) %>%
   # extract time threshld (separate at the position 5 of the string)
   tidyr::separate(tipo, c("indicador", "tempo_viagem"), sep = 5) %>%
   # extract activity

@@ -123,7 +123,8 @@ output$graphs <- renderUI({
     # IF MODE IS 'TP' (PUBLIC TRANSPORT), TIME THRESHOLD RANGES BETWEEN 30 AND 120 EVERY 30 
     # IF MODE IS 'CAMINHADA' OR 'BIKE' (WALK OU BIKE), TIME THRESHOLD RANGES BETWEEN 15 AND 60 EVERY 15 
     
-    conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1 && input.modo_todos_graph == 'public_transport'",
+    conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1 && ['public_transport', 'car'].indexOf(input.modo_todos_graph) > -1",
+    # conditionalPanel(condition = "graphs_cma.indexOf(input.graph_type) > -1 && input.modo_todos_graph == 'public_transport'",
                      sliderInput(inputId = "tempo_tp_graph",
                                  label = i18n()$t("Tempo de viagem"),
                                  min = 30, max = 120,
