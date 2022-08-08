@@ -14,7 +14,7 @@ output$graphs <- renderUI({
                                                            i18n()$t("Educação Média"))))
   
   list_cras_graph <- list('CRAS' = structure(c("CT"), 
-                                       .Names = c(i18n()$t("Cras Total"))))
+                                             .Names = c(i18n()$t("Cras Total"))))
   
   list_types_graphs_palma <- list('Razão de Desigualdade' = 
                                     structure(c("palma_renda", "palma_cor"), 
@@ -143,11 +143,22 @@ output$graphs <- renderUI({
     # 5) ADITIONAL INFORMATION AT THE BOTTOM OF THE PANEL ------------------------
     
     hr(),
-    tagList(i18n()$t('Mais informações podem ser encontradas na seção de resultados do'), 
-            shiny::a('Texto para Discussão', href=i18n()$t('https://www.ipea.gov.br/acessooportunidades/publication/2019_td2535/')))
+      if(input$selected_language == "pt") {
+    tagList(
+      
+      'Mais informações podem ser encontradas em', 
+        shiny::a('nossas publicações', href='https://www.ipea.gov.br/acessooportunidades/publicacoes/')
+    )
+      
+    }  else {
+      
+      tagList(
+                   'More information  can be found at',
+                   shiny::a('our studies', href='https://www.ipea.gov.br/acessooportunidades/en/publicacoes/')
+      )
+    }
     
+  
   )
-  
-  
   
 })

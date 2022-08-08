@@ -190,7 +190,7 @@ output$page_content <- renderUI({
           
           # IF A CITY WITH GTFS IS SELECTED, ALL MODES WILL BE AVAILABLE
           conditionalPanel(
-            condition = "cities_todos.indexOf(''.concat(output.city, '_', input.ano)) > -1", 
+            condition = "cities_todos.indexOf(''.concat(output.city, '_', input.ano)) > -1",
             radioGroupButtons(inputId = "modo_todos",
                               label = label_with_info(
                                 label = i18n()$t("Modo de transporte"),
@@ -201,6 +201,8 @@ output$page_content <- renderUI({
                                           "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
                                           "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicycle"),
                               selected = "public_transport",
+                              # selected = character(0),
+                              # selected = if (all(v_city$cidade == rv$prev_bins)) input$modo_ativo else "public_transport",
                               individual = TRUE,
                               justified = TRUE
             ),
@@ -218,7 +220,7 @@ output$page_content <- renderUI({
           # THE FUN 'RADIO_BUTTON_CUSTOM' WILL CREATE 3 RADIO BUTTONS WITH 1 BEING UNAVAILABLE
           
           conditionalPanel(
-            condition = "cities_ativo.indexOf(''.concat(output.city, '_', input.ano)) > -1", 
+            condition = "cities_ativo.indexOf(''.concat(output.city, '_', input.ano)) > -1",
             radioGroupButtons(inputId = "modo_ativo",
                               label = label_with_info(
                                 label = i18n()$t("Modo de transporte"),
@@ -229,6 +231,7 @@ output$page_content <- renderUI({
                                           "<i class=\"fas fa-walking fa-2x\"></i>" = "walk",
                                           "<i class=\"fas fa-bicycle fa-2x\"></i>" = "bicycle"),
                               selected = "walk",
+                              # selected = ifelse(modo_cidade$teste == "ativo", "walk", input$modo_todos),
                               individual = TRUE,
                               justified = TRUE
             ),

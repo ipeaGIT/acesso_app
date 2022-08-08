@@ -51,7 +51,7 @@ output$downloadData1 <- downloadHandler(
   },
   content = function(file) {
     
-    sf::st_write(cidade_filtrada(), file)
+    sf::st_write(cidade_filtrada() %>% dplyr::left_join(hex_filtrado(), by = 'id_hex') %>% st_sf(crs = 4326), file)
     
   }
   
@@ -68,7 +68,7 @@ output$downloadData2 <- downloadHandler(
   },
   content = function(file) {
     
-    sf::st_write(cidade_filtrada(), file)
+    sf::st_write(cidade_filtrada()  %>% dplyr::left_join(hex_filtrado(), by = 'id_hex') %>% st_sf(crs = 4326), file)
     
   }
   

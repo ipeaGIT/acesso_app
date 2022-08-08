@@ -65,6 +65,9 @@ output$city <- reactive({
 outputOptions(output, 'city', suspendWhenHidden = FALSE)
 
 
+
+rv <- reactiveValues(prev_bins = NULL)
+
 # observer to change the labels of each year
 observeEvent(v_city$cidade, {
   
@@ -97,32 +100,49 @@ observeEvent(v_city$cidade, {
                      choiceValues = c("2017", "2018", "2019"),
                      choiceNames = choices_new)
   
+  
 })
 
-# observeEvent({input$cidade},{
-#   
-#   
-#   req(input$cidade)
-#   # print(input$cidade)
-#   # if(input$cidade != "") {
-#   # 
-#   #   v_city$city <- input$cidade }
-#   # 
-#   # else {v_city$city <- NULL}
-#   v_city$city <- if(input$cidade != "") input$cidade
-#   
-#   
-#   
-#   # print(v_city$city)
-#   
-# })
+# first, identify previous city
 
-# Filter the city
+observeEvent(c(v_city$cidade), {
+  
+  
+  # rv$prev_bins <- c(rv$prev_bins, v_city$cidade)
+  rv$prev_bins <- c(tail(rv$prev_bins, 1), v_city$cidade)
+  
+  # print("rv$prev_bins")
+  # print(v_city$cidade == rv$prev_bins)
+  # print(all(v_city$cidade == rv$prev_bins))
+  
+  
+})
 
-# waiter_show(html = tagList(spin_loaders(id = 2, color = "black"), br(), HTML("&nbsp;"), br(),
-#                            span("Opening GTFS...", style = "color: black"),
-#                            br(),  br(), HTML("&nbsp;")),
-#             color = "rgba(233, 235, 240, .5)")
+observeEvent(c(input$modo_ativo, input$ano), {
+  
+  print("GAROTO")
+  print(a())
+  
+  updateRadioGroupButtons(
+    session = session,
+    inputId = "modo_todos",
+    selected = a()
+  )
+  
+})
+
+observeEvent(c(input$modo_ativo), {
+  
+  # print("GAROTO")
+  # 
+  # updateRadioGroupButtons(
+  #   session = session,
+  #   inputId = "modo_todos",
+  #   selected = "walk"
+  # )
+  
+})
+
 
 cidade_filtrada <- reactive({
   
@@ -170,7 +190,7 @@ ano_filtrado <- reactive({
 # here we should create the observer for the landuse indicator --------------------------------
 us_filtrado <- reactive({
   
-  print(sprintf("Us deu certo? %s", input$indicador_us))
+  # print(sprintf("Us deu certo? %s", input$indicador_us))
   
   if (input$indicador_us == "us") {
     
@@ -289,7 +309,7 @@ us_filtrado_ano_atividade <- reactive({
   
   # print(nrow(us_filtrado_ano()))
   # print(colnames(us_filtrado_ano()))
-  print(sprintf("Indicador us ok: %s", indicador_us_ok()))
+  # print(sprintf("Indicador us ok: %s", indicador_us_ok()))
   # print(colnames(us_filtrado_ano()))
   cols <- c("id_hex", indicador_us_ok())
   # print(cols)
@@ -320,7 +340,7 @@ us_filtrado_ano_atividade <- reactive({
       )]
   
   
-  print(head(a))
+  # print(head(a))
   # print(valor)
   # return(a)
   
@@ -344,35 +364,42 @@ us_filtrado_ano_atividade_sf <- reactive({
 
 # 2) REACTIVE TO FILTER THE MODE -----------------------------------------------------------------
 
-# First we use a reactive expression to choose the input
+
+
+modo_cidade <- reactiveValues(teste = NULL)
+
 
 a <- reactive({
   
+  
+  # !all(v_city$cidade == rv$prev_bins)
+  
   req(v_city$cidade)
   
-  if (v_city$cidade %in% c('for', 'spo', 'cur', 'poa', 'bho', 'cam') & input$ano %in% c(2017, 2018, 2019)) 
-    
-  {input$modo_todos}
   
-  else if(v_city$cidade %in% c('rio') & input$ano %in% c(2018, 2019)) {
+  if (v_city$cidade %in% c('for', 'spo', 'cur', 'poa', 'bho', 'cam') & input$ano %in% c(2017, 2018, 2019))  {
     
-    input$modo_todos }
+    
+    return(input$modo_todos)
+    
+  } else if(v_city$cidade %in% c('rio') & input$ano %in% c(2018, 2019)) {
+    
+    return(input$modo_todos)
+    
+  } else if(v_city$cidade %in% c('rec', 'goi') & input$ano %in% c(2019)) {
+    
+    return(input$modo_todos)
+    
+  } else {
+    
+    return(input$modo_ativo)
+  }
   
-  else if(v_city$cidade %in% c('rec', 'goi') & input$ano %in% c(2019)) {
-    
-    
-    input$modo_todos
-    
-    
-    # else if(v_city$cidade %in% c('bsb', 'sal', 'man', 'goi', 'bel', 'gua', 'slz', 'sgo', 'mac', 'duq', 'cgr', 'nat', 'fake')) {
-    
-    
-  } else input$modo_ativo 
   
-  # print(sprintf("teste1 %s", input$modo_todos))
-  # print(sprintf("teste2 %s", input$modo_ativo))
+  
   
 })
+
 
 output$tp <- reactive({
   a() %in% c("public_transport", "car")
@@ -384,8 +411,10 @@ outputOptions(output, 'tp', suspendWhenHidden = FALSE)
 # Reactive para a modo
 modo_filtrado <- reactive({
   
-  print(sprintf("ano filtrado nrow: %s", nrow(ano_filtrado())))
-  print(sprintf("Mode selected: %s", a()))
+  
+  
+  # print(sprintf("ano filtrado nrow: %s", nrow(ano_filtrado())))
+  # print(sprintf("Mode selected: %s", a()))
   
   ano_filtrado()[mode == a()]
   
@@ -397,8 +426,8 @@ modo_filtrado <- reactive({
 
 indicador_filtrado <- reactive({
   
-  print(sprintf("go: %s", input$indicador))
-  print(sprintf("modo filtrado nrow: %s", nrow(modo_filtrado())))
+  # print(sprintf("go: %s", input$indicador))
+  # print(sprintf("modo filtrado nrow: %s", nrow(modo_filtrado())))
   
   cols <- c('id_hex', 'P001', grep(input$indicador, colnames(modo_filtrado()), ignore.case = TRUE, value = TRUE))
   
@@ -908,7 +937,9 @@ observeEvent({c(input$indicador_us,
                 input$atividade_cma, input$atividade_cmp, input$atividade_min, 
                 input$tempo_tp, input$tempo_ativo)},{
                   
-                  # print(nrow(atividade_filtrada_min_sf))
+                  
+                  
+                  
                   
                   req(input$indicador_us == "access")
                   
@@ -937,16 +968,20 @@ observeEvent({c(input$indicador_us,
                       data <- atividade_filtrada_min_sf() %>%
                         dplyr::arrange(valor)
                       
+                      print("mean")
+                      print(mean(data$valor))
+                      print(min(data$valor))
+                      
                       fill_color <- colourvalues::colour_values(
                         # x = c(data$valor, 300000),
-                        x = c(0, data$valor, scale_limits()$max),
+                        x = c(data$valor, scale_limits()$max),
                         alpha = 200,
                         palette = "viridis"
                       )
                       
                       # adjust vector with colors
                       # delete the first
-                      fill_color <- fill_color[-1]
+                      # fill_color <- fill_color[-1]
                       # delete the last
                       fill_color <- fill_color[-length(fill_color)]
                       
@@ -955,8 +990,8 @@ observeEvent({c(input$indicador_us,
                         dplyr::mutate(fill = fill_color)
                       data$fill <- rev(data$fill)
                       
-                      print("UEEEEE")
-                      print(data$fill)
+                      # print("UEEEEE")
+                      # print(data$fill)
                       # fill for the legend
                       # compose the vector of values
                       # print(head(data$fill))
