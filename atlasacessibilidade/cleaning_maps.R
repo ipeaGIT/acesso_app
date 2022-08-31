@@ -139,10 +139,6 @@ landuse <- rbind(
     setDT())
 landuse <- landuse %>% dplyr::filter(P001 > 0 | T001 > 0 | E001 > 0 | S001 > 0)
 
-# rename - only for internal data
-landuse <- landuse %>%
-  rename(year = ano, abbrev_muni = sigla_muni, name_muni = nome_muni)
-
 # truncar variaveis de trabalho
 landuse <- landuse %>%
   group_by(abbrev_muni) %>%
@@ -163,6 +159,7 @@ landuse <- landuse %>%
                 # rename vars
                 PT = P001,
                 # PH, PM,
+                PM = P006, PH = P007,
                 PB = P002, PN = P003, PI = P004, PA = P005,
                 P0005I = P010, P0614I = P011, P1518I = P012, P1924I = P013, P2539I = P014, P4069I = P015, P70I = P016,
                 starts_with("R0"),
