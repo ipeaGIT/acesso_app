@@ -109,7 +109,7 @@
     {"pt": "Indicador", "en": "Indicator"},
     {"pt": "Baixe os dados (.csv)", "en": "Download the data (.csv)"},
     {"pt": "Baixe o gŕafico (.png)", "en": "Download the chart (.png)"},
-    {"pt": "Baixe o dicionário dos dados (.xlsx)", "en": "Download the data dictionary (.xlsx)"},
+    {"pt": "Visite a página com o dicionário e todos os dados", "en": "Visit the data webpage"},
     {"pt": "Baixe os indicadores para a cidade (.gpkg)", "en": "Download the indicators for the city (.gpkg)"},
     {"pt": "Baixe os indicadores para todas as cidades (.gpkg)", "en": "Download the indicators for the whole country (.gpkg)"},
     {"pt": "Mapa", "en": "Map"},

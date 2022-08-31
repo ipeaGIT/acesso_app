@@ -128,8 +128,8 @@ output$ui_download_button <- renderUI({
 
 output$ui_download_dic <- renderUI({
   
-  actionButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"), 
-               onclick = "location.href='http://repositorio.ipea.gov.br/bitstream/11058/9586/5/dicionario2019_v1.0_20200116.xlsx';")
+  actionButton("downloadDic", i18n()$t("Visite a página com o dicionário e todos os dados"), 
+               onclick = if(input$selected_language == "pt") "location.href='https://www.ipea.gov.br/acessooportunidades/dados';" else "location.href='https://www.ipea.gov.br/acessooportunidades/en/dados';")
   
   # downloadButton("downloadDic", i18n()$t("Baixe o dicionário dos dados (.xlsx)"))
   
