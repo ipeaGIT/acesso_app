@@ -765,9 +765,13 @@ observeEvent({v_city$cidade},{
                      input$indicador == "CMP", "viridis",
                      input$indicador == "TMI", "viridis")
     
+    fill_values <- c(data$valor, scale_limits()$max)
+    if (input$indicador == "TMI") fill_values <- -fill_values else fill_values <- fill_values
+    
+    
     fill_color <- colourvalues::colour_values(
       # x = c(data$valor, 300000),
-      x = c(data$valor, scale_limits()$max),
+      x = fill_values,
       alpha = 200,
       palette = palette
     )
@@ -779,7 +783,6 @@ observeEvent({v_city$cidade},{
     
     # print(length(fill_color))
     # print(head(fill_color))
-    if (input$indicador == "TMI") fill_color <- rev(fill_color) else fill_color <- fill_color
     
     # ADD THE COULOURS TO THE DATA
     data$fill <- fill_color
@@ -798,7 +801,7 @@ observeEvent({v_city$cidade},{
     
     legend <- mapdeck::legend_element(
       variables = legend_converter(l$summary_values)
-      , colours = rev(l$summary_colours)
+      , colours = if (input$indicador == "TMI") rev(l$summary_colours) else l$summary_colours
       , colour_type = "fill"
       , variable_type = "gradient"
       , title = legend
@@ -975,7 +978,7 @@ observeEvent({c(input$indicador_us,
                       
                       fill_color <- colourvalues::colour_values(
                         # x = c(data$valor, 300000),
-                        x = c(data$valor, scale_limits()$max),
+                        x = -c(data$valor, scale_limits()$max),
                         alpha = 200,
                         palette = "viridis"
                       )
@@ -989,7 +992,6 @@ observeEvent({c(input$indicador_us,
                       # ADD THE COULOURS TO THE DATA
                       data <- data %>% 
                         dplyr::mutate(fill = fill_color)
-                      data$fill <- rev(data$fill)
                       
                       # print("UEEEEE")
                       # print(data$fill)
@@ -1000,7 +1002,7 @@ observeEvent({c(input$indicador_us,
                       # create legend
                       l <- colourvalues::colour_values(
                         # x = c(data$valor, 300000)
-                        x = c(0, data$valor, scale_limits()$max)
+                        x = c(data$valor, scale_limits()$max)
                         , n_summaries = 6,
                         palette = "viridis"
                       )
