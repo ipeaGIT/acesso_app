@@ -35,4 +35,4 @@ data.table::setDTthreads(percent = 100)
 
 # register mapbox api key ---------------------------
 # set_token("")
-set_token("pk.eyJ1Ijoia2F1ZWJyYWdhYzQwIiwiYSI6ImNsbjI2ZGcxZTA0dHgybWxsdTdmM3lzdTMifQ.vef5XdnJgHaI9Z12i3kPRg")
+set_token("pk.eyJ1Ijoia2F1ZWJyYWdhIiwiYSI6ImNqa2JoN3VodDMxa2YzcHFxMzM2YWw1bmYifQ.XAhHAgbe0LcDqKYyqKYIIQ")
